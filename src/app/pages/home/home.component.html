@@ -1,0 +1,6 @@
+<main class="home">
+  @if (usuario) {
+    <p>Sesión iniciada como {{ usuario.nombre }} ({{ usuario.rolAcceso }})</p>
+  }
+  <button type="button" (click)="cerrarSesion()">Cerrar sesión</button>
+</main>
