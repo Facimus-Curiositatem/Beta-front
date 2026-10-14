@@ -1,0 +1,41 @@
+<section class="row justify-content-center">
+  <div class="col-lg-5 col-md-7 col-sm-12">
+    <div class="card shadow-sm">
+      <div class="card-body p-4">
+        <h1 class="h4 mb-4 text-center">Iniciar sesion</h1>
+
+        @if (error) {
+          <div class="alert alert-danger" role="alert">{{ error }}</div>
+        }
+
+        <form [formGroup]="loginForm" (ngSubmit)="iniciarSesion()" novalidate>
+          <div class="mb-3">
+            <label for="email" class="form-label">Correo</label>
+            <input type="email" id="email" name="email" class="form-control" formControlName="email"
+              autocomplete="username" />
+            @if (loginForm.get('email')?.touched && loginForm.get('email')?.invalid) {
+              @if (loginForm.get('email')?.errors?.['required']) {
+                <small class="text-danger">El correo es obligatorio.</small>
+              } @else {
+                <small class="text-danger">El correo no es valido.</small>
+              }
+            }
+          </div>
+
+          <div class="mb-4">
+            <label for="password" class="form-label">Contrasena</label>
+            <input type="password" id="password" name="password" class="form-control" formControlName="password"
+              autocomplete="current-password" />
+            @if (loginForm.get('password')?.touched && loginForm.get('password')?.invalid) {
+              <small class="text-danger">La contrasena es obligatoria.</small>
+            }
+          </div>
+
+          <button type="submit" class="btn btn-primary w-100" [disabled]="loginForm.invalid || cargando">
+            {{ cargando ? 'Ingresando...' : 'Ingresar' }}
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>

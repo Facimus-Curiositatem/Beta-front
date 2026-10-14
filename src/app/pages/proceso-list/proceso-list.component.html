@@ -1,0 +1,129 @@
+<section>
+  <header class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 mb-0">Procesos</h1>
+    @if (puedeEditar) {
+      <a class="btn btn-primary" [routerLink]="['/procesos/nuevo']">Nuevo proceso</a>
+    }
+  </header>
+
+  <form [formGroup]="filtros" class="row g-2 mb-3">
+    <div class="col-lg-4 col-md-6 col-sm-12">
+      <label for="nombre" class="form-label visually-hidden">Buscar por nombre</label>
+      <input id="nombre" name="nombre" class="form-control" formControlName="nombre" placeholder="Buscar por nombre" />
+    </div>
+    <div class="col-lg-3 col-md-6 col-sm-12">
+      <label for="categoria" class="form-label visually-hidden">Categoria</label>
+      <input id="categoria" name="categoria" class="form-control" formControlName="categoria" placeholder="Categoria" />
+    </div>
+    <div class="col-lg-3 col-md-6 col-sm-12">
+      <label for="estado" class="form-label visually-hidden">Estado</label>
+      <select id="estado" name="estado" class="form-select" formControlName="estado">
+        <option [ngValue]="null">Todos los estados</option>
+        <option value="BORRADOR">Borrador</option>
+        <option value="PUBLICADO">Publicado</option>
+      </select>
+    </div>
+    <div class="col-lg-2 col-md-6 col-sm-12 d-flex align-items-center">
+      <div class="form-check">
+        <input id="verEliminados" name="verEliminados" type="checkbox" class="form-check-input"
+          formControlName="verEliminados" />
+        <label for="verEliminados" class="form-check-label">Ver eliminados</label>
+      </div>
+    </div>
+  </form>
+
+  @if (error) {
+    <div class="alert alert-danger" role="alert">{{ error }}</div>
+  }
+
+  @if (cargando && !resultado) {
+    <p class="text-muted">Cargando procesos...</p>
+  }
+
+  @if (resultado) {
+    <div class="table-responsive">
+      <table class="table table-hover align-middle">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Categoria</th>
+            <th>Estado</th>
+            <th>Ultima modificacion</th>
+            <th class="text-end">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (proceso of resultado.content; track proceso.id) {
+            <tr>
+              <td>
+                <strong>{{ proceso.nombre }}</strong>
+                <div class="small text-muted">{{ proceso.descripcion }}</div>
+              </td>
+              <td>{{ proceso.categoria }}</td>
+              <td>
+                <span class="badge" [class.text-bg-success]="proceso.estado === 'PUBLICADO'"
+                  [class.text-bg-warning]="proceso.estado === 'BORRADOR'">{{ proceso.estado }}</span>
+                @if (!proceso.activo) {
+                  <span class="badge text-bg-secondary ms-1">ELIMINADO</span>
+                }
+              </td>
+              <td>{{ proceso.fechaModificacion | date: 'short' }}</td>
+              <td class="text-end">
+                @if (proceso.activo) {
+                  @if (puedeEditar) {
+                    <a class="btn btn-sm btn-outline-primary me-2"
+                      [routerLink]="['/procesos/editar', proceso.id]">Editar</a>
+                    @if (proceso.estado === 'BORRADOR') {
+                      <button type="button" class="btn btn-sm btn-outline-success me-2"
+                        (click)="publicar(proceso)">Publicar</button>
+                    }
+                  }
+                  @if (puedeEliminar) {
+                    <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal"
+                      data-bs-target="#modalEliminar" (click)="procesoAEliminar = proceso">Eliminar</button>
+                  }
+                }
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="5" class="text-center text-muted py-4">No hay procesos con esos filtros.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <nav class="d-flex justify-content-between align-items-center" aria-label="Paginacion de procesos">
+      <small class="text-muted">{{ resultado.totalElements }} procesos</small>
+      <div>
+        <button type="button" class="btn btn-sm btn-outline-secondary me-2" [disabled]="pagina === 0"
+          (click)="irAPagina(pagina - 1)">Anterior</button>
+        <span class="small">Pagina {{ resultado.totalPages === 0 ? 0 : pagina + 1 }} de {{ resultado.totalPages }}</span>
+        <button type="button" class="btn btn-sm btn-outline-secondary ms-2"
+          [disabled]="pagina + 1 >= resultado.totalPages" (click)="irAPagina(pagina + 1)">Siguiente</button>
+      </div>
+    </nav>
+  }
+</section>
+
+<!-- HU-06: confirmacion antes de eliminar -->
+<div class="modal fade" id="modalEliminar" tabindex="-1" aria-labelledby="tituloModalEliminar" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title fs-5" id="tituloModalEliminar">Eliminar proceso</h2>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        El proceso <strong>{{ procesoAEliminar?.nombre }}</strong> pasara a inactivo. Podras consultarlo con el
+        filtro "Ver eliminados".
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-danger" data-bs-dismiss="modal"
+          (click)="confirmarEliminacion()">Eliminar</button>
+      </div>
+    </div>
+  </div>
+</div>

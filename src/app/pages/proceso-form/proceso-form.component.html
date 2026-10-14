@@ -1,0 +1,55 @@
+<section class="row justify-content-center">
+  <div class="col-lg-7 col-md-9 col-sm-12">
+    <div class="card shadow-sm">
+      <div class="card-body p-4">
+        <h1 class="h4 mb-4">{{ isEdit ? 'Editar proceso' : 'Nuevo proceso' }}</h1>
+
+        @if (error) {
+          <div class="alert alert-danger" role="alert">{{ error }}</div>
+        }
+
+        <form [formGroup]="procesoForm" (ngSubmit)="guardar()" novalidate>
+          <div class="mb-3">
+            <label for="nombre" class="form-label">Nombre</label>
+            <input id="nombre" name="nombre" class="form-control" formControlName="nombre" />
+            @if (procesoForm.get('nombre')?.touched && procesoForm.get('nombre')?.invalid) {
+              @if (procesoForm.get('nombre')?.errors?.['required']) {
+                <small class="text-danger">El nombre es obligatorio.</small>
+              } @else {
+                <small class="text-danger">El nombre admite maximo 150 caracteres.</small>
+              }
+            }
+          </div>
+
+          <div class="mb-3">
+            <label for="categoria" class="form-label">Categoria</label>
+            <input id="categoria" name="categoria" class="form-control" formControlName="categoria" />
+            @if (procesoForm.get('categoria')?.touched && procesoForm.get('categoria')?.invalid) {
+              @if (procesoForm.get('categoria')?.errors?.['required']) {
+                <small class="text-danger">La categoria es obligatoria.</small>
+              } @else {
+                <small class="text-danger">La categoria admite maximo 100 caracteres.</small>
+              }
+            }
+          </div>
+
+          <div class="mb-4">
+            <label for="descripcion" class="form-label">Descripcion</label>
+            <textarea id="descripcion" name="descripcion" rows="4" class="form-control"
+              formControlName="descripcion"></textarea>
+            @if (procesoForm.get('descripcion')?.touched && procesoForm.get('descripcion')?.invalid) {
+              <small class="text-danger">La descripcion es obligatoria.</small>
+            }
+          </div>
+
+          <div class="d-flex justify-content-end">
+            <a class="btn btn-secondary me-2" [routerLink]="['/procesos']">Cancelar</a>
+            <button type="submit" class="btn btn-primary" [disabled]="procesoForm.invalid || guardando">
+              {{ guardando ? 'Guardando...' : 'Guardar' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
