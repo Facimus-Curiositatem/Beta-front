@@ -1,4 +1,4 @@
-export interface CrearUsuarioRequest {
+export interface AceptarInvitacionRequest {
     nombre: string;
     password: string;      
 }
