@@ -1,0 +1,32 @@
+<h2>@if (editing()) { Editar pool } @else { Crear pool }</h2>
+
+@if (message()) {
+  <p>{{ message() }}</p>
+}
+
+<form [formGroup]="form" (ngSubmit)="submit()">
+  <label>
+    Nombre
+    <input formControlName="nombre">
+  </label>
+  @if (form.controls.nombre.touched && form.controls.nombre.hasError('required')) {
+    <small>El nombre es obligatorio</small>
+  }
+
+  <label>
+    Tipo de participante
+    <select formControlName="tipoParticipante">
+      @for (tipo of tiposParticipante; track tipo) {
+        <option [value]="tipo">{{ tipo }}</option>
+      }
+    </select>
+  </label>
+
+  <label>
+    <input type="checkbox" formControlName="cajaNegra"> Caja negra
+  </label>
+
+  <button type="submit" [disabled]="saving()">
+    @if (saving()) { Guardando... } @else { Guardar }
+  </button>
+</form>

@@ -1,0 +1,45 @@
+<h2>Pools del proceso</h2>
+
+<a [routerLink]="['/procesos', procesoId(), 'pools', 'nuevo']">Crear pool</a>
+
+@switch (status()) {
+  @case ('loading') {
+    <p>Cargando pools...</p>
+  }
+  @case ('error') {
+    <p>{{ message() }}</p>
+    <button (click)="load()">Reintentar</button>
+  }
+  @case ('success') {
+    @if (items().length === 0) {
+      <p>No hay pools registrados.</p>
+    } @else {
+      <table>
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Tipo</th>
+            <th>Caja negra</th>
+            <th>Orden</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (pool of items(); track pool.id) {
+            <tr>
+              <td>{{ pool.nombre }}</td>
+              <td>{{ pool.tipoParticipante }}</td>
+              <td>{{ pool.cajaNegra ? 'Si' : 'No' }}</td>
+              <td>{{ pool.orden }}</td>
+              <td>
+                <button (click)="editar(pool.id)">Editar</button>
+                <button (click)="eliminar(pool.id)">Eliminar</button>
+                <button (click)="verLanes(pool.id)">Lanes</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  }
+}
