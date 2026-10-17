@@ -1,0 +1,44 @@
+<h2>Lanes del pool</h2>
+
+<a [routerLink]="['/pools', id(), 'lanes', 'nuevo']">Crear lane</a>
+
+@switch (status()) {
+  @case ('loading') {
+    <p>Cargando lanes...</p>
+  }
+  @case ('error') {
+    <p>{{ message() }}</p>
+    <button (click)="load()">Reintentar</button>
+  }
+  @case ('success') {
+    @if (items().length === 0) {
+      <p>No hay lanes registrados.</p>
+    } @else {
+      <table>
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Rol</th>
+            <th>Orden</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (lane of items(); track lane.id; let i = $index) {
+            <tr>
+              <td>{{ lane.nombre }}</td>
+              <td>{{ lane.rolProcesoNombre }}</td>
+              <td>{{ lane.orden }}</td>
+              <td>
+                <button (click)="subirOrden(i)" [disabled]="i === 0">Subir</button>
+                <button (click)="bajarOrden(i)" [disabled]="i === items().length - 1">Bajar</button>
+                <button (click)="editar(lane.id)">Editar</button>
+                <button (click)="eliminar(lane.id)">Eliminar</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  }
+}
