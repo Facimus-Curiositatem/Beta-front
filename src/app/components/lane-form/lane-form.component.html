@@ -1,0 +1,29 @@
+<h2>@if (editing()) { Editar lane } @else { Crear lane }</h2>
+
+@if (message()) {
+  <p>{{ message() }}</p>
+}
+
+<form [formGroup]="form" (ngSubmit)="submit()">
+  <label>
+    Nombre
+    <input formControlName="nombre">
+  </label>
+  @if (form.controls.nombre.touched && form.controls.nombre.hasError('required')) {
+    <small>El nombre es obligatorio</small>
+  }
+
+  <label>
+    Rol de proceso
+    <select formControlName="rolProcesoId">
+      <option [value]="0" disabled>Seleccione un rol</option>
+      @for (rol of roles(); track rol.id) {
+        <option [value]="rol.id">{{ rol.nombre }}</option>
+      }
+    </select>
+  </label>
+
+  <button type="submit" [disabled]="saving()">
+    @if (saving()) { Guardando... } @else { Guardar }
+  </button>
+</form>
