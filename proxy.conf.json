@@ -1,0 +1,6 @@
+{
+  "/api": {
+    "target": "http://10.43.99.37:8080",
+    "secure": false
+  }
+}

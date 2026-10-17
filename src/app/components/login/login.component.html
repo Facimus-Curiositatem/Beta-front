@@ -1,0 +1,30 @@
+<h2>Iniciar sesion</h2>
+
+@if (message()) {
+  <p>{{ message() }}</p>
+}
+
+<form [formGroup]="form" (ngSubmit)="submit()">
+  <label>
+    Correo
+    <input type="email" formControlName="email">
+  </label>
+  @if (form.controls.email.touched && form.controls.email.hasError('required')) {
+    <small>El correo es obligatorio</small>
+  }
+  @if (form.controls.email.touched && form.controls.email.hasError('email')) {
+    <small>El correo no tiene un formato valido</small>
+  }
+
+  <label>
+    Contrasena
+    <input type="password" formControlName="password">
+  </label>
+  @if (form.controls.password.touched && form.controls.password.hasError('required')) {
+    <small>La contrasena es obligatoria</small>
+  }
+
+  <button type="submit" [disabled]="loading()">
+    @if (loading()) { Ingresando... } @else { Ingresar }
+  </button>
+</form>
