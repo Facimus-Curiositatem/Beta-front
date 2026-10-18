@@ -1,1 +1,32 @@
-<p>usuario-list works!</p>
+<h2>Usuarios</h2>
+<a routerLink="/usuarios/nuevo">Nuevo usuario</a>
+<a routerLink="/usuarios/invitar">Invitar usuario</a>
+
+<p>{{ status() === 'loading' ? 'Cargando...' : '' }}</p>
+<p class="error">{{ message() }}</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Nombre</th>
+      <th>Correo</th>
+      <th>Rol</th>
+      <th>Estado</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let u of items()">
+      <td>{{ u.nombre }}</td>
+      <td>{{ u.email }}</td>
+      <td>{{ u.rolAcceso }}</td>
+      <td>{{ u.activo ? 'Activo' : 'Inactivo' }}</td>
+      <td>
+        <a [routerLink]="['/usuarios', u.id, 'editar']">Editar</a>
+        <button type="button" class="desactivar" [disabled]="!u.activo" (click)="desactivar(u)">
+          Desactivar
+        </button>
+      </td>
+    </tr>
+  </tbody>
+</table>
