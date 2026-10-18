@@ -1,6 +1,6 @@
 import { RolAcceso } from './rol-acceso';
 
-export interface CrearUsuarioRequest {
+export interface invitacionRequest {
     email: string;
     rolAcceso: RolAcceso;
 }
