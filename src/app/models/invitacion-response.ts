@@ -1,9 +1,9 @@
 import { RolAcceso } from './rol-acceso';
 
 export interface invitacionResponse {
-    nombre: string;
+    id: number;
     email: string;
     rolAcceso: RolAcceso;
-    toke: string;
+    token: string;
     fechaExpiracion: string;
 }

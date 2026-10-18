@@ -4,8 +4,8 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { InvitacionService } from '../../services/invitacion.service';
-import { InvitacionRequest } from '../../models/invitacion-request';
-import { InvitacionResponse } from '../../models/invitacion-response';
+import { invitacionRequest } from '../../models/invitacion-request';
+import { invitacionResponse } from '../../models/invitacion-response';
 import { RolAcceso } from '../../models/rol-acceso';
 
 @Component({
@@ -19,7 +19,7 @@ export class InvitacionFormComponent {
   private service = inject(InvitacionService);
 
   roles: RolAcceso[] = ['ADMINISTRADOR', 'EDITOR', 'SOLO_LECTURA'];
-  invitacion = signal<InvitacionResponse | null>(null);
+  invitacion = signal<invitacionResponse | null>(null);
   message = signal('');
 
   form = this.fb.nonNullable.group({
@@ -32,7 +32,7 @@ export class InvitacionFormComponent {
       this.form.markAllAsTouched();
       return;
     }
-    const request: InvitacionRequest = this.form.getRawValue();
+    const request: invitacionRequest = this.form.getRawValue();
 
     this.service.create(request).subscribe({
       next: (data) => {
