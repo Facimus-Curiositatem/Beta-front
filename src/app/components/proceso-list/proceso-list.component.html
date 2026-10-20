@@ -1,0 +1,71 @@
+<h2>Procesos</h2>
+
+<a routerLink="/procesos/nuevo">Crear proceso</a>
+
+<form [formGroup]="filtros" (ngSubmit)="buscar()">
+  <label>
+    Nombre
+    <input formControlName="nombre">
+  </label>
+
+  <label>
+    Estado
+    <select formControlName="estado">
+      <option value="">Todos</option>
+      @for (estado of estados; track estado) {
+        <option [value]="estado">{{ estado }}</option>
+      }
+    </select>
+  </label>
+
+  <label>
+    Categoria
+    <input formControlName="categoria">
+  </label>
+
+  <button type="submit">Buscar</button>
+</form>
+
+@switch (status()) {
+  @case ('loading') {
+    <p>Cargando procesos...</p>
+  }
+  @case ('error') {
+    <p>{{ message() }}</p>
+    <button (click)="load()">Reintentar</button>
+  }
+  @case ('success') {
+    @if (items().length === 0) {
+      <p>No hay procesos registrados.</p>
+    } @else {
+      <table>
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Categoria</th>
+            <th>Estado</th>
+            <th>Creacion</th>
+            <th>Modificacion</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (proceso of items(); track proceso.id) {
+            <tr>
+              <td>{{ proceso.nombre }}</td>
+              <td>{{ proceso.categoria }}</td>
+              <td>{{ proceso.estado }}</td>
+              <td>{{ proceso.fechaCreacion }}</td>
+              <td>{{ proceso.fechaModificacion }}</td>
+              <td><button (click)="ver(proceso.id)">Ver</button></td>
+            </tr>
+          }
+        </tbody>
+      </table>
+
+      <button (click)="anterior()" [disabled]="pagina() === 0">Anterior</button>
+      <span>Pagina {{ pagina() + 1 }} de {{ totalPages() }}</span>
+      <button (click)="siguiente()" [disabled]="pagina() + 1 >= totalPages()">Siguiente</button>
+    }
+  }
+}

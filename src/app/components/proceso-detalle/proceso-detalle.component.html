@@ -1,0 +1,42 @@
+<a routerLink="/procesos">Volver a procesos</a>
+
+@if (message()) {
+  <p>{{ message() }}</p>
+}
+
+@switch (status()) {
+  @case ('loading') {
+    <p>Cargando proceso...</p>
+  }
+  @case ('error') {
+    <button (click)="load()">Reintentar</button>
+  }
+  @case ('success') {
+    @if (detalle(); as d) {
+      <h2>{{ d.proceso.nombre }}</h2>
+      <p>Descripcion: {{ d.proceso.descripcion }}</p>
+      <p>Categoria: {{ d.proceso.categoria }}</p>
+      <p>Estado: {{ d.proceso.estado }}</p>
+      <p>Activo: {{ d.proceso.activo ? 'Si' : 'No' }}</p>
+      <p>Creacion: {{ d.proceso.fechaCreacion }}</p>
+      <p>Modificacion: {{ d.proceso.fechaModificacion }}</p>
+
+      <a [routerLink]="['/procesos', d.proceso.id, 'editar']">Editar</a>
+      @if (d.proceso.estado === 'BORRADOR') {
+        <button (click)="publicar()">Publicar</button>
+      }
+      <button (click)="eliminar()">Eliminar</button>
+
+      <h3>Historial de cambios</h3>
+      @if (d.historial.length === 0) {
+        <p>No hay cambios registrados.</p>
+      } @else {
+        <ul>
+          @for (cambio of d.historial; track cambio.id) {
+            <li>{{ cambio.fechaCambio }} - {{ cambio.autorNombre }}: {{ cambio.descripcionCambio }}</li>
+          }
+        </ul>
+      }
+    }
+  }
+}
