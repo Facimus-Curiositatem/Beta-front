@@ -1,0 +1,14 @@
+<h1>Procesos</h1>
+@if (sinPermiso) {
+  <p role="alert">No tienes permiso para administrar esta sección.</p>
+}
+<p>Acceso por identificador. El listado de procesos se incorporará con H3.</p>
+<form [formGroup]="form" (ngSubmit)="abrir()">
+  <label
+    >ID de un proceso existente <input type="number" min="1" step="1" formControlName="procesoId"
+  /></label>
+  <button type="submit" [disabled]="form.invalid">Ver pools</button>
+  @if (tokens.esAdministrador()) {
+    <button type="button" (click)="compartir()" [disabled]="form.invalid">Compartir proceso</button>
+  }
+</form>

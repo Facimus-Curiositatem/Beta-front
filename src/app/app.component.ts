@@ -1,12 +1,29 @@
-import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component, inject, signal } from '@angular/core';
+import { RouterOutlet, RouterLink, Router } from '@angular/router';
+
+import { AuthService } from './services/auth.service';
+import { TokenService } from './services/token.service';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, RouterLink],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
 export class AppComponent {
   title = 'Beta-front';
+  readonly tokens = inject(TokenService);
+  private readonly auth = inject(AuthService);
+  private readonly router = inject(Router);
+  readonly closing = signal(false);
+  cerrarSesion(): void {
+    if (this.closing()) return;
+    this.closing.set(true);
+    const salir = () => {
+      this.tokens.removeToken();
+      this.closing.set(false);
+      this.router.navigate(['/login']);
+    };
+    this.auth.logout().subscribe({ next: salir, error: salir });
+  }
 }
