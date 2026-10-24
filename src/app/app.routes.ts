@@ -1,5 +1,10 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './guards/auth.guard';
+import { UsuarioListComponent } from './components/usuario-list/usuario-list.component';
+import { UsuarioFormComponent } from './components/usuario-form/usuario-form.component';
+import { EditarUsuarioComponent } from './components/editar-usuario/editar-usuario.component';
+import { InvitacionFormComponent } from './components/invitacion-form/invitacion-form.component';
+import { AceptarInvitacionComponent } from './components/aceptar-invitacion/aceptar-invitacion.component';
 
 export const routes: Routes = [
   {
@@ -41,6 +46,11 @@ export const routes: Routes = [
     redirectTo: 'login',
     pathMatch: 'full'
   },
+  { path: 'usuarios', component: UsuarioListComponent, canActivate: [authGuard] },
+  { path: 'usuarios/nuevo', component: UsuarioFormComponent, canActivate: [authGuard] },
+  { path: 'usuarios/invitar', component: InvitacionFormComponent, canActivate: [authGuard] },
+  { path: 'usuarios/:id/editar', component: EditarUsuarioComponent, canActivate: [authGuard] },
+  { path: 'invitaciones/:token/aceptar', component: AceptarInvitacionComponent },
   {
     path: '**',
     redirectTo: 'login'
