@@ -1,0 +1,16 @@
+<h1>{{ id() ? 'Editar' : 'Crear' }} rol de proceso</h1>
+@if (message()) {
+  <p role="alert">{{ message() }}</p>
+}
+@if (id() && !loaded()) {
+  <button type="button" (click)="cargar()" [disabled]="loading()">Reintentar carga</button>
+}
+<form [formGroup]="form" (ngSubmit)="submit()">
+  <label>Nombre <input formControlName="nombre" /></label>
+  @if (form.controls.nombre.touched && form.controls.nombre.invalid) {
+    <small>El nombre es obligatorio</small>
+  }
+  <label>Descripción <textarea formControlName="descripcion"></textarea></label>
+  <button type="submit" [disabled]="saving() || loading() || (!!id() && !loaded())">Guardar</button>
+</form>
+<a routerLink="/roles">Volver</a>
