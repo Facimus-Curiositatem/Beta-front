@@ -20,19 +20,19 @@ describe('authGuard', () => {
   afterEach(() => localStorage.clear());
 
   it('debe permitir acceso cuando hay token', () => {
-    tokenService.setToken('token-valido');
-
-    const result = TestBed.runInInjectionContext(() =>
-      authGuard({} as any, {} as any)
+    tokenService.setToken(
+      'header.' +
+        btoa(JSON.stringify({ exp: Math.floor(Date.now() / 1000) + 3600, rol: 'EDITOR' })) +
+        '.firma'
     );
+
+    const result = TestBed.runInInjectionContext(() => authGuard({} as any, {} as any));
 
     expect(result).toBeTrue();
   });
 
   it('debe redirigir a /login cuando no hay token', () => {
-    const result = TestBed.runInInjectionContext(() =>
-      authGuard({} as any, {} as any)
-    );
+    const result = TestBed.runInInjectionContext(() => authGuard({} as any, {} as any));
 
     expect(result).toBeInstanceOf(UrlTree);
     expect((result as UrlTree).toString()).toBe('/login');
