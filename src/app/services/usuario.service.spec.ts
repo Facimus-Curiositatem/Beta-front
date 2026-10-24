@@ -4,12 +4,12 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 
 import { UsuarioService } from './usuario.service';
 import { API_URL } from '../config/api.config';
-import { Usuario } from '../models/usuario';
+import { UsuarioResponse } from '../models/usuario.model';
 
 describe('UsuarioService', () => {
   let service: UsuarioService;
   let http: HttpTestingController;
-  const usuario: Usuario = { id: 1, nombre: 'Juan', email: 'juan@correo.com', rolAcceso: 'EDITOR', activo: true };
+  const usuario: UsuarioResponse = { id: 1, nombre: 'Juan', email: 'juan@correo.com', rolAcceso: 'EDITOR', activo: true };
 
   beforeEach(() => {
     TestBed.configureTestingModule({

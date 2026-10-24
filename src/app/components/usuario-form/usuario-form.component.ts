@@ -5,8 +5,8 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
 import { UsuarioService } from '../../services/usuario.service';
-import { CrearUsuarioRequest } from '../../models/crear-usuario-request';
-import { RolAcceso } from '../../models/rol-acceso';
+import { CrearUsuarioRequest } from '../../models/usuario.model';
+import { RolAcceso } from '../../models/usuario.model';
 
 @Component({
   selector: 'app-usuario-form',

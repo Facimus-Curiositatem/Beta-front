@@ -5,7 +5,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 
 import { InvitacionService } from '../../services/invitacion.service';
-import { AceptarInvitacionRequest } from '../../models/aceptar-invitacion-request';
+import { AceptarInvitacionRequest } from '../../models/invitacion.model';
 
 @Component({
   selector: 'app-aceptar-invitacion',

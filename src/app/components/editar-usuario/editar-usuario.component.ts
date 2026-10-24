@@ -5,9 +5,9 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { UsuarioService } from '../../services/usuario.service';
-import { Usuario } from '../../models/usuario';
-import { ActualizarUsuarioRequest } from '../../models/actualizar-usuario-request';
-import { RolAcceso } from '../../models/rol-acceso';
+import { UsuarioResponse } from '../../models/usuario.model';
+import { ActualizarUsuarioRequest } from '../../models/usuario.model';
+import { RolAcceso } from '../../models/usuario.model';
 
 @Component({
   selector: 'app-editar-usuario',
@@ -23,7 +23,7 @@ export class EditarUsuarioComponent implements OnInit {
 
   id = Number(this.route.snapshot.paramMap.get('id'));
   roles: RolAcceso[] = ['ADMINISTRADOR', 'EDITOR', 'SOLO_LECTURA'];
-  usuario = signal<Usuario | null>(null);
+  usuario = signal<UsuarioResponse | null>(null);
   message = signal('');
 
   form = this.fb.nonNullable.group({

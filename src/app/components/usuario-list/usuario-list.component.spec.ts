@@ -5,13 +5,13 @@ import { of, throwError } from 'rxjs';
 
 import { UsuarioListComponent } from './usuario-list.component';
 import { UsuarioService } from '../../services/usuario.service';
-import { Usuario } from '../../models/usuario';
+import { UsuarioResponse } from '../../models/usuario.model';
 
 describe('UsuarioListComponent', () => {
   let fixture: ComponentFixture<UsuarioListComponent>;
   let service: jasmine.SpyObj<UsuarioService>;
 
-  const usuarios: Usuario[] = [
+  const usuarios: UsuarioResponse[] = [
     { id: 1, nombre: 'Juan', email: 'juan@correo.com', rolAcceso: 'ADMINISTRADOR', activo: true },
     { id: 2, nombre: 'Ana', email: 'ana@correo.com', rolAcceso: 'EDITOR', activo: false },
   ];

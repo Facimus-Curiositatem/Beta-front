@@ -4,7 +4,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { RouterLink } from '@angular/router';
 
 import { UsuarioService } from '../../services/usuario.service';
-import { Usuario } from '../../models/usuario';
+import { UsuarioResponse } from '../../models/usuario.model';
 
 @Component({
   selector: 'app-usuario-list',
@@ -15,7 +15,7 @@ import { Usuario } from '../../models/usuario';
 export class UsuarioListComponent implements OnInit {
   private service = inject(UsuarioService);
 
-  items = signal<Usuario[]>([]);
+  items = signal<UsuarioResponse[]>([]);
   status = signal<'idle' | 'loading' | 'success' | 'error'>('idle');
   message = signal('');
 
@@ -39,7 +39,7 @@ export class UsuarioListComponent implements OnInit {
     });
   }
 
-  desactivar(usuario: Usuario): void {
+  desactivar(usuario: UsuarioResponse): void {
     if (!confirm(`¿Desactivar a ${usuario.nombre}?`)) {
       return;
     }
