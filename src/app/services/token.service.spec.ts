@@ -30,4 +30,23 @@ describe('TokenService', () => {
     service.removeToken();
     expect(service.getToken()).toBeNull();
   });
+  it('rechaza tokens malformados, sin vencimiento o vencidos', () => {
+    for (const token of [
+      'mal',
+      'h.invalido.s',
+      'h.' + btoa('{}') + '.s',
+      'h.' + btoa(JSON.stringify({ exp: 1 })) + '.s'
+    ]) {
+      service.setToken(token);
+      expect(service.tieneSesion()).toBeFalse();
+      expect(service.esAdministrador()).toBeFalse();
+    }
+  });
+  it('reconoce sesión y rol de acceso de JWT vigente', () => {
+    service.setToken(
+      'h.' + btoa(JSON.stringify({ exp: Date.now() / 1000 + 1000, rol: 'ADMINISTRADOR' })) + '.s'
+    );
+    expect(service.tieneSesion()).toBeTrue();
+    expect(service.esAdministrador()).toBeTrue();
+  });
 });
