@@ -35,37 +35,35 @@
     <button (click)="load()">Reintentar</button>
   }
   @case ('success') {
-    @if (items().length === 0) {
-      <p>No hay procesos registrados.</p>
-    } @else {
-      <table>
-        <thead>
+    <table>
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Categoria</th>
+          <th>Estado</th>
+          <th>Creacion</th>
+          <th>Modificacion</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (proceso of items(); track proceso.id) {
           <tr>
-            <th>Nombre</th>
-            <th>Categoria</th>
-            <th>Estado</th>
-            <th>Creacion</th>
-            <th>Modificacion</th>
-            <th>Acciones</th>
+            <td>{{ proceso.nombre }}</td>
+            <td>{{ proceso.categoria }}</td>
+            <td>{{ proceso.estado }}</td>
+            <td>{{ proceso.fechaCreacion }}</td>
+            <td>{{ proceso.fechaModificacion }}</td>
+            <td><button (click)="ver(proceso.id)">Ver</button></td>
           </tr>
-        </thead>
-        <tbody>
-          @for (proceso of items(); track proceso.id) {
-            <tr>
-              <td>{{ proceso.nombre }}</td>
-              <td>{{ proceso.categoria }}</td>
-              <td>{{ proceso.estado }}</td>
-              <td>{{ proceso.fechaCreacion }}</td>
-              <td>{{ proceso.fechaModificacion }}</td>
-              <td><button (click)="ver(proceso.id)">Ver</button></td>
-            </tr>
-          }
-        </tbody>
-      </table>
+        } @empty {
+          <tr><td colspan="6">No hay procesos registrados.</td></tr>
+        }
+      </tbody>
+    </table>
 
-      <button (click)="anterior()" [disabled]="pagina() === 0">Anterior</button>
-      <span>Pagina {{ pagina() + 1 }} de {{ totalPages() }}</span>
-      <button (click)="siguiente()" [disabled]="pagina() + 1 >= totalPages()">Siguiente</button>
-    }
+    <button (click)="anterior()" [disabled]="pagina() === 0">Anterior</button>
+    <span>Pagina {{ pagina() + 1 }} de {{ totalPages() || 1 }}</span>
+    <button (click)="siguiente()" [disabled]="pagina() + 1 >= totalPages()">Siguiente</button>
   }
 }

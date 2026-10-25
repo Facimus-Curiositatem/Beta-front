@@ -3,8 +3,8 @@ import { provideRouter } from '@angular/router';
 import { of } from 'rxjs';
 import { ProcesoListComponent } from './proceso-list.component';
 import { ProcesoService } from '../../services/proceso.service';
-import { ProcesoResponse } from '../../models/proceso-response';
-import { PageResponse } from '../../models/page-response';
+import { ProcesoResponse } from '../../models/proceso.model';
+import { PageResponse } from '../../models/page-response.model';
 
 describe('ProcesoListComponent', () => {
   let fixture: ComponentFixture<ProcesoListComponent>;
@@ -42,7 +42,7 @@ describe('ProcesoListComponent', () => {
   });
 
   it('debe buscar procesos al inicializar', () => {
-    expect(procesoService.buscar).toHaveBeenCalledWith('', '', '', undefined, 0);
+    expect(procesoService.buscar).toHaveBeenCalledWith('', undefined, '', undefined, 0);
   });
 
   it('debe mostrar los procesos en la tabla', () => {
@@ -51,5 +51,14 @@ describe('ProcesoListComponent', () => {
     expect(rows[0].textContent).toContain('Compras');
     expect(rows[0].textContent).toContain('Finanzas');
     expect(rows[0].textContent).toContain('BORRADOR');
+  });
+
+  it('debe mostrar una fila de aviso cuando no hay procesos', () => {
+    procesoService.buscar.and.returnValue(of({ ...page, content: [], totalElements: 0, totalPages: 0 }));
+    component.load();
+    fixture.detectChanges();
+    const rows = fixture.nativeElement.querySelectorAll('tbody tr');
+    expect(rows.length).toBe(1);
+    expect(rows[0].textContent).toContain('No hay procesos registrados.');
   });
 });

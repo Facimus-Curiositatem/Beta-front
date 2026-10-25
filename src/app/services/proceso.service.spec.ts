@@ -2,10 +2,9 @@ import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ProcesoService } from './proceso.service';
-import { ProcesoResponse } from '../models/proceso-response';
-import { PageResponse } from '../models/page-response';
-import { ProcesoDetalleResponse } from '../models/proceso-detalle-response';
-import { HistorialCambioResponse } from '../models/historial-cambio-response';
+import { ProcesoDetalleResponse, ProcesoResponse } from '../models/proceso.model';
+import { HistorialCambioResponse } from '../models/historial.model';
+import { PageResponse } from '../models/page-response.model';
 import { environment } from '../../environments/environment';
 
 describe('ProcesoService', () => {

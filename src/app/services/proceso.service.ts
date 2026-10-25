@@ -1,14 +1,12 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { ProcesoRequest } from '../models/proceso-request';
-import { EditarProcesoRequest } from '../models/editar-proceso-request';
-import { CambiarEstadoRequest } from '../models/cambiar-estado-request';
-import { ProcesoResponse } from '../models/proceso-response';
-import { ProcesoDetalleResponse } from '../models/proceso-detalle-response';
-import { HistorialCambioResponse } from '../models/historial-cambio-response';
-import { ProcesoDiagramaResponse } from '../models/proceso-diagrama-response';
-import { PageResponse } from '../models/page-response';
+import {
+  CambiarEstadoRequest, EditarProcesoRequest, EstadoProceso, ProcesoDetalleResponse,
+  ProcesoDiagramaResponse, ProcesoRequest, ProcesoResponse
+} from '../models/proceso.model';
+import { HistorialCambioResponse } from '../models/historial.model';
+import { PageResponse } from '../models/page-response.model';
 import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
@@ -18,7 +16,7 @@ export class ProcesoService {
 
   buscar(
     nombre?: string,
-    estado?: string,
+    estado?: EstadoProceso,
     categoria?: string,
     activo?: boolean,
     pagina = 0

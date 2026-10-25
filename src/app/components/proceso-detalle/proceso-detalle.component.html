@@ -28,15 +28,13 @@
       <button (click)="eliminar()">Eliminar</button>
 
       <h3>Historial de cambios</h3>
-      @if (d.historial.length === 0) {
-        <p>No hay cambios registrados.</p>
-      } @else {
-        <ul>
-          @for (cambio of d.historial; track cambio.id) {
-            <li>{{ cambio.fechaCambio }} - {{ cambio.autorNombre }}: {{ cambio.descripcionCambio }}</li>
-          }
-        </ul>
-      }
+      <ul>
+        @for (cambio of d.historial; track cambio.id) {
+          <li>{{ cambio.fechaCambio }} - {{ cambio.autorNombre }}: {{ cambio.descripcionCambio }}</li>
+        } @empty {
+          <li>No hay cambios registrados.</li>
+        }
+      </ul>
     }
   }
 }

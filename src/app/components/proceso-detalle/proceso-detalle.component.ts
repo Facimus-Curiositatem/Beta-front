@@ -2,7 +2,7 @@ import { Component, ChangeDetectionStrategy, inject, input, signal } from '@angu
 import { Router, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ProcesoService } from '../../services/proceso.service';
-import { ProcesoDetalleResponse } from '../../models/proceso-detalle-response';
+import { ProcesoDetalleResponse } from '../../models/proceso.model';
 
 @Component({
   selector: 'app-proceso-detalle',

@@ -3,7 +3,7 @@ import { ReactiveFormsModule, FormBuilder } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ProcesoService } from '../../services/proceso.service';
-import { ProcesoResponse } from '../../models/proceso-response';
+import { EstadoProceso, ProcesoResponse } from '../../models/proceso.model';
 
 @Component({
   selector: 'app-proceso-list',
@@ -17,7 +17,7 @@ export class ProcesoListComponent {
   private readonly procesoService = inject(ProcesoService);
   private readonly router = inject(Router);
 
-  protected readonly estados = ['BORRADOR', 'PUBLICADO'];
+  protected readonly estados: EstadoProceso[] = ['BORRADOR', 'PUBLICADO'];
   protected readonly status = signal<'loading' | 'success' | 'error'>('loading');
   protected readonly items = signal<ProcesoResponse[]>([]);
   protected readonly message = signal('');
@@ -26,7 +26,7 @@ export class ProcesoListComponent {
 
   protected readonly filtros = this.fb.nonNullable.group({
     nombre: [''],
-    estado: [''],
+    estado: this.fb.nonNullable.control<EstadoProceso | ''>(''),
     categoria: ['']
   });
 
@@ -42,7 +42,7 @@ export class ProcesoListComponent {
   load(): void {
     this.status.set('loading');
     const { nombre, estado, categoria } = this.filtros.getRawValue();
-    this.procesoService.buscar(nombre, estado, categoria, undefined, this.pagina()).subscribe({
+    this.procesoService.buscar(nombre, estado || undefined, categoria, undefined, this.pagina()).subscribe({
       next: page => {
         this.items.set(page.content);
         this.totalPages.set(page.totalPages);
