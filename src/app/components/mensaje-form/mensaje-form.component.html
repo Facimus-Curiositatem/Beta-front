@@ -1,0 +1,139 @@
+<h2>@if (editing()) { Editar mensaje } @else { Crear mensaje }</h2>
+
+@if (message()) {
+  <p>{{ message() }}</p>
+}
+
+<form [formGroup]="form" (ngSubmit)="submit()">
+  <label>
+    Nombre
+    <input formControlName="nombre">
+  </label>
+  @if (form.controls.nombre.touched && form.controls.nombre.hasError('required')) {
+    <small>El nombre es obligatorio</small>
+  }
+
+  <label>
+    Contenido
+    <input formControlName="contenido">
+  </label>
+  @if (form.controls.contenido.touched && form.controls.contenido.hasError('required')) {
+    <small>El contenido es obligatorio</small>
+  }
+
+  <label>
+    Pool origen
+    <select formControlName="poolOrigenId">
+      <option [ngValue]="null" disabled>Seleccione un pool</option>
+      @for (pool of pools(); track pool.id) {
+        <option [ngValue]="pool.id">{{ pool.nombre }}</option>
+      }
+    </select>
+  </label>
+  @if (form.controls.poolOrigenId.touched && form.controls.poolOrigenId.hasError('required')) {
+    <small>El pool de origen es obligatorio</small>
+  }
+
+  <label>
+    Pool destino
+    <select formControlName="poolDestinoId">
+      <option [ngValue]="null" disabled>Seleccione un pool</option>
+      @for (pool of pools(); track pool.id) {
+        <option [ngValue]="pool.id">{{ pool.nombre }}</option>
+      }
+    </select>
+  </label>
+  @if (form.controls.poolDestinoId.touched && form.controls.poolDestinoId.hasError('required')) {
+    <small>El pool de destino es obligatorio</small>
+  }
+
+  <label>
+    Evento throw
+    <select formControlName="eventoThrowId">
+      <option [ngValue]="null">Ninguno</option>
+      @for (evento of eventosThrow(); track evento.id) {
+        <option [ngValue]="evento.id">{{ evento.nombre }}</option>
+      }
+    </select>
+  </label>
+
+  <label>
+    Evento catch
+    <select formControlName="eventoCatchId">
+      <option [ngValue]="null">Ninguno</option>
+      @for (evento of eventosCatch(); track evento.id) {
+        <option [ngValue]="evento.id">{{ evento.nombre }} ({{ evento.tipoEvento }})</option>
+      }
+    </select>
+  </label>
+
+  <label>
+    Clave de correlacion
+    <input formControlName="claveCorrelacion">
+  </label>
+
+  <label>
+    Tipo destino externo
+    <select formControlName="tipoDestinoExterno">
+      <option value="">Ninguno</option>
+      @for (tipo of tiposDestinoExterno; track tipo) {
+        <option [value]="tipo">{{ tipo }}</option>
+      }
+    </select>
+  </label>
+
+  <label>
+    Destino externo
+    <input formControlName="destinoExterno">
+  </label>
+
+  <label>
+    Politica de fallo de notificacion
+    <select formControlName="politicaFalloNotificacion">
+      <option value="">Ninguna</option>
+      @for (politica of politicasFallo; track politica) {
+        <option [value]="politica">{{ politica }}</option>
+      }
+    </select>
+  </label>
+
+  <label>
+    Id actividad de error
+    <input type="number" formControlName="actividadErrorId">
+  </label>
+
+  <label>
+    Politica mensaje sin caso
+    <select formControlName="politicaSinCaso">
+      <option value="">Ninguna</option>
+      @for (politica of politicasSinCaso; track politica) {
+        <option [value]="politica">{{ politica }}</option>
+      }
+    </select>
+  </label>
+
+  <button type="submit" [disabled]="saving()">
+    @if (saving()) { Guardando... } @else { Guardar }
+  </button>
+</form>
+
+@if (editing()) {
+  <h3>Correlacion</h3>
+
+  @if (correlacionMessage()) {
+    <p>{{ correlacionMessage() }}</p>
+  }
+
+  <form [formGroup]="correlacionForm" (ngSubmit)="definirCorrelacion()">
+    <label>
+      Criterio
+      <input formControlName="criterio">
+    </label>
+    @if (correlacionForm.controls.criterio.touched && correlacionForm.controls.criterio.hasError('required')) {
+      <small>El criterio es obligatorio</small>
+    }
+
+    <button type="submit">Guardar correlacion</button>
+    <button type="button" (click)="eliminarCorrelacion()">Eliminar correlacion</button>
+  </form>
+}

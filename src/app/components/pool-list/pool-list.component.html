@@ -35,6 +35,7 @@
                 <button (click)="editar(pool.id)">Editar</button>
                 <button (click)="eliminar(pool.id)">Eliminar</button>
                 <button (click)="verLanes(pool.id)">Lanes</button>
+                <a [routerLink]="['/pools', pool.id, 'arcos']">Arcos</a>
               </td>
             </tr>
           }

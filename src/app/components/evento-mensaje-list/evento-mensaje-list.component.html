@@ -1,0 +1,49 @@
+<h2>Eventos de mensaje del lane</h2>
+
+<a [routerLink]="['/lanes', laneId(), 'eventos-mensaje', 'nuevo']">Crear evento</a>
+
+@switch (status()) {
+  @case ('loading') {
+    <p>Cargando eventos...</p>
+  }
+  @case ('error') {
+    <p>{{ message() }}</p>
+    <button (click)="load()">Reintentar</button>
+  }
+  @case ('success') {
+    @if (message()) {
+      <p>{{ message() }}</p>
+    }
+    <table>
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Tipo</th>
+          <th>Contenido</th>
+          <th>Clave correlacion</th>
+          <th>Posicion</th>
+          <th>Origen externo</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (evento of items(); track evento.id) {
+          <tr>
+            <td>{{ evento.nombre }}</td>
+            <td>{{ evento.tipoEvento }}</td>
+            <td>{{ evento.contenido }}</td>
+            <td>{{ evento.claveCorrelacion }}</td>
+            <td>({{ evento.posicionX }}, {{ evento.posicionY }})</td>
+            <td>{{ evento.origenExterno ? 'Si' : 'No' }}</td>
+            <td>
+              <button (click)="editar(evento.id)">Editar</button>
+              <button (click)="eliminar(evento.id)">Eliminar</button>
+            </td>
+          </tr>
+        } @empty {
+          <tr><td colspan="7">No hay eventos de mensaje registrados.</td></tr>
+        }
+      </tbody>
+    </table>
+  }
+}

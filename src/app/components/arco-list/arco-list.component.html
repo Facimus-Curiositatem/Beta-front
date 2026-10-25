@@ -1,0 +1,45 @@
+<h2>Arcos del pool</h2>
+
+<a [routerLink]="['/pools', poolId(), 'arcos', 'nuevo']">Crear arco</a>
+
+@switch (status()) {
+  @case ('loading') {
+    <p>Cargando arcos...</p>
+  }
+  @case ('error') {
+    <p>{{ message() }}</p>
+    <button (click)="load()">Reintentar</button>
+  }
+  @case ('success') {
+    @if (message()) {
+      <p>{{ message() }}</p>
+    }
+    <table>
+      <thead>
+        <tr>
+          <th>Origen</th>
+          <th>Destino</th>
+          <th>Etiqueta</th>
+          <th>Condicion</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (arco of items(); track arco.id) {
+          <tr>
+            <td>{{ nombresNodo().get(arco.origenId) ?? arco.origenId }}</td>
+            <td>{{ nombresNodo().get(arco.destinoId) ?? arco.destinoId }}</td>
+            <td>{{ arco.etiqueta }}</td>
+            <td>{{ arco.condicion }}</td>
+            <td>
+              <button (click)="editar(arco.id)">Editar</button>
+              <button (click)="eliminar(arco.id)">Eliminar</button>
+            </td>
+          </tr>
+        } @empty {
+          <tr><td colspan="5">No hay arcos registrados.</td></tr>
+        }
+      </tbody>
+    </table>
+  }
+}

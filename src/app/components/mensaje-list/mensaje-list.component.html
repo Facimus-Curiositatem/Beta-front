@@ -1,0 +1,50 @@
+<h2>Mensajes del proceso</h2>
+
+<a [routerLink]="['/procesos', procesoId()]">Volver al proceso</a>
+<a [routerLink]="['/procesos', procesoId(), 'mensajes', 'nuevo']">Crear mensaje</a>
+
+@switch (status()) {
+  @case ('loading') {
+    <p>Cargando mensajes...</p>
+  }
+  @case ('error') {
+    <p>{{ message() }}</p>
+    <button (click)="load()">Reintentar</button>
+  }
+  @case ('success') {
+    @if (message()) {
+      <p>{{ message() }}</p>
+    }
+    <table>
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Contenido</th>
+          <th>Pool origen</th>
+          <th>Pool destino</th>
+          <th>Clave correlacion</th>
+          <th>Sin receptor</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (mensaje of items(); track mensaje.id) {
+          <tr>
+            <td>{{ mensaje.nombre }}</td>
+            <td>{{ mensaje.contenido }}</td>
+            <td>{{ nombresPool().get(mensaje.poolOrigenId) ?? mensaje.poolOrigenId }}</td>
+            <td>{{ nombresPool().get(mensaje.poolDestinoId) ?? mensaje.poolDestinoId }}</td>
+            <td>{{ mensaje.claveCorrelacion }}</td>
+            <td>{{ mensaje.sinReceptor ? 'Si' : 'No' }}</td>
+            <td>
+              <button (click)="editar(mensaje.id)">Editar</button>
+              <button (click)="eliminar(mensaje.id)">Eliminar</button>
+            </td>
+          </tr>
+        } @empty {
+          <tr><td colspan="7">No hay mensajes registrados.</td></tr>
+        }
+      </tbody>
+    </table>
+  }
+}

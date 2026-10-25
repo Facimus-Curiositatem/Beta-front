@@ -57,6 +57,51 @@ export const routes: Routes = [
     canActivate: [authGuard]
   },
   {
+    path: 'lanes/:laneId/eventos-mensaje',
+    loadComponent: () => import('./components/evento-mensaje-list/evento-mensaje-list.component').then(m => m.EventoMensajeListComponent),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'lanes/:laneId/eventos-mensaje/nuevo',
+    loadComponent: () => import('./components/evento-mensaje-form/evento-mensaje-form.component').then(m => m.EventoMensajeFormComponent),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'lanes/:laneId/eventos-mensaje/:eventoId/editar',
+    loadComponent: () => import('./components/evento-mensaje-form/evento-mensaje-form.component').then(m => m.EventoMensajeFormComponent),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'procesos/:procesoId/mensajes',
+    loadComponent: () => import('./components/mensaje-list/mensaje-list.component').then(m => m.MensajeListComponent),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'procesos/:procesoId/mensajes/nuevo',
+    loadComponent: () => import('./components/mensaje-form/mensaje-form.component').then(m => m.MensajeFormComponent),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'procesos/:procesoId/mensajes/:mensajeId/editar',
+    loadComponent: () => import('./components/mensaje-form/mensaje-form.component').then(m => m.MensajeFormComponent),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'pools/:poolId/arcos',
+    loadComponent: () => import('./components/arco-list/arco-list.component').then(m => m.ArcoListComponent),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'pools/:poolId/arcos/nuevo',
+    loadComponent: () => import('./components/arco-form/arco-form.component').then(m => m.ArcoFormComponent),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'pools/:poolId/arcos/:arcoId/editar',
+    loadComponent: () => import('./components/arco-form/arco-form.component').then(m => m.ArcoFormComponent),
+    canActivate: [authGuard]
+  },
+  {
     path: '',
     redirectTo: 'login',
     pathMatch: 'full'
