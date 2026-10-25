@@ -1,24 +1,21 @@
-import { Component, inject, signal } from '@angular/core';
-import { NgIf } from '@angular/common';
+import { Component, inject, input, signal } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
 
 import { InvitacionService } from '../../services/invitacion.service';
 import { AceptarInvitacionRequest } from '../../models/invitacion.model';
 
 @Component({
   selector: 'app-aceptar-invitacion',
-  imports: [ReactiveFormsModule, NgIf],
+  imports: [ReactiveFormsModule],
   templateUrl: './aceptar-invitacion.component.html',
   styleUrl: './aceptar-invitacion.component.css',
 })
 export class AceptarInvitacionComponent {
   private fb = inject(FormBuilder);
   private service = inject(InvitacionService);
-  private route = inject(ActivatedRoute);
 
-  token = this.route.snapshot.paramMap.get('token') ?? '';
+  readonly token = input.required<string>();
   status = signal<'idle' | 'loading' | 'success' | 'error'>('idle');
   message = signal('');
 
@@ -35,7 +32,7 @@ export class AceptarInvitacionComponent {
     const request: AceptarInvitacionRequest = this.form.getRawValue();
     this.status.set('loading');
 
-    this.service.accept(this.token, request).subscribe({
+    this.service.accept(this.token(), request).subscribe({
       next: () => {
         this.message.set('');
         this.status.set('success');
