@@ -1,27 +1,23 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
-import { NgFor } from '@angular/common';
+import { Component, OnInit, inject, input, signal } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 
 import { UsuarioService } from '../../services/usuario.service';
-import { UsuarioResponse } from '../../models/usuario.model';
-import { ActualizarUsuarioRequest } from '../../models/usuario.model';
-import { RolAcceso } from '../../models/usuario.model';
+import { ActualizarUsuarioRequest, RolAcceso, UsuarioResponse } from '../../models/usuario.model';
 
 @Component({
   selector: 'app-editar-usuario',
-  imports: [ReactiveFormsModule, NgFor],
+  imports: [ReactiveFormsModule],
   templateUrl: './editar-usuario.component.html',
   styleUrl: './editar-usuario.component.css',
 })
 export class EditarUsuarioComponent implements OnInit {
   private fb = inject(FormBuilder);
   private service = inject(UsuarioService);
-  private route = inject(ActivatedRoute);
   private router = inject(Router);
 
-  id = Number(this.route.snapshot.paramMap.get('id'));
+  readonly id = input.required<string>();
   roles: RolAcceso[] = ['ADMINISTRADOR', 'EDITOR', 'SOLO_LECTURA'];
   usuario = signal<UsuarioResponse | null>(null);
   message = signal('');
@@ -32,7 +28,7 @@ export class EditarUsuarioComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    this.service.get(this.id).subscribe({
+    this.service.get(Number(this.id())).subscribe({
       next: (u) => {
         this.usuario.set(u);
         this.form.patchValue({ rolAcceso: u.rolAcceso, activo: u.activo });
@@ -49,7 +45,7 @@ export class EditarUsuarioComponent implements OnInit {
     }
     const request: ActualizarUsuarioRequest = this.form.getRawValue();
 
-    this.service.update(this.id, request).subscribe({
+    this.service.update(Number(this.id()), request).subscribe({
       next: () => this.router.navigate(['/usuarios']),
       error: (err: HttpErrorResponse) =>
         this.message.set(err.error?.detail ?? 'No fue posible actualizar el usuario'),
