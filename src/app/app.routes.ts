@@ -36,6 +36,36 @@ export const routes: Routes = [
     loadComponent: () => import('./components/lane-form/lane-form.component').then(m => m.LaneFormComponent),
     canActivate: [authGuard]
   },
+    {
+    path: 'lanes/:laneId/actividades',
+    loadComponent: () => import('./components/actividad-list/actividad-list.component').then(m => m.ActividadListComponent),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'lanes/:laneId/actividades/nuevo',
+    loadComponent: () => import('./components/actividad-form/actividad-form.component').then(m => m.ActividadFormComponent),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'lanes/:laneId/actividades/:id/editar',
+    loadComponent: () => import('./components/actividad-form/actividad-form.component').then(m => m.ActividadFormComponent),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'lanes/:laneId/gateways',
+    loadComponent: () => import('./components/gateway-list/gateway-list.component').then(m => m.GatewayListComponent),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'lanes/:laneId/gateways/nuevo',
+    loadComponent: () => import('./components/gateway-form/gateway-form.component').then(m => m.GatewayFormComponent),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'lanes/:laneId/gateways/:id/editar',
+    loadComponent: () => import('./components/gateway-form/gateway-form.component').then(m => m.GatewayFormComponent),
+    canActivate: [authGuard]
+  },
   {
     path: 'lanes/:laneId/actividades',
     loadComponent: () => import('./components/actividad-list/actividad-list.component').then(m => m.ActividadListComponent),
