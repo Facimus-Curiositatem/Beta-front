@@ -56,68 +56,7 @@ H3 ya tiene el PR #19 abierto; aún no estaba en main al hacer esta separación.
 <main><router-outlet /></main>
 ```
 
-### 2. `src/app/app.routes.spec.ts`
-
-**Propósito y qué hace:** Pruebas de app.routes: protege módulos privados sin sesión; impide a editor abrir administración; vincula id de ruta al formulario de edición; vincula id de proceso al módulo compartir.
-
-**Por qué así:** Comprueba peticiones, estado visible o navegación usando TestBed y respuestas HTTP controladas; no usa la VM. Las dependencias se registran como en la aplicación.
-
-**Pregunta probable:** ¿Por qué estas pruebas? Protegen estos comportamientos concretos y detectan regresiones. No comprueban disponibilidad de la VM ni reemplazan pruebas entre frontend y backend reales.
-
-```typescript
-import { TestBed } from '@angular/core/testing';
-import { provideRouter, withComponentInputBinding, Router } from '@angular/router';
-import { RouterTestingHarness } from '@angular/router/testing';
-import { provideHttpClient } from '@angular/common/http';
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { routes } from './app.routes';
-import { TokenService } from './services/token.service';
-import { RolProcesoFormComponent } from './components/rol-proceso-form/rol-proceso-form.component';
-
-describe('Rutas administrativas H8', () => {
-  beforeEach(() => {
-    localStorage.clear();
-    TestBed.configureTestingModule({
-      providers: [
-        provideRouter(routes, withComponentInputBinding()),
-        provideHttpClient(),
-        provideHttpClientTesting()
-      ]
-    });
-  });
-  afterEach(() => {
-    TestBed.inject(HttpTestingController).verify();
-    localStorage.clear();
-  });
-  function login(rol = 'ADMINISTRADOR') {
-    TestBed.inject(TokenService).setToken(
-      'h.' + btoa(JSON.stringify({ exp: Date.now() / 1000 + 3600, rol })) + '.s'
-    );
-  }
-  it('protege módulos privados sin sesión', async () => {
-    const h = await RouterTestingHarness.create();
-    await h.navigateByUrl('/roles');
-    expect(TestBed.inject(Router).url).toBe('/login');
-  });
-  it('impide a editor abrir administración', async () => {
-    login('EDITOR');
-    const h = await RouterTestingHarness.create();
-    await h.navigateByUrl('/roles');
-    expect(TestBed.inject(Router).url).toContain('/procesos?aviso=sin-permiso');
-  });
-  it('vincula id de ruta al formulario de edición', async () => {
-    login();
-    const h = await RouterTestingHarness.create();
-    const c = await h.navigateByUrl('/roles/7/editar', RolProcesoFormComponent);
-    expect(c.id()).toBe('7');
-    TestBed.inject(HttpTestingController)
-      .expectOne('/api/v1/roles/7')
-      .flush({ id: 7, nombre: 'Ventas', descripcion: null });
-  });
-});
-```
-
-### 3. `src/app/app.routes.ts`
+### 2. `src/app/app.routes.ts`
 
 **Propósito y qué hace:** Relaciona URLs con login, registro, roles, permisos, procesos compartidos y los pools/lanes existentes.
 
@@ -230,7 +169,7 @@ export const routes: Routes = [
 ];
 ```
 
-### 4. `src/app/components/permiso-estructura/permiso-estructura.component.html`
+### 3. `src/app/components/permiso-estructura/permiso-estructura.component.html`
 
 **Propósito y qué hace:** Plantilla de la pantalla: Muestra una fila por rol de acceso, seis casillas y guardado individual.
 
@@ -324,7 +263,7 @@ export const routes: Routes = [
 </form>
 ```
 
-### 5. `src/app/components/permiso-estructura/permiso-estructura.component.spec.ts`
+### 4. `src/app/components/permiso-estructura/permiso-estructura.component.spec.ts`
 
 **Propósito y qué hace:** Pruebas de permiso-estructura.component: muestra seis checkboxes y envía los cambios sin rolAcceso en body; permite reintento al fallar actualización.
 
@@ -384,7 +323,7 @@ describe('PermisoEstructuraComponent', () => {
 });
 ```
 
-### 6. `src/app/components/permiso-estructura/permiso-estructura.component.ts`
+### 5. `src/app/components/permiso-estructura/permiso-estructura.component.ts`
 
 **Propósito y qué hace:** Muestra una fila por rol de acceso, seis casillas y guardado individual.
 
@@ -468,7 +407,7 @@ export class PermisoEstructuraComponent {
 }
 ```
 
-### 7. `src/app/components/rol-proceso-form/rol-proceso-form.component.html`
+### 6. `src/app/components/rol-proceso-form/rol-proceso-form.component.html`
 
 **Propósito y qué hace:** Plantilla de la pantalla: Crea y edita roles, carga datos al cambiar id y permite reintentar una carga fallida.
 
@@ -495,7 +434,7 @@ export class PermisoEstructuraComponent {
 <a routerLink="/roles">Volver</a>
 ```
 
-### 8. `src/app/components/rol-proceso-form/rol-proceso-form.component.spec.ts`
+### 7. `src/app/components/rol-proceso-form/rol-proceso-form.component.spec.ts`
 
 **Propósito y qué hace:** Pruebas de rol-proceso-form.component: no envía nombre vacío; crea un rol y regresa al listado; carga y edita el rol de la ruta; permite reintentar carga fallida sin habilitar edición de datos no cargados; recarga al cambiar el ID sin recrear la pantalla.
 
@@ -575,7 +514,7 @@ describe('RolProcesoFormComponent', () => {
 });
 ```
 
-### 9. `src/app/components/rol-proceso-form/rol-proceso-form.component.ts`
+### 8. `src/app/components/rol-proceso-form/rol-proceso-form.component.ts`
 
 **Propósito y qué hace:** Crea y edita roles, carga datos al cambiar id y permite reintentar una carga fallida.
 
@@ -665,7 +604,7 @@ export class RolProcesoFormComponent {
 }
 ```
 
-### 10. `src/app/components/rol-proceso-list/rol-proceso-list.component.html`
+### 9. `src/app/components/rol-proceso-list/rol-proceso-list.component.html`
 
 **Propósito y qué hace:** Plantilla de la pantalla: Busca roles con paginación y muestra nombre, descripción, uso y acciones.
 
@@ -742,7 +681,7 @@ export class RolProcesoFormComponent {
 }
 ```
 
-### 11. `src/app/components/rol-proceso-list/rol-proceso-list.component.spec.ts`
+### 10. `src/app/components/rol-proceso-list/rol-proceso-list.component.spec.ts`
 
 **Propósito y qué hace:** Pruebas de rol-proceso-list.component: muestra uso y no permite eliminar rol en uso; busca desde página cero y muestra respuesta vacía; conserva mensaje de conflicto al eliminar.
 
@@ -812,7 +751,7 @@ describe('RolProcesoListComponent', () => {
 });
 ```
 
-### 12. `src/app/components/rol-proceso-list/rol-proceso-list.component.ts`
+### 11. `src/app/components/rol-proceso-list/rol-proceso-list.component.ts`
 
 **Propósito y qué hace:** Busca roles con paginación y muestra nombre, descripción, uso y acciones.
 
@@ -883,6 +822,65 @@ export class RolProcesoListComponent {
     });
   }
 }
+```
+
+### 12. `src/app/h8.routes.spec.ts`
+
+**Propósito:** comprueba la conducta observable del módulo mediante TestBed y peticiones controladas.
+
+**Pregunta probable:** ¿Prueba la VM real? No, prueba la llamada y su resultado en Angular; falta el recorrido de integración contra el servidor.
+
+```typescript
+import { TestBed } from '@angular/core/testing';
+import { provideRouter, withComponentInputBinding, Router } from '@angular/router';
+import { RouterTestingHarness } from '@angular/router/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { routes } from './app.routes';
+import { TokenService } from './services/token.service';
+import { RolProcesoFormComponent } from './components/rol-proceso-form/rol-proceso-form.component';
+
+describe('Rutas administrativas H8', () => {
+  beforeEach(() => {
+    localStorage.clear();
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter(routes, withComponentInputBinding()),
+        provideHttpClient(),
+        provideHttpClientTesting()
+      ]
+    });
+  });
+  afterEach(() => {
+    TestBed.inject(HttpTestingController).verify();
+    localStorage.clear();
+  });
+  function login(rol = 'ADMINISTRADOR') {
+    TestBed.inject(TokenService).setToken(
+      'h.' + btoa(JSON.stringify({ exp: Date.now() / 1000 + 3600, rol })) + '.s'
+    );
+  }
+  it('protege módulos privados sin sesión', async () => {
+    const h = await RouterTestingHarness.create();
+    await h.navigateByUrl('/roles');
+    expect(TestBed.inject(Router).url).toBe('/login');
+  });
+  it('impide a editor abrir administración', async () => {
+    login('EDITOR');
+    const h = await RouterTestingHarness.create();
+    await h.navigateByUrl('/roles');
+    expect(TestBed.inject(Router).url).toContain('/procesos?aviso=sin-permiso');
+  });
+  it('vincula id de ruta al formulario de edición', async () => {
+    login();
+    const h = await RouterTestingHarness.create();
+    const c = await h.navigateByUrl('/roles/7/editar', RolProcesoFormComponent);
+    expect(c.id()).toBe('7');
+    TestBed.inject(HttpTestingController)
+      .expectOne('/api/v1/roles/7')
+      .flush({ id: 7, nombre: 'Ventas', descripcion: null });
+  });
+});
 ```
 
 ### 13. `src/app/models/page-response.model.ts`
