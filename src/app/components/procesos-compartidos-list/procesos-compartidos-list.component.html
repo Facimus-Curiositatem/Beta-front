@@ -1,0 +1,32 @@
+<h1>Procesos compartidos conmigo</h1>
+@if (message()) {
+  <p role="alert">{{ message() }}</p>
+}
+<button type="button" (click)="cargar()" [disabled]="loading()">Actualizar</button>
+@if (loading()) {
+  <p>Cargando...</p>
+}
+<table>
+  <thead>
+    <tr>
+      <th>Proceso</th>
+      <th>Empresa propietaria</th>
+      <th>Solo lectura</th>
+    </tr>
+  </thead>
+  <tbody>
+    @for (item of items(); track item.id) {
+      <tr>
+        <td>
+          <a [routerLink]="['/procesos-compartidos', item.procesoId]">{{ item.procesoNombre }}</a>
+        </td>
+        <td>{{ item.empresaPropietaria }}</td>
+        <td>{{ item.soloLectura ? 'Sí' : 'No' }}</td>
+      </tr>
+    } @empty {
+      <tr>
+        <td colspan="3">No hay procesos compartidos contigo.</td>
+      </tr>
+    }
+  </tbody>
+</table>
