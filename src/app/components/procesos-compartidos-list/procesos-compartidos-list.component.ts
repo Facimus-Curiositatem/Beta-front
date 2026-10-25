@@ -1,10 +1,11 @@
-import { Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ProcesoCompartidoService } from '../../services/proceso-compartido.service';
 import { ProcesoCompartidoResponse } from '../../models/proceso-compartido.model';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-procesos-compartidos-list',
   standalone: true,
   imports: [RouterLink],

@@ -8,4 +8,7 @@
     >ID de un proceso existente <input type="number" min="1" step="1" formControlName="procesoId"
   /></label>
   <button type="submit" [disabled]="form.invalid">Ver pools</button>
+  @if (tokens.esAdministrador()) {
+    <button type="button" (click)="compartir()" [disabled]="form.invalid">Compartir proceso</button>
+  }
 </form>

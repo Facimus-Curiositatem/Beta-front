@@ -1,11 +1,12 @@
 import { Subscription } from 'rxjs';
-import { Component, inject, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ProcesoCompartidoService } from '../../services/proceso-compartido.service';
 import { ProcesoCompartidoDetalleResponse } from '../../models/proceso-compartido.model';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-proceso-compartido-detalle',
   standalone: true,
   imports: [RouterLink],

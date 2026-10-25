@@ -1,5 +1,5 @@
 import { Subscription } from 'rxjs';
-import { Component, inject, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -7,6 +7,7 @@ import { ProcesoCompartidoService } from '../../services/proceso-compartido.serv
 import { ProcesoCompartidoResponse } from '../../models/proceso-compartido.model';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-compartir-proceso',
   standalone: true,
   imports: [ReactiveFormsModule, RouterLink],

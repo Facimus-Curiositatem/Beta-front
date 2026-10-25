@@ -1,6 +1,7 @@
 @if (tokens.tieneSesion()) {
   <nav aria-label="Navegación principal">
     <a routerLink="/procesos">Procesos</a>
+    <a routerLink="/procesos-compartidos">Compartidos conmigo</a>
     <button type="button" (click)="cerrarSesion()" [disabled]="closing()">Cerrar sesión</button>
   </nav>
 }

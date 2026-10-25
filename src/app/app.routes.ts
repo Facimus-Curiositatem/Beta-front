@@ -1,7 +1,32 @@
+import { adminGuard } from './guards/admin.guard';
 import { Routes } from '@angular/router';
 import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
+  {
+    path: 'procesos/:id/compartir',
+    canActivate: [adminGuard],
+    loadComponent: () =>
+      import('./components/compartir-proceso/compartir-proceso.component').then(
+        (m) => m.CompartirProcesoComponent
+      )
+  },
+  {
+    path: 'procesos-compartidos',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./components/procesos-compartidos-list/procesos-compartidos-list.component').then(
+        (m) => m.ProcesosCompartidosListComponent
+      )
+  },
+  {
+    path: 'procesos-compartidos/:id',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./components/proceso-compartido-detalle/proceso-compartido-detalle.component').then(
+        (m) => m.ProcesoCompartidoDetalleComponent
+      )
+  },
   {
     path: 'registro',
     loadComponent: () =>
