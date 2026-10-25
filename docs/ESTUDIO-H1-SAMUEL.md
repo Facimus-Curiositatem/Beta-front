@@ -1198,6 +1198,21 @@ describe('TokenService', () => {
     expect(service.tieneSesion()).toBeTrue();
     expect(service.esAdministrador()).toBeTrue();
   });
+  it('sincroniza la sesión cuando otra pestaña cambia o elimina el token', () => {
+    service.setToken('anterior');
+    localStorage.setItem('accessToken', 'nuevo');
+    window.dispatchEvent(
+      new StorageEvent('storage', {
+        key: 'accessToken',
+        storageArea: localStorage,
+        newValue: 'nuevo'
+      })
+    );
+    expect(service.getToken()).toBe('nuevo');
+    localStorage.clear();
+    window.dispatchEvent(new StorageEvent('storage', { key: null, storageArea: localStorage }));
+    expect(service.getToken()).toBeNull();
+  });
 });
 ```
 
@@ -1209,15 +1224,28 @@ describe('TokenService', () => {
 
 **Pregunta probable:** ¿Por qué localStorage? Ya lo usaba main y conserva sesión al recargar. JavaScript puede leerlo: no evita robo por XSS. No guardamos contraseñas y no afirmamos que decodificar verifique la firma.
 
-**Ajuste del 25 de octubre:** getToken lee ahora una signal inicializada desde localStorage; setToken/removeToken actualizan almacenamiento y signal. Así OnPush recibe la notificación. No se guarda la contraseña ni se verifica la firma en el navegador.
+**Ajuste del 25 de octubre:** getToken lee ahora una signal inicializada desde localStorage; setToken/removeToken actualizan almacenamiento y signal. Así OnPush recibe la notificación. Se escucha storage para sincronizar cambios de otra pestaña, incluido clear. DestroyRef retira el listener al destruir el servicio en pruebas o al destruir su inyector. No se guarda la contraseña ni se verifica la firma en el navegador.
 
 ```typescript
-import { Injectable, signal } from '@angular/core';
+import { DestroyRef, Injectable, inject, signal } from '@angular/core';
 
 @Injectable({ providedIn: 'root' })
 export class TokenService {
   private readonly TOKEN_KEY = 'accessToken';
   private readonly token = signal<string | null>(localStorage.getItem(this.TOKEN_KEY));
+
+  constructor() {
+    const sincronizar = (event: StorageEvent) => {
+      if (
+        event.storageArea === localStorage &&
+        (event.key === this.TOKEN_KEY || event.key === null)
+      ) {
+        this.token.set(localStorage.getItem(this.TOKEN_KEY));
+      }
+    };
+    window.addEventListener('storage', sincronizar);
+    inject(DestroyRef).onDestroy(() => window.removeEventListener('storage', sincronizar));
+  }
 
   getToken(): string | null {
     return this.token();

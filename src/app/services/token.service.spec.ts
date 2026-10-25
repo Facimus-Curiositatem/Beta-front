@@ -49,4 +49,19 @@ describe('TokenService', () => {
     expect(service.tieneSesion()).toBeTrue();
     expect(service.esAdministrador()).toBeTrue();
   });
+  it('sincroniza la sesión cuando otra pestaña cambia o elimina el token', () => {
+    service.setToken('anterior');
+    localStorage.setItem('accessToken', 'nuevo');
+    window.dispatchEvent(
+      new StorageEvent('storage', {
+        key: 'accessToken',
+        storageArea: localStorage,
+        newValue: 'nuevo'
+      })
+    );
+    expect(service.getToken()).toBe('nuevo');
+    localStorage.clear();
+    window.dispatchEvent(new StorageEvent('storage', { key: null, storageArea: localStorage }));
+    expect(service.getToken()).toBeNull();
+  });
 });

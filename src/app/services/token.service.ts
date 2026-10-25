@@ -1,9 +1,22 @@
-import { Injectable, signal } from '@angular/core';
+import { DestroyRef, Injectable, inject, signal } from '@angular/core';
 
 @Injectable({ providedIn: 'root' })
 export class TokenService {
   private readonly TOKEN_KEY = 'accessToken';
   private readonly token = signal<string | null>(localStorage.getItem(this.TOKEN_KEY));
+
+  constructor() {
+    const sincronizar = (event: StorageEvent) => {
+      if (
+        event.storageArea === localStorage &&
+        (event.key === this.TOKEN_KEY || event.key === null)
+      ) {
+        this.token.set(localStorage.getItem(this.TOKEN_KEY));
+      }
+    };
+    window.addEventListener('storage', sincronizar);
+    inject(DestroyRef).onDestroy(() => window.removeEventListener('storage', sincronizar));
+  }
 
   getToken(): string | null {
     return this.token();
