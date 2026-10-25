@@ -1,16 +1,14 @@
 import { Component, inject, signal } from '@angular/core';
-import { NgIf, NgFor } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { InvitacionService } from '../../services/invitacion.service';
-import { InvitacionRequest } from '../../models/invitacion.model';
-import { InvitacionResponse } from '../../models/invitacion.model';
+import { InvitacionRequest, InvitacionResponse } from '../../models/invitacion.model';
 import { RolAcceso } from '../../models/usuario.model';
 
 @Component({
   selector: 'app-invitacion-form',
-  imports: [ReactiveFormsModule, NgIf, NgFor],
+  imports: [ReactiveFormsModule],
   templateUrl: './invitacion-form.component.html',
   styleUrl: './invitacion-form.component.css',
 })
