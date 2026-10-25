@@ -1,20 +1,18 @@
 import { Component, inject, signal } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
-import { TokenService } from '../../services/token.service';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, RouterLink],
   templateUrl: './login.component.html'
 })
 export class LoginComponent {
   private readonly fb = inject(FormBuilder);
   private readonly authService = inject(AuthService);
-  private readonly tokenService = inject(TokenService);
   private readonly router = inject(Router);
 
   protected readonly message = signal('');
@@ -26,6 +24,7 @@ export class LoginComponent {
   });
 
   submit(): void {
+    if (this.loading()) return;
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
@@ -35,13 +34,15 @@ export class LoginComponent {
     this.message.set('');
 
     this.authService.login(this.form.getRawValue()).subscribe({
-      next: response => {
-        this.tokenService.setToken(response.accessToken);
-        this.router.navigate(['/']);
+      next: () => {
+        this.loading.set(false);
+        this.router.navigate(['/procesos']);
       },
       error: (err: HttpErrorResponse) => {
         this.loading.set(false);
-        this.message.set(err.error?.message ?? 'No fue posible iniciar sesion');
+        this.message.set(
+          err.error?.detail ?? err.error?.message ?? 'No fue posible iniciar sesion'
+        );
       }
     });
   }

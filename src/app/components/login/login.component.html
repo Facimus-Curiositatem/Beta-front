@@ -7,7 +7,7 @@
 <form [formGroup]="form" (ngSubmit)="submit()">
   <label>
     Correo
-    <input type="email" formControlName="email">
+    <input type="email" formControlName="email" />
   </label>
   @if (form.controls.email.touched && form.controls.email.hasError('required')) {
     <small>El correo es obligatorio</small>
@@ -18,13 +18,19 @@
 
   <label>
     Contrasena
-    <input type="password" formControlName="password">
+    <input type="password" formControlName="password" />
   </label>
   @if (form.controls.password.touched && form.controls.password.hasError('required')) {
     <small>La contrasena es obligatoria</small>
   }
 
   <button type="submit" [disabled]="loading()">
-    @if (loading()) { Ingresando... } @else { Ingresar }
+    @if (loading()) {
+      Ingresando...
+    } @else {
+      Ingresar
+    }
   </button>
 </form>
+
+<a routerLink="/registro">Registrar una empresa</a>

@@ -1,0 +1,34 @@
+<h1>Registrar empresa</h1>
+@if (message()) {
+  <p role="alert">{{ message() }}</p>
+}
+<form [formGroup]="form" (ngSubmit)="submit()">
+  <label>Nombre de la empresa<input type="text" formControlName="nombreEmpresa" /></label>
+  @if (form.controls.nombreEmpresa.touched && form.controls.nombreEmpresa.invalid) {
+    <small>Revisa este campo: es obligatorio y debe tener un formato válido.</small>
+  }
+  <label>NIT<input type="text" formControlName="nit" /></label>
+  @if (form.controls.nit.touched && form.controls.nit.invalid) {
+    <small>Revisa este campo: es obligatorio y debe tener un formato válido.</small>
+  }
+  <label>Correo de contacto<input type="email" formControlName="correoContacto" /></label>
+  @if (form.controls.correoContacto.touched && form.controls.correoContacto.invalid) {
+    <small>Revisa este campo: es obligatorio y debe tener un formato válido.</small>
+  }
+  <label>Nombre del administrador<input type="text" formControlName="nombreAdmin" /></label>
+  @if (form.controls.nombreAdmin.touched && form.controls.nombreAdmin.invalid) {
+    <small>Revisa este campo: es obligatorio y debe tener un formato válido.</small>
+  }
+  <label>Correo del administrador<input type="email" formControlName="emailAdmin" /></label>
+  @if (form.controls.emailAdmin.touched && form.controls.emailAdmin.invalid) {
+    <small>Revisa este campo: es obligatorio y debe tener un formato válido.</small>
+  }
+  <label
+    >Contraseña (mínimo 6 caracteres)<input type="password" formControlName="passwordAdmin"
+  /></label>
+  @if (form.controls.passwordAdmin.touched && form.controls.passwordAdmin.invalid) {
+    <small>Revisa este campo: es obligatorio y debe tener un formato válido.</small>
+  }
+  <button type="submit" [disabled]="saving()">{{ saving() ? 'Guardando...' : 'Registrar' }}</button>
+</form>
+<a routerLink="/login">Volver a iniciar sesión</a>
