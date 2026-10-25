@@ -4,9 +4,8 @@ import { Observable } from 'rxjs';
 
 import { API_URL } from '../config/api.config';
 import { UsuarioResponse } from '../models/usuario.model';
-import { InvitacionRequest } from '../models/invitacion.model';
-import { InvitacionResponse } from '../models/invitacion.model';
-import { AceptarInvitacionRequest } from '../models/invitacion.model';
+import { InvitacionRequest, InvitacionResponse, AceptarInvitacionRequest } from '../models/invitacion.model';
+
 
 @Injectable({ providedIn: 'root' })
 export class InvitacionService {

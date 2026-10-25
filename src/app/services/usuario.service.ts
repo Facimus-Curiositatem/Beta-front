@@ -3,9 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 import { API_URL } from '../config/api.config';
-import { UsuarioResponse } from '../models/usuario.model';
-import { CrearUsuarioRequest } from '../models/usuario.model';
-import { ActualizarUsuarioRequest } from '../models/usuario.model';
+import { UsuarioResponse, CrearUsuarioRequest, ActualizarUsuarioRequest } from '../models/usuario.model';
 
 @Injectable({ providedIn: 'root' })
 export class UsuarioService {
