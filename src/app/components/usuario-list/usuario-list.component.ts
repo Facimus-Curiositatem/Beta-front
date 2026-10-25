@@ -1,5 +1,4 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
-import { NgFor } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { RouterLink } from '@angular/router';
 
@@ -8,7 +7,7 @@ import { UsuarioResponse } from '../../models/usuario.model';
 
 @Component({
   selector: 'app-usuario-list',
-  imports: [NgFor, RouterLink],
+  imports: [RouterLink],
   templateUrl: './usuario-list.component.html',
   styleUrl: './usuario-list.component.css',
 })
@@ -33,7 +32,11 @@ export class UsuarioListComponent implements OnInit {
         this.status.set('success');
       },
       error: (err: HttpErrorResponse) => {
-        this.message.set(err.error?.detail ?? 'No fue posible cargar los usuarios');
+        this.message.set(
+          err.status === 0
+            ? 'No hay conexión con el servidor'
+            : (err.error?.detail ?? 'No fue posible cargar los usuarios'),
+        );
         this.status.set('error');
       },
     });
