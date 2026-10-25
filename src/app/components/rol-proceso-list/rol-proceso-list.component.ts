@@ -1,12 +1,13 @@
-import { Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { RolProcesoService } from '../../services/rol-proceso.service';
-import { PageResponse } from '../../models/page.model';
+import { PageResponse } from '../../models/page-response.model';
 import { RolProcesoConsultaResponse } from '../../models/rol-proceso.model';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-rol-proceso-list',
   standalone: true,
   imports: [ReactiveFormsModule, RouterLink],

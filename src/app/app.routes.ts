@@ -1,7 +1,40 @@
+import { adminGuard } from './guards/admin.guard';
 import { Routes } from '@angular/router';
 import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
+  {
+    path: 'roles',
+    canActivate: [adminGuard],
+    loadComponent: () =>
+      import('./components/rol-proceso-list/rol-proceso-list.component').then(
+        (m) => m.RolProcesoListComponent
+      )
+  },
+  {
+    path: 'roles/nuevo',
+    canActivate: [adminGuard],
+    loadComponent: () =>
+      import('./components/rol-proceso-form/rol-proceso-form.component').then(
+        (m) => m.RolProcesoFormComponent
+      )
+  },
+  {
+    path: 'roles/:id/editar',
+    canActivate: [adminGuard],
+    loadComponent: () =>
+      import('./components/rol-proceso-form/rol-proceso-form.component').then(
+        (m) => m.RolProcesoFormComponent
+      )
+  },
+  {
+    path: 'permisos-estructura',
+    canActivate: [adminGuard],
+    loadComponent: () =>
+      import('./components/permiso-estructura/permiso-estructura.component').then(
+        (m) => m.PermisoEstructuraComponent
+      )
+  },
   {
     path: 'registro',
     loadComponent: () =>

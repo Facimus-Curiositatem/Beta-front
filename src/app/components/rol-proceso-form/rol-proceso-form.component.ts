@@ -1,11 +1,12 @@
 import { Subscription } from 'rxjs';
-import { Component, inject, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { RolProcesoService } from '../../services/rol-proceso.service';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-rol-proceso-form',
   standalone: true,
   imports: [ReactiveFormsModule, RouterLink],

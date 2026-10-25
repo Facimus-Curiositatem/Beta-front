@@ -8,7 +8,7 @@ import {
 } from '../models/rol-proceso.model';
 import { environment } from '../../environments/environment';
 
-import { PageResponse } from '../models/page.model';
+import { PageResponse } from '../models/page-response.model';
 
 @Injectable({ providedIn: 'root' })
 export class RolProcesoService {
