@@ -1,1 +1,7 @@
-<router-outlet />
+@if (tokens.tieneSesion()) {
+  <nav aria-label="Navegación principal">
+    <a routerLink="/procesos">Procesos</a>
+    <button type="button" (click)="cerrarSesion()" [disabled]="closing()">Cerrar sesión</button>
+  </nav>
+}
+<main><router-outlet /></main>

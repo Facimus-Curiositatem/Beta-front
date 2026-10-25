@@ -1,15 +1,17 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 
 @Injectable({ providedIn: 'root' })
 export class TokenService {
   private readonly TOKEN_KEY = 'accessToken';
+  private readonly token = signal<string | null>(localStorage.getItem(this.TOKEN_KEY));
 
   getToken(): string | null {
-    return localStorage.getItem(this.TOKEN_KEY);
+    return this.token();
   }
 
   setToken(token: string): void {
     localStorage.setItem(this.TOKEN_KEY, token);
+    this.token.set(token);
   }
 
   // Leer claims orienta la interfaz; solo el backend verifica la firma del JWT.
@@ -37,5 +39,6 @@ export class TokenService {
 
   removeToken(): void {
     localStorage.removeItem(this.TOKEN_KEY);
+    this.token.set(null);
   }
 }
