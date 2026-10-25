@@ -1,0 +1,83 @@
+<h1>Permisos de estructura</h1>
+<p>El rol de acceso determina quién puede crear, editar o eliminar pools y lanes.</p>
+@if (message()) {
+  <p role="status">{{ message() }}</p>
+}
+@if (loading()) {
+  <p>Cargando...</p>
+}
+<button type="button" (click)="cargar()" [disabled]="loading() || saving() !== null">
+  Recargar
+</button>
+<form [formGroup]="form">
+  <div formArrayName="permisos">
+    <table>
+      <thead>
+        <tr>
+          <th>Rol de acceso</th>
+          <th>crearPool</th>
+          <th>editarPool</th>
+          <th>eliminarPool</th>
+          <th>crearLane</th>
+          <th>editarLane</th>
+          <th>eliminarLane</th>
+          <th>Acción</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (row of rows.controls; track row; let i = $index) {
+          <tr [formGroupName]="i">
+            <th>{{ row.controls.rolAcceso.value }}</th>
+            <td>
+              <input
+                type="checkbox"
+                formControlName="crearPool"
+                [attr.aria-label]="row.controls.rolAcceso.value + ' crearPool'"
+              />
+            </td>
+            <td>
+              <input
+                type="checkbox"
+                formControlName="editarPool"
+                [attr.aria-label]="row.controls.rolAcceso.value + ' editarPool'"
+              />
+            </td>
+            <td>
+              <input
+                type="checkbox"
+                formControlName="eliminarPool"
+                [attr.aria-label]="row.controls.rolAcceso.value + ' eliminarPool'"
+              />
+            </td>
+            <td>
+              <input
+                type="checkbox"
+                formControlName="crearLane"
+                [attr.aria-label]="row.controls.rolAcceso.value + ' crearLane'"
+              />
+            </td>
+            <td>
+              <input
+                type="checkbox"
+                formControlName="editarLane"
+                [attr.aria-label]="row.controls.rolAcceso.value + ' editarLane'"
+              />
+            </td>
+            <td>
+              <input
+                type="checkbox"
+                formControlName="eliminarLane"
+                [attr.aria-label]="row.controls.rolAcceso.value + ' eliminarLane'"
+              />
+            </td>
+            <td>
+              <button type="button" (click)="guardar(i)" [disabled]="saving() !== null">
+                Guardar
+              </button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</form>
