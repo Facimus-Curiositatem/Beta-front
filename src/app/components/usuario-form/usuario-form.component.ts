@@ -1,16 +1,14 @@
 import { Component, inject, signal } from '@angular/core';
-import { NgIf, NgFor } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
 import { UsuarioService } from '../../services/usuario.service';
-import { CrearUsuarioRequest } from '../../models/usuario.model';
-import { RolAcceso } from '../../models/usuario.model';
+import { CrearUsuarioRequest, RolAcceso } from '../../models/usuario.model';
 
 @Component({
   selector: 'app-usuario-form',
-  imports: [ReactiveFormsModule, NgIf, NgFor],
+  imports: [ReactiveFormsModule],
   templateUrl: './usuario-form.component.html',
   styleUrl: './usuario-form.component.css',
 })

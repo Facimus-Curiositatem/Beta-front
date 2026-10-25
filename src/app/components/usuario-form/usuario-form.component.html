@@ -3,28 +3,32 @@
 <form [formGroup]="form" (ngSubmit)="submit()">
   <label>Nombre</label>
   <input formControlName="nombre" />
-  <p class="error" *ngIf="form.controls.nombre.touched && form.controls.nombre.invalid">
-    El nombre es obligatorio.
-  </p>
+  @if (form.controls.nombre.touched && form.controls.nombre.invalid) {
+    <p class="error">El nombre es obligatorio.</p>
+  }
 
   <label>Correo</label>
   <input formControlName="email" />
-  <p class="error" *ngIf="form.controls.email.touched && form.controls.email.invalid">
-    Escribe un correo válido.
-  </p>
+  @if (form.controls.email.touched && form.controls.email.invalid) {
+    <p class="error">Escribe un correo válido.</p>
+  }
 
   <label>Contraseña</label>
   <input type="password" formControlName="password" />
-  <p class="error" *ngIf="form.controls.password.touched && form.controls.password.invalid">
-    La contraseña debe tener al menos 6 caracteres.
-  </p>
+  @if (form.controls.password.touched && form.controls.password.invalid) {
+    <p class="error">La contraseña debe tener al menos 6 caracteres.</p>
+  }
 
   <label>Rol</label>
   <select formControlName="rolAcceso">
-    <option *ngFor="let r of roles" [value]="r">{{ r }}</option>
+    @for (r of roles; track r) {
+      <option [value]="r">{{ r }}</option>
+    }
   </select>
 
-  <p class="error">{{ message() }}</p>
+  @if (message()) {
+    <p class="error">{{ message() }}</p>
+  }
 
   <button type="submit">Guardar</button>
 </form>
