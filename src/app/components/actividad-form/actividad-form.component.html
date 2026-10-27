@@ -1,0 +1,43 @@
+<h2>@if (editing()) { Editar actividad } @else { Crear actividad }</h2>
+
+@if (message()) {
+  <p class="error">{{ message() }}</p>
+}
+
+<form [formGroup]="form" (ngSubmit)="submit()">
+  <label>
+    Nombre
+    <input formControlName="nombre">
+  </label>
+  @if (form.controls.nombre.touched && form.controls.nombre.hasError('required')) {
+    <small>El nombre es obligatorio</small>
+  }
+
+  <label>
+    Descripción
+    <input formControlName="descripcion">
+  </label>
+
+  <label>
+    Tipo de actividad
+    <select formControlName="tipoActividad">
+      @for (tipo of tiposActividad; track tipo) {
+        <option [value]="tipo">{{ tipo }}</option>
+      }
+    </select>
+  </label>
+
+  <label>
+    Posición X
+    <input type="number" formControlName="posicionX">
+  </label>
+
+  <label>
+    Posición Y
+    <input type="number" formControlName="posicionY">
+  </label>
+
+  <button type="submit" [disabled]="saving()">
+    @if (saving()) { Guardando... } @else { Guardar }
+  </button>
+</form>

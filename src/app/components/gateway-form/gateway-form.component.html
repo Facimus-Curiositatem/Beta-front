@@ -1,0 +1,38 @@
+<h2>@if (editing()) { Editar gateway } @else { Crear gateway }</h2>
+
+@if (message()) {
+  <p class="error">{{ message() }}</p>
+}
+
+<form [formGroup]="form" (ngSubmit)="submit()">
+  <label>
+    Nombre
+    <input formControlName="nombre">
+  </label>
+  @if (form.controls.nombre.touched && form.controls.nombre.hasError('required')) {
+    <small>El nombre es obligatorio</small>
+  }
+
+  <label>
+    Tipo de gateway
+    <select formControlName="tipoGateway">
+      @for (tipo of tiposGateway; track tipo) {
+        <option [value]="tipo">{{ tipo }}</option>
+      }
+    </select>
+  </label>
+
+  <label>
+    Posición X
+    <input type="number" formControlName="posicionX">
+  </label>
+
+  <label>
+    Posición Y
+    <input type="number" formControlName="posicionY">
+  </label>
+
+  <button type="submit" [disabled]="saving()">
+    @if (saving()) { Guardando... } @else { Guardar }
+  </button>
+</form>

@@ -1,0 +1,19 @@
+<section>
+  <h3>Eliminar "{{ nombre() }}"</h3>
+
+  @if (impacto().advertencias.length === 0) {
+    <p>Esta eliminación no afecta otros elementos del proceso.</p>
+  } @else {
+    @if (impacto().rompeContinuidad) {
+      <p>Atención: se rompe la continuidad del flujo.</p>
+    }
+    <ul>
+      @for (advertencia of impacto().advertencias; track advertencia) {
+        <li>{{ advertencia }}</li>
+      }
+    </ul>
+  }
+
+  <button type="button" class="confirmar" (click)="confirmar.emit()">Confirmar eliminación</button>
+  <button type="button" class="cancelar" (click)="cancelar.emit()">Cancelar</button>
+</section>

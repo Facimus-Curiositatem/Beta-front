@@ -32,6 +32,8 @@
               <td>
                 <button (click)="subirOrden(i)" [disabled]="i === 0">Subir</button>
                 <button (click)="bajarOrden(i)" [disabled]="i === items().length - 1">Bajar</button>
+                <a [routerLink]="['/lanes', lane.id, 'actividades']">Actividades</a>
+                <a [routerLink]="['/lanes', lane.id, 'gateways']">Gateways</a>
                 <button (click)="editar(lane.id)">Editar</button>
                 <button (click)="eliminar(lane.id)">Eliminar</button>
               </td>
