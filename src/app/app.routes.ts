@@ -67,14 +67,6 @@ export const routes: Routes = [
       )
   },
   {
-    path: 'procesos',
-    canActivate: [authGuard],
-    loadComponent: () =>
-      import('./components/inicio-procesos/inicio-procesos.component').then(
-        (m) => m.InicioProcesosComponent
-      )
-  },
-  {
     path: 'login',
     loadComponent: () => import('./components/login/login.component').then((m) => m.LoginComponent)
   },
