@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, input, signal } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -11,11 +11,12 @@ import { ActualizarUsuarioRequest, RolAcceso, UsuarioResponse } from '../../mode
   imports: [ReactiveFormsModule],
   templateUrl: './editar-usuario.component.html',
   styleUrl: './editar-usuario.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EditarUsuarioComponent implements OnInit {
-  private fb = inject(FormBuilder);
-  private service = inject(UsuarioService);
-  private router = inject(Router);
+  private readonly fb = inject(FormBuilder);
+  private readonly service = inject(UsuarioService);
+  private readonly router = inject(Router);
 
   readonly id = input.required<string>();
   roles: RolAcceso[] = ['ADMINISTRADOR', 'EDITOR', 'SOLO_LECTURA'];
