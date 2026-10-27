@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 
@@ -11,10 +11,11 @@ import { RolAcceso } from '../../models/usuario.model';
   imports: [ReactiveFormsModule],
   templateUrl: './invitacion-form.component.html',
   styleUrl: './invitacion-form.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class InvitacionFormComponent {
-  private fb = inject(FormBuilder);
-  private service = inject(InvitacionService);
+  private readonly fb = inject(FormBuilder);
+  private readonly service = inject(InvitacionService);
 
   roles: RolAcceso[] = ['ADMINISTRADOR', 'EDITOR', 'SOLO_LECTURA'];
   invitacion = signal<InvitacionResponse | null>(null);
