@@ -22,6 +22,26 @@ export const routes: Routes = [
     loadComponent: () => import('./components/login/login.component').then((m) => m.LoginComponent)
   },
   {
+    path: 'procesos',
+    loadComponent: () => import('./components/proceso-list/proceso-list.component').then(m => m.ProcesoListComponent),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'procesos/nuevo',
+    loadComponent: () => import('./components/proceso-form/proceso-form.component').then(m => m.ProcesoFormComponent),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'procesos/:id',
+    loadComponent: () => import('./components/proceso-detalle/proceso-detalle.component').then(m => m.ProcesoDetalleComponent),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'procesos/:id/editar',
+    loadComponent: () => import('./components/proceso-form/proceso-form.component').then(m => m.ProcesoFormComponent),
+    canActivate: [authGuard]
+  },
+  {
     path: 'procesos/:procesoId/pools',
     loadComponent: () =>
       import('./components/pool-list/pool-list.component').then((m) => m.PoolListComponent),

@@ -1,0 +1,35 @@
+<h2>@if (editing()) { Editar proceso } @else { Crear proceso }</h2>
+
+@if (message()) {
+  <p>{{ message() }}</p>
+}
+
+<form [formGroup]="form" (ngSubmit)="submit()">
+  <label>
+    Nombre
+    <input formControlName="nombre">
+  </label>
+  @if (form.controls.nombre.touched && form.controls.nombre.hasError('required')) {
+    <small>El nombre es obligatorio</small>
+  }
+
+  <label>
+    Descripcion
+    <textarea formControlName="descripcion"></textarea>
+  </label>
+  @if (form.controls.descripcion.touched && form.controls.descripcion.hasError('required')) {
+    <small>La descripcion es obligatoria</small>
+  }
+
+  <label>
+    Categoria
+    <input formControlName="categoria">
+  </label>
+  @if (form.controls.categoria.touched && form.controls.categoria.hasError('required')) {
+    <small>La categoria es obligatoria</small>
+  }
+
+  <button type="submit" [disabled]="saving()">
+    @if (saving()) { Guardando... } @else { Guardar }
+  </button>
+</form>
