@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { RouterLink } from '@angular/router';
 
@@ -10,9 +10,10 @@ import { UsuarioResponse } from '../../models/usuario.model';
   imports: [RouterLink],
   templateUrl: './usuario-list.component.html',
   styleUrl: './usuario-list.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UsuarioListComponent implements OnInit {
-  private service = inject(UsuarioService);
+  private readonly service = inject(UsuarioService);
 
   items = signal<UsuarioResponse[]>([]);
   status = signal<'idle' | 'loading' | 'success' | 'error'>('idle');
