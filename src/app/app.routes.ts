@@ -67,11 +67,6 @@ export const routes: Routes = [
     canActivate: [authGuard]
   },
   {
-    path: 'lanes/:laneId/actividades',
-    loadComponent: () => import('./components/actividad-list/actividad-list.component').then(m => m.ActividadListComponent),
-    canActivate: [authGuard]
-  },
-  {
     path: '',
     redirectTo: 'login',
     pathMatch: 'full'
