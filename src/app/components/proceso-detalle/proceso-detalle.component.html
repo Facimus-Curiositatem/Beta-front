@@ -22,6 +22,7 @@
       <p>Modificacion: {{ d.proceso.fechaModificacion }}</p>
 
       <a [routerLink]="['/procesos', d.proceso.id, 'editar']">Editar</a>
+      <a [routerLink]="['/procesos', d.proceso.id, 'mensajes']">Mensajes</a>
       @if (d.proceso.estado === 'BORRADOR') {
         <button (click)="publicar()">Publicar</button>
       }

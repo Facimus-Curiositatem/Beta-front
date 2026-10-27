@@ -36,6 +36,7 @@
                 <a [routerLink]="['/lanes', lane.id, 'gateways']">Gateways</a>
                 <button (click)="editar(lane.id)">Editar</button>
                 <button (click)="eliminar(lane.id)">Eliminar</button>
+                <a [routerLink]="['/lanes', lane.id, 'eventos-mensaje']">Eventos</a>
               </td>
             </tr>
           }

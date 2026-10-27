@@ -1,0 +1,47 @@
+<h2>@if (editing()) { Editar arco } @else { Crear arco }</h2>
+
+@if (message()) {
+  <p>{{ message() }}</p>
+}
+
+<form [formGroup]="form" (ngSubmit)="submit()">
+  <label>
+    Nodo origen
+    <select formControlName="origenId">
+      <option [ngValue]="null" disabled>Seleccione un nodo</option>
+      @for (nodo of nodos(); track nodo.tipo + nodo.id) {
+        <option [ngValue]="nodo.id">{{ nodo.nombre }} ({{ nodo.tipo }})</option>
+      }
+    </select>
+  </label>
+  @if (form.controls.origenId.touched && form.controls.origenId.hasError('required')) {
+    <small>El nodo de origen es obligatorio</small>
+  }
+
+  <label>
+    Nodo destino
+    <select formControlName="destinoId">
+      <option [ngValue]="null" disabled>Seleccione un nodo</option>
+      @for (nodo of nodos(); track nodo.tipo + nodo.id) {
+        <option [ngValue]="nodo.id">{{ nodo.nombre }} ({{ nodo.tipo }})</option>
+      }
+    </select>
+  </label>
+  @if (form.controls.destinoId.touched && form.controls.destinoId.hasError('required')) {
+    <small>El nodo de destino es obligatorio</small>
+  }
+
+  <label>
+    Etiqueta
+    <input formControlName="etiqueta">
+  </label>
+
+  <label>
+    Condicion
+    <input formControlName="condicion">
+  </label>
+
+  <button type="submit" [disabled]="saving()">
+    @if (saving()) { Guardando... } @else { Guardar }
+  </button>
+</form>

@@ -1,0 +1,58 @@
+<h2>@if (editing()) { Editar evento de mensaje } @else { Crear evento de mensaje }</h2>
+
+@if (message()) {
+  <p>{{ message() }}</p>
+}
+
+<form [formGroup]="form" (ngSubmit)="submit()">
+  <label>
+    Nombre
+    <input formControlName="nombre">
+  </label>
+  @if (form.controls.nombre.touched && form.controls.nombre.hasError('required')) {
+    <small>El nombre es obligatorio</small>
+  }
+
+  <label>
+    Tipo de evento
+    <select formControlName="tipoEvento">
+      @for (tipo of tiposEvento; track tipo) {
+        <option [value]="tipo">{{ tipo }}</option>
+      }
+    </select>
+  </label>
+
+  <label>
+    Contenido
+    <input formControlName="contenido">
+  </label>
+  @if (form.controls.contenido.touched && form.controls.contenido.hasError('required')) {
+    <small>El contenido es obligatorio</small>
+  }
+
+  <label>
+    Clave de correlacion
+    <input formControlName="claveCorrelacion">
+  </label>
+  @if (form.controls.claveCorrelacion.touched && form.controls.claveCorrelacion.hasError('required')) {
+    <small>La clave de correlacion es obligatoria</small>
+  }
+
+  <label>
+    Posicion X
+    <input type="number" formControlName="posicionX">
+  </label>
+
+  <label>
+    Posicion Y
+    <input type="number" formControlName="posicionY">
+  </label>
+
+  <label>
+    <input type="checkbox" formControlName="origenExterno"> Origen externo
+  </label>
+
+  <button type="submit" [disabled]="saving()">
+    @if (saving()) { Guardando... } @else { Guardar }
+  </button>
+</form>
