@@ -58,6 +58,30 @@ export const routes: Routes = [
     canActivate: [authGuard]
   },
   {
+    path: 'usuarios',
+    loadComponent: () => import('./components/usuario-list/usuario-list.component').then(m => m.UsuarioListComponent),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'usuarios/nuevo',
+    loadComponent: () => import('./components/usuario-form/usuario-form.component').then(m => m.UsuarioFormComponent),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'usuarios/invitar',
+    loadComponent: () => import('./components/invitacion-form/invitacion-form.component').then(m => m.InvitacionFormComponent),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'usuarios/:id/editar',
+    loadComponent: () => import('./components/editar-usuario/editar-usuario.component').then(m => m.EditarUsuarioComponent),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'invitaciones/:token/aceptar',
+    loadComponent: () => import('./components/aceptar-invitacion/aceptar-invitacion.component').then(m => m.AceptarInvitacionComponent)
+  },
+  {
     path: '',
     redirectTo: 'login',
     pathMatch: 'full'
