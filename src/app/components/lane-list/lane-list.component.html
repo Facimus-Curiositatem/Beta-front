@@ -34,7 +34,6 @@
                 <button (click)="bajarOrden(i)" [disabled]="i === items().length - 1">Bajar</button>
                 <a [routerLink]="['/lanes', lane.id, 'actividades']">Actividades</a>
                 <a [routerLink]="['/lanes', lane.id, 'gateways']">Gateways</a>
-                <!-- Samu Coloque esas rutas para conectar con las actividades y gateways -->
                 <button (click)="editar(lane.id)">Editar</button>
                 <button (click)="eliminar(lane.id)">Eliminar</button>
               </td>
