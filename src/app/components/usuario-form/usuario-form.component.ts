@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -11,11 +11,12 @@ import { CrearUsuarioRequest, RolAcceso } from '../../models/usuario.model';
   imports: [ReactiveFormsModule],
   templateUrl: './usuario-form.component.html',
   styleUrl: './usuario-form.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UsuarioFormComponent {
-  private fb = inject(FormBuilder);
-  private service = inject(UsuarioService);
-  private router = inject(Router);
+  private readonly fb = inject(FormBuilder);
+  private readonly service = inject(UsuarioService);
+  private readonly router = inject(Router);
 
   roles: RolAcceso[] = ['ADMINISTRADOR', 'EDITOR', 'SOLO_LECTURA'];
   message = signal('');
