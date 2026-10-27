@@ -1,0 +1,46 @@
+<h1>Compartir proceso {{ id() }}</h1>
+<p>La empresa invitada tendrá acceso de solo lectura.</p>
+@if (message()) {
+  <p role="alert">{{ message() }}</p>
+}
+<form [formGroup]="form" (ngSubmit)="compartir()">
+  <label
+    >ID de empresa invitada
+    <input type="number" min="1" step="1" formControlName="empresaInvitadaId"
+  /></label>
+  @if (form.controls.empresaInvitadaId.touched && form.controls.empresaInvitadaId.invalid) {
+    <small>Ingresa un ID entero mayor que cero.</small>
+  }
+  <button type="submit" [disabled]="saving()">Compartir</button>
+</form>
+<button type="button" (click)="cargar()" [disabled]="loading() || saving()">
+  Actualizar lista
+</button>
+@if (loading()) {
+  <p>Cargando...</p>
+}
+<table>
+  <thead>
+    <tr>
+      <th>Empresa invitada</th>
+      <th>Solo lectura</th>
+      <th>Acción</th>
+    </tr>
+  </thead>
+  <tbody>
+    @for (item of compartidos(); track item.id) {
+      <tr>
+        <td>{{ item.empresaInvitada }}</td>
+        <td>{{ item.soloLectura ? 'Sí' : 'No' }}</td>
+        <td>
+          <button type="button" (click)="revocar(item)" [disabled]="saving()">Revocar</button>
+        </td>
+      </tr>
+    } @empty {
+      <tr>
+        <td colspan="3">No hay empresas invitadas.</td>
+      </tr>
+    }
+  </tbody>
+</table>
+<a routerLink="/procesos">Volver a procesos</a>

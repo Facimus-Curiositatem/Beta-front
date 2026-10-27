@@ -36,6 +36,30 @@ export const routes: Routes = [
       )
   },
   {
+    path: 'procesos/:id/compartir',
+    canActivate: [adminGuard],
+    loadComponent: () =>
+      import('./components/compartir-proceso/compartir-proceso.component').then(
+        (m) => m.CompartirProcesoComponent
+      )
+  },
+  {
+    path: 'procesos-compartidos',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./components/procesos-compartidos-list/procesos-compartidos-list.component').then(
+        (m) => m.ProcesosCompartidosListComponent
+      )
+  },
+  {
+    path: 'procesos-compartidos/:id',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./components/proceso-compartido-detalle/proceso-compartido-detalle.component').then(
+        (m) => m.ProcesoCompartidoDetalleComponent
+      )
+  },
+  {
     path: 'registro',
     loadComponent: () =>
       import('./components/registro-empresa/registro-empresa.component').then(

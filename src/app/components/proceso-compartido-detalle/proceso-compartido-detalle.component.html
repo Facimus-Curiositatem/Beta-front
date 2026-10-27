@@ -1,0 +1,271 @@
+<a routerLink="/procesos-compartidos">Volver a compartidos</a>
+@if (message()) {
+  <p role="alert">{{ message() }}</p>
+}
+<button type="button" (click)="cargar()" [disabled]="loading()">Actualizar</button>
+@if (loading()) {
+  <p>Cargando...</p>
+}
+@if (detalle(); as d) {
+  <h1>{{ d.proceso.nombre }}</h1>
+  <p>Empresa propietaria: {{ d.empresaPropietaria }}. Vista de solo lectura.</p>
+  <dl>
+    <dt>ID</dt>
+    <dd>{{ d.proceso.id }}</dd>
+    <dt>Descripción</dt>
+    <dd>{{ d.proceso.descripcion }}</dd>
+    <dt>Categoría</dt>
+    <dd>{{ d.proceso.categoria }}</dd>
+    <dt>Estado</dt>
+    <dd>{{ d.proceso.estado }}</dd>
+    <dt>Activo</dt>
+    <dd>{{ d.proceso.activo }}</dd>
+    <dt>Creación</dt>
+    <dd>{{ d.proceso.fechaCreacion }}</dd>
+    <dt>Modificación</dt>
+    <dd>{{ d.proceso.fechaModificacion }}</dd>
+  </dl>
+  <section>
+    <h2>Pools</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>id</th>
+          <th>nombre</th>
+          <th>tipoParticipante</th>
+          <th>cajaNegra</th>
+          <th>orden</th>
+          <th>procesoId</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of d.pools; track item.id) {
+          <tr>
+            <td>{{ item.id }}</td>
+            <td>{{ item.nombre }}</td>
+            <td>{{ item.tipoParticipante }}</td>
+            <td>{{ item.cajaNegra }}</td>
+            <td>{{ item.orden }}</td>
+            <td>{{ item.procesoId }}</td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="6">Sin registros</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </section>
+  <section>
+    <h2>Lanes</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>id</th>
+          <th>nombre</th>
+          <th>orden</th>
+          <th>poolId</th>
+          <th>rolProcesoId</th>
+          <th>Rol de proceso</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of d.lanes; track item.id) {
+          <tr>
+            <td>{{ item.id }}</td>
+            <td>{{ item.nombre }}</td>
+            <td>{{ item.orden }}</td>
+            <td>{{ item.poolId }}</td>
+            <td>{{ item.rolProcesoId }}</td>
+            <td>{{ item.rolProcesoNombre }}</td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="5">Sin registros</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </section>
+  <section>
+    <h2>Actividades</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>id</th>
+          <th>nombre</th>
+          <th>descripcion</th>
+          <th>tipoActividad</th>
+          <th>laneId</th>
+          <th>posicionX</th>
+          <th>posicionY</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of d.actividades; track item.id) {
+          <tr>
+            <td>{{ item.id }}</td>
+            <td>{{ item.nombre }}</td>
+            <td>{{ item.descripcion }}</td>
+            <td>{{ item.tipoActividad }}</td>
+            <td>{{ item.laneId }}</td>
+            <td>{{ item.posicionX }}</td>
+            <td>{{ item.posicionY }}</td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="7">Sin registros</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </section>
+  <section>
+    <h2>Gateways</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>id</th>
+          <th>nombre</th>
+          <th>tipoGateway</th>
+          <th>laneId</th>
+          <th>posicionX</th>
+          <th>posicionY</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of d.gateways; track item.id) {
+          <tr>
+            <td>{{ item.id }}</td>
+            <td>{{ item.nombre }}</td>
+            <td>{{ item.tipoGateway }}</td>
+            <td>{{ item.laneId }}</td>
+            <td>{{ item.posicionX }}</td>
+            <td>{{ item.posicionY }}</td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="6">Sin registros</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </section>
+  <section>
+    <h2>Eventos de mensaje</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>id</th>
+          <th>nombre</th>
+          <th>tipoEvento</th>
+          <th>contenido</th>
+          <th>claveCorrelacion</th>
+          <th>laneId</th>
+          <th>posicionX</th>
+          <th>posicionY</th>
+          <th>origenExterno</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of d.eventos; track item.id) {
+          <tr>
+            <td>{{ item.id }}</td>
+            <td>{{ item.nombre }}</td>
+            <td>{{ item.tipoEvento }}</td>
+            <td>{{ item.contenido }}</td>
+            <td>{{ item.claveCorrelacion }}</td>
+            <td>{{ item.laneId }}</td>
+            <td>{{ item.posicionX }}</td>
+            <td>{{ item.posicionY }}</td>
+            <td>{{ item.origenExterno }}</td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="9">Sin registros</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </section>
+  <section>
+    <h2>Arcos</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>id</th>
+          <th>etiqueta</th>
+          <th>condicion</th>
+          <th>origenId</th>
+          <th>destinoId</th>
+          <th>poolId</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of d.arcos; track item.id) {
+          <tr>
+            <td>{{ item.id }}</td>
+            <td>{{ item.etiqueta }}</td>
+            <td>{{ item.condicion }}</td>
+            <td>{{ item.origenId }}</td>
+            <td>{{ item.destinoId }}</td>
+            <td>{{ item.poolId }}</td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="6">Sin registros</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </section>
+  <section>
+    <h2>Mensajes</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>id</th>
+          <th>nombre</th>
+          <th>contenido</th>
+          <th>poolOrigenId</th>
+          <th>poolDestinoId</th>
+          <th>procesoId</th>
+          <th>eventoThrowId</th>
+          <th>eventoCatchId</th>
+          <th>claveCorrelacion</th>
+          <th>tipoDestinoExterno</th>
+          <th>destinoExterno</th>
+          <th>politicaFalloNotificacion</th>
+          <th>actividadErrorId</th>
+          <th>politicaSinCaso</th>
+          <th>sinReceptor</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of d.mensajes; track item.id) {
+          <tr>
+            <td>{{ item.id }}</td>
+            <td>{{ item.nombre }}</td>
+            <td>{{ item.contenido }}</td>
+            <td>{{ item.poolOrigenId }}</td>
+            <td>{{ item.poolDestinoId }}</td>
+            <td>{{ item.procesoId }}</td>
+            <td>{{ item.eventoThrowId }}</td>
+            <td>{{ item.eventoCatchId }}</td>
+            <td>{{ item.claveCorrelacion }}</td>
+            <td>{{ item.tipoDestinoExterno }}</td>
+            <td>{{ item.destinoExterno }}</td>
+            <td>{{ item.politicaFalloNotificacion }}</td>
+            <td>{{ item.actividadErrorId }}</td>
+            <td>{{ item.politicaSinCaso }}</td>
+            <td>{{ item.sinReceptor }}</td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="15">Sin registros</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </section>
+}

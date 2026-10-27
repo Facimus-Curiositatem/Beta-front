@@ -1,6 +1,7 @@
 @if (tokens.tieneSesion()) {
   <nav aria-label="Navegación principal">
     <a routerLink="/procesos">Procesos</a>
+    <a routerLink="/procesos-compartidos">Compartidos conmigo</a>
     @if (tokens.esAdministrador()) {
       <a routerLink="/roles">Roles de proceso</a>
       <a routerLink="/permisos-estructura">Permisos de estructura</a>

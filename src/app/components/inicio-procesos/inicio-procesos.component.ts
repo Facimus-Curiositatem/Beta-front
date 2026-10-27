@@ -3,6 +3,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 
 // Punto de acceso temporal hasta integrar el listado H3 del compañero.
+import { TokenService } from '../../services/token.service';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -12,12 +13,17 @@ import { ActivatedRoute, Router } from '@angular/router';
   templateUrl: './inicio-procesos.component.html'
 })
 export class InicioProcesosComponent {
+  readonly tokens = inject(TokenService);
   private readonly router = inject(Router);
   readonly sinPermiso =
     inject(ActivatedRoute).snapshot.queryParamMap.get('aviso') === 'sin-permiso';
   readonly form = inject(FormBuilder).nonNullable.group({
     procesoId: [1, [Validators.required, Validators.min(1), Validators.pattern(/^[0-9]+$/)]]
   });
+  compartir(): void {
+    if (this.form.invalid) return;
+    this.router.navigate(['/procesos', this.form.getRawValue().procesoId, 'compartir']);
+  }
   abrir(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
