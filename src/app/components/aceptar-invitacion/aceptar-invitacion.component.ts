@@ -1,4 +1,4 @@
-import { Component, inject, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, signal } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 
@@ -10,10 +10,11 @@ import { AceptarInvitacionRequest } from '../../models/invitacion.model';
   imports: [ReactiveFormsModule],
   templateUrl: './aceptar-invitacion.component.html',
   styleUrl: './aceptar-invitacion.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AceptarInvitacionComponent {
-  private fb = inject(FormBuilder);
-  private service = inject(InvitacionService);
+  private readonly fb = inject(FormBuilder);
+  private readonly service = inject(InvitacionService);
 
   readonly token = input.required<string>();
   status = signal<'idle' | 'loading' | 'success' | 'error'>('idle');
