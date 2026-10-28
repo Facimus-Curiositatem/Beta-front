@@ -1,10 +1,11 @@
 @if (tokens.tieneSesion()) {
   <nav aria-label="Navegación principal">
-    <a routerLink="/procesos">Procesos</a>
-    <a routerLink="/procesos-compartidos">Compartidos conmigo</a>
+    <a routerLink="/procesos" routerLinkActive="activo">Procesos</a>
+    <a routerLink="/procesos-compartidos" routerLinkActive="activo">Compartidos conmigo</a>
     @if (tokens.esAdministrador()) {
-      <a routerLink="/roles">Roles de proceso</a>
-      <a routerLink="/permisos-estructura">Permisos de estructura</a>
+      <a routerLink="/usuarios" routerLinkActive="activo">Usuarios</a>
+      <a routerLink="/roles" routerLinkActive="activo">Roles de proceso</a>
+      <a routerLink="/permisos-estructura" routerLinkActive="activo">Permisos de estructura</a>
     }
     <button type="button" (click)="cerrarSesion()" [disabled]="closing()">Cerrar sesión</button>
   </nav>
