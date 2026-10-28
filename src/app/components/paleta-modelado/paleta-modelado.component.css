@@ -1,0 +1,76 @@
+.paleta {
+  display: grid;
+  gap: 4px;
+  padding: 10px;
+  border: 1px solid var(--borde);
+  border-radius: 6px;
+  background: #ffffff;
+}
+
+h3 {
+  margin: 8px 0 2px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--texto-suave);
+}
+
+h3:first-child {
+  margin-top: 0;
+}
+
+.elementos {
+  display: grid;
+  gap: 2px;
+}
+
+.elemento {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 4px 6px;
+  font: inherit;
+  font-size: 0.85rem;
+  text-align: left;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  cursor: grab;
+}
+
+.elemento:hover:not(:disabled) {
+  background: var(--acento-suave);
+}
+
+.elemento.elegido {
+  border-color: var(--acento);
+  background: var(--acento-suave);
+}
+
+.elemento:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.icono {
+  flex: none;
+  width: 32px;
+  height: 24px;
+  overflow: visible;
+  fill: #ffffff;
+  stroke: #1f2328;
+  stroke-width: 1.5;
+}
+
+.icono .marca {
+  fill: none;
+  stroke-width: 2;
+}
+
+.icono .sobre.relleno {
+  fill: #1f2328;
+  stroke: #ffffff;
+  stroke-width: 1;
+}
