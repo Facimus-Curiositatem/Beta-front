@@ -3,12 +3,15 @@ import { Router, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { PoolService } from '../../services/pool.service';
 import { PoolResponse } from '../../models/pool.model';
+import { LanesPorPool, TramoNavegacion } from '../../models/navegacion.model';
+import { RutaNavegacionComponent } from '../ruta-navegacion/ruta-navegacion.component';
 
 @Component({
   selector: 'app-pool-list',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, RutaNavegacionComponent],
   templateUrl: './pool-list.component.html',
+  styleUrl: './pool-list.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PoolListComponent {
@@ -16,6 +19,8 @@ export class PoolListComponent {
   private readonly router = inject(Router);
 
   procesoId = input.required<string>();
+  tramos = input<TramoNavegacion[]>([]);
+  lanesPorPool = input<LanesPorPool>({});
 
   protected readonly status = signal<'loading' | 'success' | 'error'>('loading');
   protected readonly items = signal<PoolResponse[]>([]);
@@ -33,7 +38,7 @@ export class PoolListComponent {
         this.status.set('success');
       },
       error: (err: HttpErrorResponse) => {
-        this.message.set(err.error?.message ?? 'No fue posible cargar los pools');
+        this.message.set(err.error?.detail ?? 'No fue posible cargar los pools');
         this.status.set('error');
       }
     });
@@ -43,7 +48,7 @@ export class PoolListComponent {
     this.poolService.eliminar(id).subscribe({
       next: () => this.load(),
       error: (err: HttpErrorResponse) => {
-        this.message.set(err.error?.message ?? 'No fue posible eliminar el pool');
+        this.message.set(err.error?.detail ?? 'No fue posible eliminar el pool');
       }
     });
   }
