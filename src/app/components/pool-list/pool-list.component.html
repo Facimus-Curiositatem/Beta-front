@@ -1,3 +1,5 @@
+<app-ruta-navegacion [tramos]="tramos()" />
+
 <h2>Pools del proceso</h2>
 
 <a [routerLink]="['/procesos', procesoId(), 'pools', 'nuevo']">Crear pool</a>
@@ -7,34 +9,57 @@
     <p>Cargando pools...</p>
   }
   @case ('error') {
-    <p>{{ message() }}</p>
+    <p class="error">{{ message() }}</p>
     <button (click)="load()">Reintentar</button>
   }
   @case ('success') {
+    @if (message()) {
+      <p class="error" role="alert">{{ message() }}</p>
+    }
     @if (items().length === 0) {
       <p>No hay pools registrados.</p>
     } @else {
       <table>
         <thead>
           <tr>
-            <th>Nombre</th>
-            <th>Tipo</th>
-            <th>Caja negra</th>
-            <th>Orden</th>
+            <th>Pool</th>
+            <th>Lanes</th>
             <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
           @for (pool of items(); track pool.id) {
             <tr>
-              <td>{{ pool.nombre }}</td>
-              <td>{{ pool.tipoParticipante }}</td>
-              <td>{{ pool.cajaNegra ? 'Si' : 'No' }}</td>
-              <td>{{ pool.orden }}</td>
               <td>
+                <strong>{{ pool.nombre }}</strong>
+                <div class="detalle">
+                  {{ pool.tipoParticipante }}
+                  @if (pool.cajaNegra) { · Caja negra }
+                </div>
+              </td>
+              <td>
+                <div class="lanes">
+                  @for (lane of lanesPorPool()[pool.id] ?? []; track lane.id) {
+                    <div class="lane">
+                      <span>
+                        <strong>{{ lane.nombre }}</strong>
+                        <span class="detalle">{{ lane.rolProcesoNombre }}</span>
+                      </span>
+                      <span class="enlaces">
+                        <a [routerLink]="['/lanes', lane.id, 'actividades']">Actividades</a>
+                        <a [routerLink]="['/lanes', lane.id, 'gateways']">Gateways</a>
+                        <a [routerLink]="['/lanes', lane.id, 'eventos-mensaje']">Eventos</a>
+                      </span>
+                    </div>
+                  } @empty {
+                    <span class="detalle">Sin lanes</span>
+                  }
+                </div>
+              </td>
+              <td>
+                <button (click)="verLanes(pool.id)">Ordenar lanes</button>
                 <button (click)="editar(pool.id)">Editar</button>
                 <button (click)="eliminar(pool.id)">Eliminar</button>
-                <button (click)="verLanes(pool.id)">Lanes</button>
                 <a [routerLink]="['/pools', pool.id, 'arcos']">Arcos</a>
               </td>
             </tr>
