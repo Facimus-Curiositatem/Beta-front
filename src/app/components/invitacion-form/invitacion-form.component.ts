@@ -7,6 +7,7 @@ import { RouterLink } from '@angular/router';
 import { InvitacionService } from '../../services/invitacion.service';
 import { InvitacionRequest, InvitacionResponse } from '../../models/invitacion.model';
 import { RolAcceso } from '../../models/usuario.model';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-invitacion-form',
@@ -18,8 +19,8 @@ import { RolAcceso } from '../../models/usuario.model';
 export class InvitacionFormComponent {
   private readonly fb = inject(FormBuilder);
   private readonly service = inject(InvitacionService);
-  // Origen con el que el admin abrió la app (ej. http://10.43.99.76:4200), para que el enlace sirva desde otra máquina.
-  private readonly origen = inject(DOCUMENT).location.origin;
+  // El enlace lo abre el invitado desde su máquina: si el admin entró por un túnel (localhost), no le serviría.
+  private readonly origen = environment.urlPublica || inject(DOCUMENT).location.origin;
 
   roles: RolAcceso[] = ['ADMINISTRADOR', 'EDITOR', 'SOLO_LECTURA'];
   invitacion = signal<InvitacionResponse | null>(null);
@@ -37,7 +38,8 @@ export class InvitacionFormComponent {
     const cuerpo = `Te invitaron con el rol ${invitacion.rolAcceso}.\n\n`
       + `Crea tu cuenta en este enlace:\n${this.enlace()}\n\n`
       + `El enlace vence: ${invitacion.fechaExpiracion}`;
-    return `mailto:${encodeURIComponent(invitacion.email)}`
+    // Algunos clientes de correo no decodifican %40 en el destinatario.
+    return `mailto:${encodeURIComponent(invitacion.email).replace('%40', '@')}`
       + `?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(cuerpo)}`;
   });
 
