@@ -32,4 +32,5 @@
   <button type="submit" [disabled]="saving()">
     @if (saving()) { Guardando... } @else { Guardar }
   </button>
+  <a [routerLink]="editing() ? ['/procesos', id()] : ['/procesos']">Cancelar</a>
 </form>

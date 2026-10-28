@@ -1,6 +1,6 @@
 import { Component, ChangeDetectionStrategy, inject, input, signal, computed } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Observable, catchError, forkJoin, map, of, switchMap } from 'rxjs';
@@ -14,11 +14,13 @@ import { EventoMensajeResponse } from '../../models/evento-mensaje.model';
 import {
   MensajeRequest, PoliticaFalloNotificacion, PoliticaMensajeSinCaso, TipoDestinoExterno
 } from '../../models/mensaje.model';
+import { TramoNavegacion } from '../../models/navegacion.model';
+import { RutaNavegacionComponent } from '../ruta-navegacion/ruta-navegacion.component';
 
 @Component({
   selector: 'app-mensaje-form',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, RouterLink, RutaNavegacionComponent],
   templateUrl: './mensaje-form.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -33,6 +35,7 @@ export class MensajeFormComponent {
 
   procesoId = input.required<string>();
   mensajeId = input<string>();
+  tramos = input<TramoNavegacion[]>([]);
 
   protected readonly tiposDestinoExterno: TipoDestinoExterno[] = ['CORREO', 'SERVICIO_WEB', 'COLA'];
   protected readonly politicasFallo: PoliticaFalloNotificacion[] = [

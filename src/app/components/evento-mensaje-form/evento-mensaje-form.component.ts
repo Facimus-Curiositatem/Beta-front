@@ -1,14 +1,16 @@
 import { Component, ChangeDetectionStrategy, inject, input, signal, computed } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { EventoMensajeService } from '../../services/evento-mensaje.service';
 import { TipoEventoMensaje } from '../../models/evento-mensaje.model';
+import { TramoNavegacion } from '../../models/navegacion.model';
+import { RutaNavegacionComponent } from '../ruta-navegacion/ruta-navegacion.component';
 
 @Component({
   selector: 'app-evento-mensaje-form',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, RouterLink, RutaNavegacionComponent],
   templateUrl: './evento-mensaje-form.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -20,6 +22,7 @@ export class EventoMensajeFormComponent {
   laneId = input.required<string>();
   eventoId = input<string>();
   volverADiagrama = input<string>();
+  tramos = input<TramoNavegacion[]>([]);
 
   protected readonly tiposEvento: TipoEventoMensaje[] = ['THROW', 'CATCH_INICIO', 'CATCH_INTERMEDIO'];
   protected readonly editing = computed(() => this.eventoId() !== undefined);

@@ -1,14 +1,14 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, input, signal } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 import { UsuarioService } from '../../services/usuario.service';
 import { ActualizarUsuarioRequest, RolAcceso, UsuarioResponse } from '../../models/usuario.model';
 
 @Component({
   selector: 'app-editar-usuario',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, RouterLink],
   templateUrl: './editar-usuario.component.html',
   styleUrl: './editar-usuario.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

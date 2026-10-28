@@ -1,15 +1,17 @@
 import { Component, ChangeDetectionStrategy, inject, input, signal, computed } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ArcoService } from '../../services/arco.service';
 import { NodoFlujoService } from '../../services/nodo-flujo.service';
 import { NodoFlujo } from '../../models/nodo-flujo.model';
+import { TramoNavegacion } from '../../models/navegacion.model';
+import { RutaNavegacionComponent } from '../ruta-navegacion/ruta-navegacion.component';
 
 @Component({
   selector: 'app-arco-form',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, RouterLink, RutaNavegacionComponent],
   templateUrl: './arco-form.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -21,6 +23,7 @@ export class ArcoFormComponent {
 
   poolId = input.required<string>();
   arcoId = input<string>();
+  tramos = input<TramoNavegacion[]>([]);
 
   protected readonly nodos = signal<NodoFlujo[]>([]);
   protected readonly editing = computed(() => this.arcoId() !== undefined);

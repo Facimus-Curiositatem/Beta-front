@@ -25,6 +25,8 @@ export class ProcesoDetalleComponent {
   protected readonly detalle = signal<ProcesoDetalleResponse | null>(null);
   protected readonly message = signal('');
 
+  protected readonly soloLectura = computed(() => this.tokens.rol() === 'SOLO_LECTURA');
+
   protected readonly tramos = computed<TramoNavegacion[]>(() => [
     { etiqueta: 'Procesos', enlace: ['/procesos'] },
     { etiqueta: this.detalle()?.proceso.nombre ?? 'Proceso' }
@@ -57,6 +59,14 @@ export class ProcesoDetalleComponent {
         this.message.set(err.error?.detail ?? 'No fue posible cambiar el estado');
       }
     });
+  }
+
+  // La eliminación es lógica: el proceso pasa a inactivo y se consulta con el filtro de inactivos.
+  confirmarEliminacion(): void {
+    const nombre = this.detalle()?.proceso.nombre ?? '';
+    if (confirm(`¿Eliminar el proceso «${nombre}»? Pasará a inactivo y podrás consultarlo con el filtro de inactivos.`)) {
+      this.eliminar();
+    }
   }
 
   eliminar(): void {

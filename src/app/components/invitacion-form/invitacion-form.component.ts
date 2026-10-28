@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@a
 import { DOCUMENT } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 
 import { InvitacionService } from '../../services/invitacion.service';
 import { InvitacionRequest, InvitacionResponse } from '../../models/invitacion.model';
@@ -9,7 +10,7 @@ import { RolAcceso } from '../../models/usuario.model';
 
 @Component({
   selector: 'app-invitacion-form',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, RouterLink],
   templateUrl: './invitacion-form.component.html',
   styleUrl: './invitacion-form.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

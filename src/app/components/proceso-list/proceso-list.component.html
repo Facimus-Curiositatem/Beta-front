@@ -1,6 +1,12 @@
 <h2>Procesos</h2>
 
-<a routerLink="/procesos/nuevo">Crear proceso</a>
+@if (aviso() === 'sin-permiso') {
+  <p class="error" role="alert">No tienes permiso para abrir esa sección. Pídele acceso a un administrador.</p>
+}
+
+@if (!soloLectura()) {
+  <a routerLink="/procesos/nuevo">Crear proceso</a>
+}
 
 <form [formGroup]="filtros" (ngSubmit)="buscar()">
   <label>
@@ -21,6 +27,14 @@
   <label>
     Categoria
     <input formControlName="categoria">
+  </label>
+
+  <label>
+    Mostrar
+    <select formControlName="vigencia">
+      <option value="activos">Activos</option>
+      <option value="inactivos">Inactivos (eliminados)</option>
+    </select>
   </label>
 
   <button type="submit">Buscar</button>

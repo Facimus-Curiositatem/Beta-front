@@ -1,13 +1,14 @@
 import { ChangeDetectionStrategy, Component, inject, input, signal } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 
 import { InvitacionService } from '../../services/invitacion.service';
 import { AceptarInvitacionRequest } from '../../models/invitacion.model';
 
 @Component({
   selector: 'app-aceptar-invitacion',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, RouterLink],
   templateUrl: './aceptar-invitacion.component.html',
   styleUrl: './aceptar-invitacion.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

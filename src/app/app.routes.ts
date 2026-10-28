@@ -149,12 +149,14 @@ export const routes: Routes = [
   {
     path: 'lanes/:laneId/actividades/nuevo',
     loadComponent: () => import('./components/actividad-form/actividad-form.component').then(m => m.ActividadFormComponent),
-    canActivate: [authGuard]
+    canActivate: [authGuard],
+    resolve: { tramos: tramosResolver('lane', 'laneId', 'Nueva actividad') }
   },
   {
     path: 'lanes/:laneId/actividades/:id/editar',
     loadComponent: () => import('./components/actividad-form/actividad-form.component').then(m => m.ActividadFormComponent),
-    canActivate: [authGuard]
+    canActivate: [authGuard],
+    resolve: { tramos: tramosResolver('lane', 'laneId', 'Editar actividad') }
   },
   {
     path: 'lanes/:laneId/gateways',
@@ -165,12 +167,14 @@ export const routes: Routes = [
   {
     path: 'lanes/:laneId/gateways/nuevo',
     loadComponent: () => import('./components/gateway-form/gateway-form.component').then(m => m.GatewayFormComponent),
-    canActivate: [authGuard]
+    canActivate: [authGuard],
+    resolve: { tramos: tramosResolver('lane', 'laneId', 'Nuevo gateway') }
   },
   {
     path: 'lanes/:laneId/gateways/:id/editar',
     loadComponent: () => import('./components/gateway-form/gateway-form.component').then(m => m.GatewayFormComponent),
-    canActivate: [authGuard]
+    canActivate: [authGuard],
+    resolve: { tramos: tramosResolver('lane', 'laneId', 'Editar gateway') }
   },
   {
     path: 'usuarios',
@@ -205,27 +209,32 @@ export const routes: Routes = [
   {
     path: 'lanes/:laneId/eventos-mensaje/nuevo',
     loadComponent: () => import('./components/evento-mensaje-form/evento-mensaje-form.component').then(m => m.EventoMensajeFormComponent),
-    canActivate: [authGuard]
+    canActivate: [authGuard],
+    resolve: { tramos: tramosResolver('lane', 'laneId', 'Nuevo evento') }
   },
   {
     path: 'lanes/:laneId/eventos-mensaje/:eventoId/editar',
     loadComponent: () => import('./components/evento-mensaje-form/evento-mensaje-form.component').then(m => m.EventoMensajeFormComponent),
-    canActivate: [authGuard]
+    canActivate: [authGuard],
+    resolve: { tramos: tramosResolver('lane', 'laneId', 'Editar evento') }
   },
   {
     path: 'procesos/:procesoId/mensajes',
     loadComponent: () => import('./components/mensaje-list/mensaje-list.component').then(m => m.MensajeListComponent),
-    canActivate: [authGuard]
+    canActivate: [authGuard],
+    resolve: { tramos: tramosResolver('proceso', 'procesoId', 'Mensajes') }
   },
   {
     path: 'procesos/:procesoId/mensajes/nuevo',
     loadComponent: () => import('./components/mensaje-form/mensaje-form.component').then(m => m.MensajeFormComponent),
-    canActivate: [authGuard]
+    canActivate: [authGuard],
+    resolve: { tramos: tramosResolver('proceso', 'procesoId', 'Nuevo mensaje') }
   },
   {
     path: 'procesos/:procesoId/mensajes/:mensajeId/editar',
     loadComponent: () => import('./components/mensaje-form/mensaje-form.component').then(m => m.MensajeFormComponent),
-    canActivate: [authGuard]
+    canActivate: [authGuard],
+    resolve: { tramos: tramosResolver('proceso', 'procesoId', 'Editar mensaje') }
   },
   {
     path: 'pools/:poolId/arcos',
@@ -236,12 +245,14 @@ export const routes: Routes = [
   {
     path: 'pools/:poolId/arcos/nuevo',
     loadComponent: () => import('./components/arco-form/arco-form.component').then(m => m.ArcoFormComponent),
-    canActivate: [authGuard]
+    canActivate: [authGuard],
+    resolve: { tramos: tramosResolver('pool', 'poolId', 'Nuevo arco') }
   },
   {
     path: 'pools/:poolId/arcos/:arcoId/editar',
     loadComponent: () => import('./components/arco-form/arco-form.component').then(m => m.ArcoFormComponent),
-    canActivate: [authGuard]
+    canActivate: [authGuard],
+    resolve: { tramos: tramosResolver('pool', 'poolId', 'Editar arco') }
   },
   {
     path: '',

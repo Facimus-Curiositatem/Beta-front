@@ -1,8 +1,9 @@
-import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
+import { Component, ChangeDetectionStrategy, computed, inject, input, signal } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ProcesoService } from '../../services/proceso.service';
+import { TokenService } from '../../services/token.service';
 import { EstadoProceso, ProcesoResponse } from '../../models/proceso.model';
 
 @Component({
@@ -16,6 +17,11 @@ export class ProcesoListComponent {
   private readonly fb = inject(FormBuilder);
   private readonly procesoService = inject(ProcesoService);
   private readonly router = inject(Router);
+  private readonly tokens = inject(TokenService);
+
+  aviso = input<string>();
+
+  protected readonly soloLectura = computed(() => this.tokens.rol() === 'SOLO_LECTURA');
 
   protected readonly estados: EstadoProceso[] = ['BORRADOR', 'PUBLICADO'];
   protected readonly status = signal<'loading' | 'success' | 'error'>('loading');
@@ -27,7 +33,8 @@ export class ProcesoListComponent {
   protected readonly filtros = this.fb.nonNullable.group({
     nombre: [''],
     estado: this.fb.nonNullable.control<EstadoProceso | ''>(''),
-    categoria: ['']
+    categoria: [''],
+    vigencia: this.fb.nonNullable.control<'activos' | 'inactivos'>('activos')
   });
 
   ngOnInit(): void {
@@ -41,8 +48,10 @@ export class ProcesoListComponent {
 
   load(): void {
     this.status.set('loading');
-    const { nombre, estado, categoria } = this.filtros.getRawValue();
-    this.procesoService.buscar(nombre, estado || undefined, categoria, undefined, this.pagina()).subscribe({
+    const { nombre, estado, categoria, vigencia } = this.filtros.getRawValue();
+    // Sin filtro el backend lista solo los activos; los eliminados se consultan aparte.
+    const activo = vigencia === 'inactivos' ? false : undefined;
+    this.procesoService.buscar(nombre, estado || undefined, categoria, activo, this.pagina()).subscribe({
       next: page => {
         this.items.set(page.content);
         this.totalPages.set(page.totalPages);
