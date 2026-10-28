@@ -1,0 +1,101 @@
+<form class="formulario-panel" [formGroup]="form" (ngSubmit)="enviar()">
+  <h3>
+    @if (esNuevo()) { Nueva notificación externa } @else if (externo()) { Notificación externa } @else { Mensaje }
+  </h3>
+
+  @if (sinReceptor()) {
+    <p class="error">Este mensaje queda sin receptor: el pool destino no tiene un Message Catch con este nombre.</p>
+  }
+
+  <label>
+    Nombre
+    <input formControlName="nombre" />
+  </label>
+
+  <label>
+    Clave de correlación
+    <input formControlName="claveCorrelacion" />
+  </label>
+  <p class="ayuda">El nombre y la clave vienen del Message Throw; cámbialos en el evento.</p>
+
+  <label>
+    Contenido
+    <textarea formControlName="contenido" rows="3"></textarea>
+  </label>
+  @if (form.controls.contenido.touched && form.controls.contenido.hasError('required')) {
+    <p class="error">Documenta el contenido del mensaje.</p>
+  }
+
+  @if (externo()) {
+    <label>
+      Tipo de destino
+      <select formControlName="tipoDestinoExterno">
+        <option [ngValue]="null" disabled>Elige el destino</option>
+        @for (destino of destinos; track destino.valor) {
+          <option [ngValue]="destino.valor">{{ destino.etiqueta }}</option>
+        }
+      </select>
+    </label>
+    @if (form.controls.tipoDestinoExterno.touched && form.controls.tipoDestinoExterno.hasError('required')) {
+      <p class="error">Elige el tipo de destino.</p>
+    }
+
+    <label>
+      Destino (dirección, URL o nombre de la cola)
+      <input formControlName="destinoExterno" />
+    </label>
+    @if (form.controls.destinoExterno.touched && form.controls.destinoExterno.hasError('required')) {
+      <p class="error">Documenta el destino externo.</p>
+    }
+
+    <label>
+      Si la notificación falla
+      <select formControlName="politicaFalloNotificacion">
+        <option [ngValue]="null" disabled>Elige qué hacer</option>
+        @for (politica of politicasFallo; track politica.valor) {
+          <option [ngValue]="politica.valor">{{ politica.etiqueta }}</option>
+        }
+      </select>
+    </label>
+    @if (form.controls.politicaFalloNotificacion.touched && form.controls.politicaFalloNotificacion.hasError('required')) {
+      <p class="error">Define qué pasa si la notificación falla.</p>
+    }
+
+    @if (form.controls.politicaFalloNotificacion.value === 'DERIVAR_ACTIVIDAD_ERROR') {
+      <label>
+        Actividad de error
+        <select formControlName="actividadErrorId">
+          <option [ngValue]="null" disabled>Elige la actividad</option>
+          @for (actividad of actividades(); track actividad.id) {
+            <option [ngValue]="actividad.id">{{ actividad.nombre }}</option>
+          }
+        </select>
+      </label>
+      @if (form.controls.actividadErrorId.touched && form.controls.actividadErrorId.hasError('required')) {
+        <p class="error">Elige la actividad a la que se deriva el error.</p>
+      }
+    }
+  } @else {
+    <label>
+      Si no corresponde a ningún caso en espera
+      <select formControlName="politicaSinCaso">
+        @for (politica of politicasSinCaso; track politica.valor) {
+          <option [ngValue]="politica.valor">{{ politica.etiqueta }}</option>
+        }
+      </select>
+    </label>
+  }
+
+  @if (!soloLectura()) {
+    <div class="acciones-panel">
+      <button type="submit" class="primario" [disabled]="guardando()">
+        @if (esNuevo()) { Crear notificación } @else { Guardar }
+      </button>
+      @if (esNuevo()) {
+        <button type="button" [disabled]="guardando()" (click)="cancelar.emit()">Cancelar</button>
+      } @else if (puedeEliminar()) {
+        <button type="button" class="peligro" [disabled]="guardando()" (click)="eliminar.emit()">Eliminar</button>
+      }
+    </div>
+  }
+</form>
