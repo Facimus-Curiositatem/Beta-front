@@ -1,14 +1,16 @@
 import { Component, ChangeDetectionStrategy, inject, input, signal, computed } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { GatewayService } from '../../services/gateway.service';
 import { GatewayRequest, TipoGateway } from '../../models/gateway.model';
+import { TramoNavegacion } from '../../models/navegacion.model';
+import { RutaNavegacionComponent } from '../ruta-navegacion/ruta-navegacion.component';
 
 @Component({
   selector: 'app-gateway-form',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, RouterLink, RutaNavegacionComponent],
   templateUrl: './gateway-form.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -20,6 +22,7 @@ export class GatewayFormComponent {
   laneId = input.required<string>();
   id = input<string>();
   volverADiagrama = input<string>();
+  tramos = input<TramoNavegacion[]>([]);
 
   protected readonly tiposGateway: TipoGateway[] = ['EXCLUSIVO', 'PARALELO', 'INCLUSIVO'];
   protected readonly editing = computed(() => this.id() !== undefined);
