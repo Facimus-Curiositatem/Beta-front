@@ -19,6 +19,7 @@ export class EventoMensajeFormComponent {
 
   laneId = input.required<string>();
   eventoId = input<string>();
+  volverADiagrama = input<string>();
 
   protected readonly tiposEvento: TipoEventoMensaje[] = ['THROW', 'CATCH_INICIO', 'CATCH_INTERMEDIO'];
   protected readonly editing = computed(() => this.eventoId() !== undefined);
@@ -71,7 +72,9 @@ export class EventoMensajeFormComponent {
       : this.eventoMensajeService.crear(Number(this.laneId()), body);
 
     request$.subscribe({
-      next: () => this.router.navigate(['/lanes', this.laneId(), 'eventos-mensaje']),
+      next: () => this.router.navigate(
+        this.volverADiagrama() ? ['/procesos', this.volverADiagrama(), 'diagrama'] : ['/lanes', this.laneId(), 'eventos-mensaje']
+      ),
       error: (err: HttpErrorResponse) => {
         this.saving.set(false);
         this.message.set(err.error?.message ?? 'No fue posible guardar el evento de mensaje');
