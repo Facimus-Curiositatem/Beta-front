@@ -1,0 +1,100 @@
+.ayuda {
+  font-size: 0.9rem;
+  color: var(--texto-suave);
+}
+
+.pool {
+  display: grid;
+  grid-template-columns: 2.25rem minmax(0, 1fr);
+  border: 1px solid var(--borde);
+  border-radius: 6px;
+  overflow-x: auto;
+}
+
+/* Nombre del pool en vertical, leído de abajo hacia arriba como en BPMN. */
+.pool-banda {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 0;
+  overflow: hidden;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  border-left: 1px solid var(--borde);
+}
+
+th, td {
+  padding: 8px 10px;
+  text-align: left;
+  border-bottom: 1px solid var(--borde);
+}
+
+tbody tr {
+  background: #ffffff;
+}
+
+tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.asa {
+  width: 2rem;
+  color: var(--texto-suave);
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+}
+
+.asa:active {
+  cursor: grabbing;
+}
+
+.cdk-drop-list-disabled .asa {
+  cursor: progress;
+}
+
+.oculto {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+
+.vista-previa {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  background: #ffffff;
+  border: 1px solid var(--acento);
+  border-radius: 6px;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.18);
+}
+
+.cdk-drag-placeholder {
+  opacity: 0.4;
+  background: var(--acento-suave);
+}
+
+.cdk-drag-animating,
+.cdk-drop-list-dragging tr:not(.cdk-drag-placeholder) {
+  transition: transform 200ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cdk-drag-animating,
+  .cdk-drop-list-dragging tr:not(.cdk-drag-placeholder) {
+    transition: none;
+  }
+}

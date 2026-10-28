@@ -5,11 +5,13 @@ import { GatewayService } from '../../services/gateway.service';
 import { GatewayResponse } from '../../models/gateway.model';
 import { ImpactoEliminacionResponse } from '../../models/impacto-eliminacion.model';
 import { ConfirmarEliminacionComponent } from '../confirmar-eliminacion/confirmar-eliminacion.component';
+import { TramoNavegacion } from '../../models/navegacion.model';
+import { RutaNavegacionComponent } from '../ruta-navegacion/ruta-navegacion.component';
 
 @Component({
   selector: 'app-gateway-list',
   standalone: true,
-  imports: [RouterLink, ConfirmarEliminacionComponent],
+  imports: [RouterLink, ConfirmarEliminacionComponent, RutaNavegacionComponent],
   templateUrl: './gateway-list.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -17,6 +19,7 @@ export class GatewayListComponent {
   private readonly gatewayService = inject(GatewayService);
 
   laneId = input.required<string>();
+  tramos = input<TramoNavegacion[]>([]);
 
   protected readonly status = signal<'loading' | 'success' | 'error'>('loading');
   protected readonly items = signal<GatewayResponse[]>([]);

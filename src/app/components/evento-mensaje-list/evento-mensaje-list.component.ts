@@ -3,11 +3,13 @@ import { Router, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { EventoMensajeService } from '../../services/evento-mensaje.service';
 import { EventoMensajeResponse } from '../../models/evento-mensaje.model';
+import { TramoNavegacion } from '../../models/navegacion.model';
+import { RutaNavegacionComponent } from '../ruta-navegacion/ruta-navegacion.component';
 
 @Component({
   selector: 'app-evento-mensaje-list',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, RutaNavegacionComponent],
   templateUrl: './evento-mensaje-list.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -16,6 +18,7 @@ export class EventoMensajeListComponent {
   private readonly router = inject(Router);
 
   laneId = input.required<string>();
+  tramos = input<TramoNavegacion[]>([]);
 
   protected readonly status = signal<'loading' | 'success' | 'error'>('loading');
   protected readonly items = signal<EventoMensajeResponse[]>([]);

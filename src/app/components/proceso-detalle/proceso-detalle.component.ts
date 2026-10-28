@@ -1,25 +1,34 @@
-import { Component, ChangeDetectionStrategy, inject, input, signal } from '@angular/core';
+import { Component, ChangeDetectionStrategy, computed, inject, input, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ProcesoService } from '../../services/proceso.service';
+import { TokenService } from '../../services/token.service';
 import { ProcesoDetalleResponse } from '../../models/proceso.model';
+import { TramoNavegacion } from '../../models/navegacion.model';
+import { RutaNavegacionComponent } from '../ruta-navegacion/ruta-navegacion.component';
 
 @Component({
   selector: 'app-proceso-detalle',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, RutaNavegacionComponent],
   templateUrl: './proceso-detalle.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProcesoDetalleComponent {
   private readonly procesoService = inject(ProcesoService);
   private readonly router = inject(Router);
+  protected readonly tokens = inject(TokenService);
 
   id = input.required<string>();
 
   protected readonly status = signal<'loading' | 'success' | 'error'>('loading');
   protected readonly detalle = signal<ProcesoDetalleResponse | null>(null);
   protected readonly message = signal('');
+
+  protected readonly tramos = computed<TramoNavegacion[]>(() => [
+    { etiqueta: 'Procesos', enlace: ['/procesos'] },
+    { etiqueta: this.detalle()?.proceso.nombre ?? 'Proceso' }
+  ]);
 
   ngOnInit(): void {
     this.load();

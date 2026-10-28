@@ -1,4 +1,4 @@
-<a routerLink="/procesos">Volver a procesos</a>
+<app-ruta-navegacion [tramos]="tramos()" />
 
 @if (message()) {
   <p>{{ message() }}</p>
@@ -21,8 +21,12 @@
       <p>Creacion: {{ d.proceso.fechaCreacion }}</p>
       <p>Modificacion: {{ d.proceso.fechaModificacion }}</p>
 
+      <a [routerLink]="['/procesos', d.proceso.id, 'pools']">Pools y lanes</a>
       <a [routerLink]="['/procesos', d.proceso.id, 'editar']">Editar</a>
       <a [routerLink]="['/procesos', d.proceso.id, 'mensajes']">Mensajes</a>
+      @if (tokens.esAdministrador()) {
+        <a [routerLink]="['/procesos', d.proceso.id, 'compartir']">Compartir</a>
+      }
       @if (d.proceso.estado === 'BORRADOR') {
         <button (click)="publicar()">Publicar</button>
       }

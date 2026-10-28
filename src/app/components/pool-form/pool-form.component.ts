@@ -1,13 +1,15 @@
 import { Component, ChangeDetectionStrategy, inject, input, signal, computed } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { PoolService } from '../../services/pool.service';
+import { TramoNavegacion } from '../../models/navegacion.model';
+import { RutaNavegacionComponent } from '../ruta-navegacion/ruta-navegacion.component';
 
 @Component({
   selector: 'app-pool-form',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, RouterLink, RutaNavegacionComponent],
   templateUrl: './pool-form.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -18,6 +20,7 @@ export class PoolFormComponent {
 
   procesoId = input.required<string>();
   id = input<string>();
+  tramos = input<TramoNavegacion[]>([]);
 
   protected readonly tiposParticipante = ['EMPRESA', 'CLIENTE', 'PROVEEDOR', 'SISTEMA_EXTERNO'];
   protected readonly editing = computed(() => this.id() !== undefined);

@@ -1,3 +1,5 @@
+<app-ruta-navegacion [tramos]="tramos()" />
+
 <h2>@if (editing()) { Editar lane } @else { Crear lane }</h2>
 
 @if (message()) {
@@ -26,4 +28,5 @@
   <button type="submit" [disabled]="saving()">
     @if (saving()) { Guardando... } @else { Guardar }
   </button>
+  <a [routerLink]="['/pools', poolId(), 'lanes']">Cancelar</a>
 </form>

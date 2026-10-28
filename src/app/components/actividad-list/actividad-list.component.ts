@@ -5,11 +5,13 @@ import { ActividadService } from '../../services/actividad.service';
 import { ActividadResponse } from '../../models/actividad.model';
 import { ImpactoEliminacionResponse } from '../../models/impacto-eliminacion.model';
 import { ConfirmarEliminacionComponent } from '../confirmar-eliminacion/confirmar-eliminacion.component';
+import { TramoNavegacion } from '../../models/navegacion.model';
+import { RutaNavegacionComponent } from '../ruta-navegacion/ruta-navegacion.component';
 
 @Component({
   selector: 'app-actividad-list',
   standalone: true,
-  imports: [RouterLink, ConfirmarEliminacionComponent],
+  imports: [RouterLink, ConfirmarEliminacionComponent, RutaNavegacionComponent],
   templateUrl: './actividad-list.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -17,6 +19,7 @@ export class ActividadListComponent {
   private readonly actividadService = inject(ActividadService);
 
   laneId = input.required<string>();
+  tramos = input<TramoNavegacion[]>([]);
 
   protected readonly status = signal<'loading' | 'success' | 'error'>('loading');
   protected readonly items = signal<ActividadResponse[]>([]);

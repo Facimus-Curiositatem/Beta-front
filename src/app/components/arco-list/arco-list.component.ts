@@ -6,11 +6,13 @@ import { ArcoService } from '../../services/arco.service';
 import { NodoFlujoService } from '../../services/nodo-flujo.service';
 import { ArcoResponse } from '../../models/arco.model';
 import { NodoFlujo } from '../../models/nodo-flujo.model';
+import { TramoNavegacion } from '../../models/navegacion.model';
+import { RutaNavegacionComponent } from '../ruta-navegacion/ruta-navegacion.component';
 
 @Component({
   selector: 'app-arco-list',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, RutaNavegacionComponent],
   templateUrl: './arco-list.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -20,6 +22,7 @@ export class ArcoListComponent {
   private readonly router = inject(Router);
 
   poolId = input.required<string>();
+  tramos = input<TramoNavegacion[]>([]);
 
   protected readonly status = signal<'loading' | 'success' | 'error'>('loading');
   protected readonly items = signal<ArcoResponse[]>([]);
