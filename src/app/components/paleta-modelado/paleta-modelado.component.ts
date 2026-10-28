@@ -25,6 +25,21 @@ const GRUPOS: GrupoPaleta[] = [
       { tipo: 'GATEWAY', subtipo: 'PARALELO', etiqueta: 'Paralelo' },
       { tipo: 'GATEWAY', subtipo: 'INCLUSIVO', etiqueta: 'Inclusivo' }
     ]
+  },
+  {
+    titulo: 'Eventos de mensaje',
+    elementos: [
+      { tipo: 'EVENTO', subtipo: 'CATCH_INICIO', etiqueta: 'Inicio de mensaje' },
+      { tipo: 'EVENTO', subtipo: 'CATCH_INTERMEDIO', etiqueta: 'Espera de mensaje' },
+      { tipo: 'EVENTO', subtipo: 'THROW', etiqueta: 'Envío de mensaje' }
+    ]
+  },
+  {
+    titulo: 'Estructura',
+    elementos: [
+      { tipo: 'POOL', etiqueta: 'Pool' },
+      { tipo: 'LANE', etiqueta: 'Lane' }
+    ]
   }
 ];
 
