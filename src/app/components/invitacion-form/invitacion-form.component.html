@@ -21,10 +21,11 @@
   <button type="submit">Enviar invitación</button>
 </form>
 
-@if (invitacion()) {
+@if (invitacion(); as inv) {
   <div>
-    <p>Invitación creada. Pásale este enlace a la persona invitada:</p>
-    <p>http://localhost:4200/invitaciones/{{ invitacion()?.token }}/aceptar</p>
-    <p>Vence: {{ invitacion()?.fechaExpiracion }}</p>
+    <p>Invitación creada para {{ inv.email }}. Envíale este enlace:</p>
+    <p>{{ enlace() }}</p>
+    <p><a [href]="enlaceCorreo()">Enviar por correo</a></p>
+    <p>Vence: {{ inv.fechaExpiracion }}</p>
   </div>
 }
