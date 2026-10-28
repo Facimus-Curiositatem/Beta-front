@@ -21,6 +21,7 @@
       <p>Creacion: {{ d.proceso.fechaCreacion }}</p>
       <p>Modificacion: {{ d.proceso.fechaModificacion }}</p>
 
+      <a [routerLink]="['/procesos', d.proceso.id, 'diagrama']">Diagrama</a>
       <a [routerLink]="['/procesos', d.proceso.id, 'pools']">Pools y lanes</a>
       <a [routerLink]="['/procesos', d.proceso.id, 'editar']">Editar</a>
       <a [routerLink]="['/procesos', d.proceso.id, 'mensajes']">Mensajes</a>
