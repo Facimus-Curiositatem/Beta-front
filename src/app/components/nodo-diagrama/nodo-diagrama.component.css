@@ -1,0 +1,106 @@
+:host {
+  position: absolute;
+  z-index: 2;
+  display: block;
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+}
+
+:host(.cdk-drag-dragging) {
+  z-index: 3;
+  cursor: grabbing;
+}
+
+:host(.cdk-drag-disabled) {
+  cursor: progress;
+}
+
+:host(:focus-visible) {
+  outline: 2px solid var(--acento);
+  outline-offset: 4px;
+}
+
+.actividad {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  padding: 6px;
+  text-align: center;
+  background: #ffffff;
+  border: 2px solid #1f2328;
+  border-radius: 10px;
+  box-sizing: border-box;
+}
+
+:host(.cdk-drag-dragging) .actividad,
+:host(.cdk-drag-dragging) .contorno {
+  stroke: var(--acento);
+  border-color: var(--acento);
+}
+
+.marcador {
+  position: absolute;
+  top: 3px;
+  left: 6px;
+  font-size: 0.6rem;
+  color: var(--texto-suave);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.nombre {
+  display: -webkit-box;
+  overflow: hidden;
+  font-size: 0.8rem;
+  line-height: 1.2;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow-wrap: anywhere;
+}
+
+.figura {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.contorno {
+  fill: #ffffff;
+  stroke: #1f2328;
+  stroke-width: 2;
+}
+
+.marca {
+  fill: none;
+  stroke: #1f2328;
+  stroke-width: 3;
+}
+
+.sobre {
+  fill: #ffffff;
+  stroke: #1f2328;
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+}
+
+.sobre.relleno {
+  fill: #1f2328;
+  stroke: #ffffff;
+}
+
+.etiqueta-externa {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 50%;
+  width: 110px;
+  transform: translateX(-50%);
+  font-size: 0.75rem;
+  line-height: 1.2;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
