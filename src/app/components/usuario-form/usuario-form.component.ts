@@ -1,14 +1,14 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 import { UsuarioService } from '../../services/usuario.service';
 import { CrearUsuarioRequest, RolAcceso } from '../../models/usuario.model';
 
 @Component({
   selector: 'app-usuario-form',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, RouterLink],
   templateUrl: './usuario-form.component.html',
   styleUrl: './usuario-form.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
