@@ -1,3 +1,5 @@
+<app-ruta-navegacion [tramos]="tramos()" />
+
 <h2>@if (editing()) { Editar arco } @else { Crear arco }</h2>
 
 @if (message()) {
@@ -44,4 +46,5 @@
   <button type="submit" [disabled]="saving()">
     @if (saving()) { Guardando... } @else { Guardar }
   </button>
+  <a [routerLink]="['/pools', poolId(), 'arcos']">Cancelar</a>
 </form>
