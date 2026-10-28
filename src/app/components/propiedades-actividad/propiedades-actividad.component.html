@@ -1,0 +1,43 @@
+<form class="formulario-panel" [formGroup]="form" (ngSubmit)="enviar()">
+  <h3>Actividad</h3>
+
+  <label>
+    Nombre
+    <input formControlName="nombre" />
+  </label>
+  @if (form.controls.nombre.touched && form.controls.nombre.hasError('required')) {
+    <p class="error">El nombre es obligatorio.</p>
+  }
+
+  <label>
+    Tipo
+    <select formControlName="tipoActividad">
+      @for (tipo of tipos; track tipo.valor) {
+        <option [ngValue]="tipo.valor">{{ tipo.etiqueta }}</option>
+      }
+    </select>
+  </label>
+
+  <label>
+    Lane responsable
+    <select formControlName="laneId">
+      @for (lane of lanes(); track lane.id) {
+        <option [ngValue]="lane.id">{{ lane.nombre }}</option>
+      }
+    </select>
+  </label>
+
+  <label>
+    Descripción
+    <textarea formControlName="descripcion" rows="4"></textarea>
+  </label>
+
+  @if (!soloLectura()) {
+    <div class="acciones-panel">
+      <button type="submit" class="primario" [disabled]="guardando()">Guardar</button>
+      @if (puedeEliminar()) {
+        <button type="button" class="peligro" [disabled]="guardando()" (click)="eliminar.emit()">Eliminar</button>
+      }
+    </div>
+  }
+</form>
