@@ -1,13 +1,13 @@
 import { Component, ChangeDetectionStrategy, inject, input, signal, computed } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ProcesoService } from '../../services/proceso.service';
 
 @Component({
   selector: 'app-proceso-form',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, RouterLink],
   templateUrl: './proceso-form.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
