@@ -5,11 +5,13 @@ import { MensajeService } from '../../services/mensaje.service';
 import { PoolService } from '../../services/pool.service';
 import { MensajeResponse } from '../../models/mensaje.model';
 import { PoolResponse } from '../../models/pool.model';
+import { TramoNavegacion } from '../../models/navegacion.model';
+import { RutaNavegacionComponent } from '../ruta-navegacion/ruta-navegacion.component';
 
 @Component({
   selector: 'app-mensaje-list',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, RutaNavegacionComponent],
   templateUrl: './mensaje-list.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -19,6 +21,7 @@ export class MensajeListComponent {
   private readonly router = inject(Router);
 
   procesoId = input.required<string>();
+  tramos = input<TramoNavegacion[]>([]);
 
   protected readonly status = signal<'loading' | 'success' | 'error'>('loading');
   protected readonly items = signal<MensajeResponse[]>([]);
