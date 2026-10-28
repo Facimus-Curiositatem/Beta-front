@@ -1,6 +1,9 @@
 import { TipoActividad } from './actividad.model';
 import { GatewayRequest, TipoGateway } from './gateway.model';
-import { TipoEventoMensaje } from './evento-mensaje.model';
+import { EventoMensajeRequest, TipoEventoMensaje } from './evento-mensaje.model';
+import { PoliticaFalloNotificacion, PoliticaMensajeSinCaso, TipoDestinoExterno } from './mensaje.model';
+import { LaneRequest } from './lane.model';
+import { PoolRequest } from './pool.model';
 
 export type TipoNodoDiagrama = 'ACTIVIDAD' | 'GATEWAY' | 'EVENTO';
 
@@ -83,6 +86,7 @@ export interface ElementoPaleta {
 export type Seleccion =
   | { tipo: 'NODO'; id: number }
   | { tipo: 'ARCO'; id: number }
+  | { tipo: 'MENSAJE'; id: number }
   | { tipo: 'LANE'; id: number }
   | { tipo: 'POOL'; id: number };
 
@@ -119,4 +123,26 @@ export interface CambiosArco {
   destinoId: number;
   etiqueta: string;
   condicion: string;
+}
+
+export type CambiosEvento = Omit<EventoMensajeRequest, 'posicionX' | 'posicionY'>;
+
+export interface CambiosMensaje {
+  nombre: string;
+  contenido: string;
+  claveCorrelacion: string;
+  politicaSinCaso: PoliticaMensajeSinCaso;
+  tipoDestinoExterno: TipoDestinoExterno | null;
+  destinoExterno: string;
+  politicaFalloNotificacion: PoliticaFalloNotificacion | null;
+  actividadErrorId: number | null;
+}
+
+export type CambiosLane = LaneRequest;
+
+export type CambiosPool = PoolRequest;
+
+export interface BorradorMensaje {
+  eventoThrowId: number;
+  poolDestinoId: number;
 }
