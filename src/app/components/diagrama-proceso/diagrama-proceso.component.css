@@ -148,6 +148,61 @@
   stroke-dasharray: 4 4;
 }
 
+.sin-pools {
+  display: grid;
+  justify-items: start;
+  gap: 8px;
+  padding: 24px;
+  border: 2px dashed var(--borde);
+  border-radius: 6px;
+}
+
+.banda[role="button"] {
+  cursor: pointer;
+}
+
+.banda[role="button"]:hover,
+.banda[role="button"]:focus-visible {
+  color: var(--acento);
+  background: var(--acento-suave);
+  outline: none;
+}
+
+.lane-banda.seleccionada {
+  color: var(--acento);
+  background: var(--acento-suave);
+}
+
+.pool.seleccionado {
+  box-shadow: inset 0 0 0 2px var(--acento), 0 0 0 3px var(--acento-suave);
+}
+
+.pool.destino {
+  box-shadow: inset 0 0 0 2px var(--acento), 0 0 0 4px var(--acento-suave);
+}
+
+.pool-vacio.destino-valido {
+  color: #1a7f37;
+  background: rgb(26 127 55 / 0.08);
+  cursor: pointer;
+}
+
+.pool-vacio.destino-invalido {
+  cursor: not-allowed;
+}
+
+.titulo-revision {
+  margin-top: 16px;
+}
+
+.advertencia {
+  margin: 0 0 6px;
+  padding: 4px 8px;
+  font-size: 0.8rem;
+  border-left: 3px solid #bf8700;
+  background: #fff8c5;
+}
+
 .lienzo-scroll {
   overflow: auto;
   padding: 10px;
