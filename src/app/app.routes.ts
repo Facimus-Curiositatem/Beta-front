@@ -1,6 +1,7 @@
 import { adminGuard } from './guards/admin.guard';
 import { Routes } from '@angular/router';
 import { authGuard } from './guards/auth.guard';
+import { lanesPorPoolResolver, poolResolver, tramosResolver } from './resolvers/navegacion.resolver';
 
 export const routes: Routes = [
   {
@@ -94,42 +95,49 @@ export const routes: Routes = [
     path: 'procesos/:procesoId/pools',
     loadComponent: () =>
       import('./components/pool-list/pool-list.component').then((m) => m.PoolListComponent),
-    canActivate: [authGuard]
+    canActivate: [authGuard],
+    resolve: { tramos: tramosResolver('proceso', 'procesoId'), lanesPorPool: lanesPorPoolResolver }
   },
   {
     path: 'procesos/:procesoId/pools/nuevo',
     loadComponent: () =>
       import('./components/pool-form/pool-form.component').then((m) => m.PoolFormComponent),
-    canActivate: [authGuard]
+    canActivate: [authGuard],
+    resolve: { tramos: tramosResolver('proceso', 'procesoId', 'Nuevo pool') }
   },
   {
     path: 'procesos/:procesoId/pools/:id/editar',
     loadComponent: () =>
       import('./components/pool-form/pool-form.component').then((m) => m.PoolFormComponent),
-    canActivate: [authGuard]
+    canActivate: [authGuard],
+    resolve: { tramos: tramosResolver('proceso', 'procesoId', 'Editar pool') }
   },
   {
     path: 'pools/:id/lanes',
     loadComponent: () =>
       import('./components/lane-list/lane-list.component').then((m) => m.LaneListComponent),
-    canActivate: [authGuard]
+    canActivate: [authGuard],
+    resolve: { tramos: tramosResolver('pool', 'id'), pool: poolResolver }
   },
   {
     path: 'pools/:poolId/lanes/nuevo',
     loadComponent: () =>
       import('./components/lane-form/lane-form.component').then((m) => m.LaneFormComponent),
-    canActivate: [authGuard]
+    canActivate: [authGuard],
+    resolve: { tramos: tramosResolver('pool', 'poolId', 'Nuevo lane') }
   },
   {
     path: 'pools/:poolId/lanes/:laneId/editar',
     loadComponent: () =>
       import('./components/lane-form/lane-form.component').then((m) => m.LaneFormComponent),
-    canActivate: [authGuard]
+    canActivate: [authGuard],
+    resolve: { tramos: tramosResolver('pool', 'poolId', 'Editar lane') }
   },
     {
     path: 'lanes/:laneId/actividades',
     loadComponent: () => import('./components/actividad-list/actividad-list.component').then(m => m.ActividadListComponent),
-    canActivate: [authGuard]
+    canActivate: [authGuard],
+    resolve: { tramos: tramosResolver('lane', 'laneId', 'Actividades') }
   },
   {
     path: 'lanes/:laneId/actividades/nuevo',
@@ -144,7 +152,8 @@ export const routes: Routes = [
   {
     path: 'lanes/:laneId/gateways',
     loadComponent: () => import('./components/gateway-list/gateway-list.component').then(m => m.GatewayListComponent),
-    canActivate: [authGuard]
+    canActivate: [authGuard],
+    resolve: { tramos: tramosResolver('lane', 'laneId', 'Gateways') }
   },
   {
     path: 'lanes/:laneId/gateways/nuevo',
@@ -183,7 +192,8 @@ export const routes: Routes = [
   {
     path: 'lanes/:laneId/eventos-mensaje',
     loadComponent: () => import('./components/evento-mensaje-list/evento-mensaje-list.component').then(m => m.EventoMensajeListComponent),
-    canActivate: [authGuard]
+    canActivate: [authGuard],
+    resolve: { tramos: tramosResolver('lane', 'laneId', 'Eventos de mensaje') }
   },
   {
     path: 'lanes/:laneId/eventos-mensaje/nuevo',
@@ -213,7 +223,8 @@ export const routes: Routes = [
   {
     path: 'pools/:poolId/arcos',
     loadComponent: () => import('./components/arco-list/arco-list.component').then(m => m.ArcoListComponent),
-    canActivate: [authGuard]
+    canActivate: [authGuard],
+    resolve: { tramos: tramosResolver('pool', 'poolId', 'Arcos') }
   },
   {
     path: 'pools/:poolId/arcos/nuevo',
