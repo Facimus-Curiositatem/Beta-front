@@ -13,7 +13,20 @@
 }
 
 :host(.cdk-drag-disabled) {
-  cursor: progress;
+  cursor: pointer;
+}
+
+:host(.seleccionado) .actividad {
+  border-color: var(--acento);
+  box-shadow: 0 0 0 4px var(--acento-suave);
+}
+
+:host(.seleccionado) .contorno {
+  stroke: var(--acento);
+}
+
+:host(.seleccionado) .figura {
+  filter: drop-shadow(0 0 3px var(--acento));
 }
 
 :host(:focus-visible) {
