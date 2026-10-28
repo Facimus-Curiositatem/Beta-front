@@ -1,3 +1,5 @@
+<app-ruta-navegacion [tramos]="tramos()" />
+
 <h2>@if (editing()) { Editar evento de mensaje } @else { Crear evento de mensaje }</h2>
 
 @if (message()) {
@@ -45,4 +47,5 @@
   <button type="submit" [disabled]="saving()">
     @if (saving()) { Guardando... } @else { Guardar }
   </button>
+  <a [routerLink]="volverADiagrama() ? ['/procesos', volverADiagrama(), 'diagrama'] : ['/lanes', laneId(), 'eventos-mensaje']">Cancelar</a>
 </form>
