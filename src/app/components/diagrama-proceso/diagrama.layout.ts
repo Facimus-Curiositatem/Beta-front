@@ -258,23 +258,33 @@ export function trazarConexiones(
   };
 
   const nombres = new Map(nodosDe(d).map(n => [n.id, n.nombre]));
-  const descripcion = (origenId: number | null, destinoId: number | null) =>
-    `${nombres.get(origenId ?? -1) ?? ''} → ${nombres.get(destinoId ?? -1) ?? ''}`;
+  const nombreDe = (id: number | null) => nombres.get(id ?? -1) ?? '';
+
+  // Sin Message Catch, el mensaje llega al borde del pool destino, justo frente al Throw.
+  const bordeDePool = (poolId: number, origen: CajaDiagrama): CajaDiagrama | undefined => {
+    const pool = layout.pools.find(p => p.id === poolId);
+    return pool && { tipo: 'EVENTO', x: origen.x + origen.ancho / 2 - 1, ancho: 2, y: pool.top, alto: pool.alto };
+  };
 
   const conexiones: ConexionDiagrama[] = [];
   for (const arco of d.arcos) {
     const origen = caja(arco.origenId);
     const destino = caja(arco.destinoId);
     if (origen && destino) {
-      conexiones.push(conexion(arco.id, 'SECUENCIA', descripcion(arco.origenId, arco.destinoId),
+      conexiones.push(conexion(arco.id, 'SECUENCIA', `${nombreDe(arco.origenId)} → ${nombreDe(arco.destinoId)}`,
         rutaSecuencia(origen, destino), arco.etiqueta || arco.condicion));
     }
   }
   for (const mensaje of d.mensajes) {
     const origen = caja(mensaje.eventoThrowId);
-    const destino = caja(mensaje.eventoCatchId);
+    const destino = mensaje.eventoCatchId !== null
+      ? caja(mensaje.eventoCatchId)
+      : origen && bordeDePool(mensaje.poolDestinoId, origen);
     if (origen && destino) {
-      conexiones.push(conexion(mensaje.id, 'MENSAJE', descripcion(mensaje.eventoThrowId, mensaje.eventoCatchId),
+      const receptor = mensaje.eventoCatchId !== null
+        ? nombreDe(mensaje.eventoCatchId)
+        : d.pools.find(p => p.id === mensaje.poolDestinoId)?.nombre ?? '';
+      conexiones.push(conexion(mensaje.id, 'MENSAJE', `${nombreDe(mensaje.eventoThrowId)} → ${receptor}`,
         rutaMensaje(origen, destino), mensaje.nombre));
     }
   }
