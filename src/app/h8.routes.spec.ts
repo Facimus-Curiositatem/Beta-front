@@ -37,6 +37,10 @@ describe('Rutas administrativas H8', () => {
     const h = await RouterTestingHarness.create();
     await h.navigateByUrl('/roles');
     expect(TestBed.inject(Router).url).toContain('/procesos?aviso=sin-permiso');
+    // La redirección abre el listado real de procesos, que pide la primera página.
+    TestBed.inject(HttpTestingController)
+      .expectOne(req => req.url === '/api/v1/procesos')
+      .flush({ content: [], page: 0, size: 10, totalElements: 0, totalPages: 0 });
   });
   it('vincula id de ruta al formulario de edición', async () => {
     login();
