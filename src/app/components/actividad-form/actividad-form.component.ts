@@ -1,14 +1,16 @@
 import { Component, ChangeDetectionStrategy, inject, input, signal, computed } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ActividadService } from '../../services/actividad.service';
 import { ActividadRequest, TipoActividad } from '../../models/actividad.model';
+import { TramoNavegacion } from '../../models/navegacion.model';
+import { RutaNavegacionComponent } from '../ruta-navegacion/ruta-navegacion.component';
 
 @Component({
   selector: 'app-actividad-form',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, RouterLink, RutaNavegacionComponent],
   templateUrl: './actividad-form.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -20,6 +22,7 @@ export class ActividadFormComponent {
   laneId = input.required<string>();
   id = input<string>();
   volverADiagrama = input<string>();
+  tramos = input<TramoNavegacion[]>([]);
 
   protected readonly tiposActividad: TipoActividad[] = [
     'TAREA', 'USUARIO', 'SERVICIO', 'MANUAL', 'SCRIPT', 'REGLA_NEGOCIO'
