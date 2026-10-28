@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 import { environment } from '../../environments/environment';
@@ -10,8 +10,10 @@ export class UsuarioService {
     private readonly http = inject(HttpClient);
     private readonly url = `${environment.apiUrl}/usuarios`;
 
-    list(): Observable<UsuarioResponse[]> {
-        return this.http.get<UsuarioResponse[]>(this.url);
+    // Sin filtro el backend lista los activos; con activo = false, los desactivados.
+    list(activo?: boolean): Observable<UsuarioResponse[]> {
+        const params = activo === undefined ? undefined : new HttpParams().set('activo', activo);
+        return this.http.get<UsuarioResponse[]>(this.url, { params });
     }
 
     get(id: number): Observable<UsuarioResponse> {
