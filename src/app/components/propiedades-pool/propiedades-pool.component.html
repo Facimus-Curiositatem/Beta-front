@@ -1,0 +1,46 @@
+<form class="formulario-panel" [formGroup]="form" (ngSubmit)="enviar()">
+  <h3>@if (esNuevo()) { Nuevo pool } @else { Pool }</h3>
+
+  <label>
+    Nombre del participante
+    <input formControlName="nombre" />
+  </label>
+  @if (form.controls.nombre.touched && form.controls.nombre.hasError('required')) {
+    <p class="error">El nombre es obligatorio.</p>
+  }
+
+  <label>
+    Tipo de participante
+    <select formControlName="tipoParticipante">
+      @for (tipo of tipos; track tipo.valor) {
+        <option [ngValue]="tipo.valor">{{ tipo.etiqueta }}</option>
+      }
+    </select>
+  </label>
+
+  <label class="casilla">
+    <input type="checkbox" formControlName="cajaNegra" />
+    Caja negra (participante externo, sin elementos internos)
+  </label>
+  @if (tieneLanes()) {
+    <p class="ayuda">Un pool con lanes no puede ser caja negra.</p>
+  }
+
+  @if (!soloLectura()) {
+    @if (!esNuevo() && !form.controls.cajaNegra.value) {
+      <div class="acciones-panel">
+        <button type="button" [disabled]="guardando()" (click)="agregarLane.emit()">+ Agregar lane</button>
+      </div>
+    }
+    <div class="acciones-panel">
+      <button type="submit" class="primario" [disabled]="guardando()">
+        @if (esNuevo()) { Crear pool } @else { Guardar }
+      </button>
+      @if (esNuevo()) {
+        <button type="button" [disabled]="guardando()" (click)="cancelar.emit()">Cancelar</button>
+      } @else if (puedeEliminar()) {
+        <button type="button" class="peligro" [disabled]="guardando()" (click)="eliminar.emit()">Eliminar</button>
+      }
+    </div>
+  }
+</form>
