@@ -37,7 +37,13 @@
             </p>
           } @else {
             <div class="lienzo-scroll">
-              <div #lienzo class="lienzo" [style.width.px]="l.ancho" [style.height.px]="l.alto">
+              <div
+                #lienzo
+                class="lienzo"
+                [class.conectando]="conectandoDesde() !== null"
+                [style.width.px]="l.ancho"
+                [style.height.px]="l.alto"
+                (pointermove)="moverPuntero($event)">
                 @for (pool of l.pools; track pool.id) {
                   <section
                     class="pool"
@@ -78,6 +84,10 @@
                               <app-nodo-diagrama
                                 [nodo]="nodo"
                                 [class.seleccionado]="seleccion()?.tipo === 'NODO' && seleccion()?.id === nodo.id"
+                                [class.origen-conexion]="conectandoDesde()?.id === nodo.id"
+                                [class.destino-valido]="motivosDestino().get(nodo.id) === null"
+                                [class.destino-invalido]="!!motivosDestino().get(nodo.id) && conectandoDesde()?.id !== nodo.id"
+                                [attr.title]="motivosDestino().get(nodo.id) || null"
                                 [style.left.px]="nodo.x"
                                 [style.top.px]="nodo.y"
                                 [style.width.px]="nodo.ancho"
@@ -93,6 +103,20 @@
                                 (keydown)="teclaEnNodo($event, nodo)"
                                 tabindex="0"
                                 [attr.aria-label]="nombresTipo[nodo.tipo] + ' ' + nodo.nombre" />
+
+                              @if (puedeEditar() && !conectandoDesde() && !arrastrando()
+                                && seleccion()?.tipo === 'NODO' && seleccion()?.id === nodo.id) {
+                                <div
+                                  class="menu-contextual"
+                                  [style.left.px]="nodo.x + nodo.ancho + 8"
+                                  [style.top.px]="nodo.y"
+                                  (click)="$event.stopPropagation()">
+                                  <button type="button" (click)="iniciarConexion(nodo, $event)">→ Conectar</button>
+                                  @if (puedeEliminar()) {
+                                    <button type="button" class="peligro" (click)="pedirEliminacion()">Eliminar</button>
+                                  }
+                                </div>
+                              }
                             }
 
                             @if (nodoBorrador(); as nb) {
@@ -126,9 +150,17 @@
                   </section>
                 }
 
-                <svg class="conexiones" [attr.width]="l.ancho" [attr.height]="l.alto" aria-hidden="true">
+                <svg class="conexiones" [attr.width]="l.ancho" [attr.height]="l.alto" role="group" aria-label="Conexiones">
                   @for (c of conexiones(); track c.clave) {
-                    <g [class.mensaje]="c.tipo === 'MENSAJE'">
+                    <g
+                      [class.mensaje]="c.tipo === 'MENSAJE'"
+                      [class.seleccionado]="c.tipo === 'SECUENCIA' && seleccion()?.tipo === 'ARCO' && seleccion()?.id === c.id"
+                      [attr.tabindex]="c.tipo === 'SECUENCIA' ? 0 : null"
+                      [attr.role]="c.tipo === 'SECUENCIA' ? 'button' : null"
+                      [attr.aria-label]="(c.tipo === 'SECUENCIA' ? 'Arco ' : 'Mensaje ') + c.descripcion"
+                      (click)="seleccionarConexion(c, $event)"
+                      (keydown)="teclaEnConexion($event, c)">
+                      <polyline class="zona-clic" [attr.points]="c.trazo" />
                       <polyline class="linea" [attr.points]="c.trazo" />
                       <polygon class="punta" [attr.points]="c.punta" />
                       @if (c.tipo === 'MENSAJE') {
@@ -138,6 +170,9 @@
                         <text class="etiqueta" [attr.x]="c.posicionEtiqueta.x" [attr.y]="c.posicionEtiqueta.y - 6">{{ c.etiqueta }}</text>
                       }
                     </g>
+                  }
+                  @if (lineaConexion(); as lc) {
+                    <line class="linea-temporal" [attr.x1]="lc.x1" [attr.y1]="lc.y1" [attr.x2]="lc.x2" [attr.y2]="lc.y2" />
                   }
                 </svg>
               </div>
@@ -171,6 +206,18 @@
             [guardando]="guardando()"
             (guardar)="guardarGateway($event)"
             (eliminar)="pedirEliminacion()" />
+        } @else if (datosArco(); as arco) {
+          <app-propiedades-arco
+            [clave]="arco.clave"
+            [datos]="arco.datos"
+            [nodos]="nodosDelArco()"
+            [esNuevo]="borradorArco() !== null"
+            [soloLectura]="!puedeEditar()"
+            [puedeEliminar]="puedeEliminar()"
+            [guardando]="guardando()"
+            (guardar)="guardarArco($event)"
+            (eliminar)="pedirEliminacion()"
+            (cancelar)="cancelarArco()" />
         } @else {
           <h3>Propiedades</h3>
           @if (puedeEditar()) {
