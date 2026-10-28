@@ -3,6 +3,99 @@
   color: var(--texto-suave);
 }
 
+.modelador {
+  display: grid;
+  grid-template-columns: 170px minmax(0, 1fr) 280px;
+  gap: 12px;
+  align-items: start;
+}
+
+.modelador.solo-lectura {
+  grid-template-columns: minmax(0, 1fr) 280px;
+}
+
+.columna-paleta,
+.panel {
+  position: sticky;
+  top: 12px;
+}
+
+.columna-lienzo {
+  min-width: 0;
+}
+
+.panel {
+  padding: 12px;
+  border: 1px solid var(--borde);
+  border-radius: 6px;
+  background: #ffffff;
+}
+
+.panel h3 {
+  margin: 0 0 8px;
+  font-size: 1rem;
+}
+
+.estado {
+  min-height: 1.4em;
+  margin: 0 0 6px;
+  font-size: 0.85rem;
+  color: var(--texto-suave);
+}
+
+.lane-contenido.colocando {
+  cursor: crosshair;
+}
+
+.lane-contenido.destino,
+.lane-contenido.colocando:hover {
+  background: rgb(10 91 181 / 0.06);
+  outline: 2px dashed var(--acento);
+  outline-offset: -2px;
+}
+
+.colocar-aqui {
+  position: absolute;
+  top: 4px;
+  right: 8px;
+  z-index: 4;
+  padding: 2px 8px;
+  font-size: 0.75rem;
+}
+
+.borrador {
+  position: absolute;
+  z-index: 4;
+}
+
+.borrador .fantasma {
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.nombre-borrador {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 5;
+  width: 120px;
+  padding: 3px 6px;
+  font: inherit;
+  font-size: 0.8rem;
+  border: 2px solid var(--acento);
+  border-radius: 4px;
+  transform: translate(-50%, -50%);
+}
+
+.nombre-borrador.debajo {
+  top: calc(100% + 6px);
+  transform: translateX(-50%);
+}
+
 .lienzo-scroll {
   overflow: auto;
   padding: 10px;
@@ -90,16 +183,6 @@
 
 .lane-contenido:last-child {
   border-bottom: none;
-}
-
-.lane-acciones {
-  position: absolute;
-  top: 4px;
-  right: 8px;
-  z-index: 1;
-  display: flex;
-  gap: 10px;
-  font-size: 0.75rem;
 }
 
 .conexiones {
