@@ -1,5 +1,5 @@
 import { TipoActividad } from './actividad.model';
-import { TipoGateway } from './gateway.model';
+import { GatewayRequest, TipoGateway } from './gateway.model';
 import { TipoEventoMensaje } from './evento-mensaje.model';
 
 export type TipoNodoDiagrama = 'ACTIVIDAD' | 'GATEWAY' | 'EVENTO';
@@ -69,3 +69,39 @@ export interface PosicionNodo {
   x: number;
   y: number;
 }
+
+export type TipoElementoPaleta = TipoNodoDiagrama | 'LANE' | 'POOL';
+
+export interface ElementoPaleta {
+  tipo: TipoElementoPaleta;
+  subtipo?: NodoDiagrama['subtipo'];
+  etiqueta: string;
+}
+
+export type Seleccion =
+  | { tipo: 'NODO'; id: number }
+  | { tipo: 'ARCO'; id: number }
+  | { tipo: 'LANE'; id: number }
+  | { tipo: 'POOL'; id: number };
+
+export interface BorradorNodo {
+  tipo: TipoNodoDiagrama;
+  subtipo: NodoDiagrama['subtipo'];
+  laneId: number;
+  x: number;
+  y: number;
+}
+
+export interface OpcionLane {
+  id: number;
+  nombre: string;
+}
+
+export interface CambiosActividad {
+  nombre: string;
+  descripcion: string;
+  tipoActividad: TipoActividad;
+  laneId: number;
+}
+
+export type CambiosGateway = Pick<GatewayRequest, 'nombre' | 'tipoGateway'>;
