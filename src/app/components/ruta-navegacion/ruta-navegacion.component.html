@@ -1,0 +1,12 @@
+<nav aria-label="Ruta de navegación">
+  @for (tramo of tramos(); track $index; let primero = $first, ultimo = $last) {
+    @if (!primero) {
+      <span aria-hidden="true"> / </span>
+    }
+    @if (tramo.enlace && !ultimo) {
+      <a [routerLink]="tramo.enlace">{{ tramo.etiqueta }}</a>
+    } @else {
+      <span [attr.aria-current]="ultimo ? 'page' : null">{{ tramo.etiqueta }}</span>
+    }
+  }
+</nav>
