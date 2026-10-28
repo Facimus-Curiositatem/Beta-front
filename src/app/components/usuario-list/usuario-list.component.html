@@ -2,6 +2,16 @@
 <a routerLink="/usuarios/nuevo">Nuevo usuario</a>
 <a routerLink="/usuarios/invitar">Invitar usuario</a>
 
+<label>
+  Mostrar
+  <select [formControl]="vigencia">
+    <option value="activos">Activos</option>
+    <option value="desactivados">Desactivados</option>
+  </select>
+</label>
+
+<p aria-live="polite">{{ aviso() }}</p>
+
 @if (message()) {
   <p class="error">{{ message() }}</p>
 }
@@ -33,9 +43,11 @@
             <td>{{ u.activo ? 'Activo' : 'Inactivo' }}</td>
             <td>
               <a [routerLink]="['/usuarios', u.id, 'editar']">Editar</a>
-              <button type="button" class="desactivar" [disabled]="!u.activo" (click)="desactivar(u)">
-                Desactivar
-              </button>
+              @if (u.activo) {
+                <button type="button" class="desactivar" (click)="desactivar(u)">Desactivar</button>
+              } @else {
+                <button type="button" class="reactivar" (click)="reactivar(u)">Reactivar</button>
+              }
             </td>
           </tr>
         } @empty {
