@@ -23,15 +23,19 @@
 
       <a [routerLink]="['/procesos', d.proceso.id, 'diagrama']">Diagrama</a>
       <a [routerLink]="['/procesos', d.proceso.id, 'pools']">Pools y lanes</a>
-      <a [routerLink]="['/procesos', d.proceso.id, 'editar']">Editar</a>
+      @if (!soloLectura()) {
+        <a [routerLink]="['/procesos', d.proceso.id, 'editar']">Editar</a>
+      }
       <a [routerLink]="['/procesos', d.proceso.id, 'mensajes']">Mensajes</a>
       @if (tokens.esAdministrador()) {
         <a [routerLink]="['/procesos', d.proceso.id, 'compartir']">Compartir</a>
       }
-      @if (d.proceso.estado === 'BORRADOR') {
+      @if (d.proceso.estado === 'BORRADOR' && !soloLectura()) {
         <button (click)="publicar()">Publicar</button>
       }
-      <button (click)="eliminar()">Eliminar</button>
+      @if (tokens.esAdministrador()) {
+        <button (click)="confirmarEliminacion()">Eliminar</button>
+      }
 
       <h3>Historial de cambios</h3>
       <ul>
