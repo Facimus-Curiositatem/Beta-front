@@ -1,0 +1,52 @@
+<nav class="paleta" aria-label="Paleta de figuras">
+  @for (grupo of grupos; track grupo.titulo) {
+    <h3>{{ grupo.titulo }}</h3>
+    <div class="elementos">
+      @for (elemento of grupo.elementos; track elemento.etiqueta) {
+        <button
+          type="button"
+          class="elemento"
+          [class.elegido]="elegido() === elemento"
+          [disabled]="deshabilitada()"
+          [attr.draggable]="!deshabilitada()"
+          [attr.aria-pressed]="elegido() === elemento"
+          [title]="'Arrastra al lienzo o pulsa para colocar: ' + elemento.etiqueta"
+          (dragstart)="iniciarArrastre($event, elemento)"
+          (dragend)="arrastreTerminado.emit()"
+          (click)="elegir.emit(elemento)">
+          <svg class="icono" viewBox="0 0 32 24" aria-hidden="true">
+            @switch (elemento.tipo) {
+              @case ('ACTIVIDAD') {
+                <rect x="3" y="3" width="26" height="18" rx="4" />
+              }
+              @case ('GATEWAY') {
+                <polygon points="16,1 27,12 16,23 5,12" />
+                @switch (elemento.subtipo) {
+                  @case ('EXCLUSIVO') { <path class="marca" d="M13 9 L19 15 M19 9 L13 15" /> }
+                  @case ('PARALELO') { <path class="marca" d="M16 7 V17 M11 12 H21" /> }
+                  @case ('INCLUSIVO') { <circle class="marca" cx="16" cy="12" r="4" /> }
+                }
+              }
+              @case ('EVENTO') {
+                <circle cx="16" cy="12" r="9" />
+                @if (elemento.subtipo !== 'CATCH_INICIO') {
+                  <circle cx="16" cy="12" r="7" />
+                }
+                <path class="sobre" [class.relleno]="elemento.subtipo === 'THROW'" d="M12 9.5 H20 V14.5 H12 Z M12 9.5 L16 12.5 L20 9.5" />
+              }
+              @case ('LANE') {
+                <rect x="2" y="3" width="28" height="18" />
+                <path class="marca" d="M7 3 V21 M7 12 H30" />
+              }
+              @case ('POOL') {
+                <rect x="2" y="3" width="28" height="18" />
+                <path class="marca" d="M7 3 V21" />
+              }
+            }
+          </svg>
+          <span>{{ elemento.etiqueta }}</span>
+        </button>
+      }
+    </div>
+  }
+</nav>
