@@ -50,6 +50,10 @@ export class TokenService {
     return this.tieneSesion() && this.claims()?.rol === 'ADMINISTRADOR';
   }
 
+  rol(): string | null {
+    return this.tieneSesion() ? this.claims()?.rol ?? null : null;
+  }
+
   removeToken(): void {
     localStorage.removeItem(this.TOKEN_KEY);
     this.token.set(null);

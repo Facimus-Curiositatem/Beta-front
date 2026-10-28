@@ -1,0 +1,34 @@
+<form class="formulario-panel" [formGroup]="form" (ngSubmit)="enviar()">
+  <h3>Gateway</h3>
+
+  <label>
+    Nombre
+    <input formControlName="nombre" />
+  </label>
+  @if (form.controls.nombre.touched && form.controls.nombre.hasError('required')) {
+    <p class="error">El nombre es obligatorio.</p>
+  }
+
+  <label>
+    Tipo
+    <select formControlName="tipoGateway">
+      @for (tipo of tipos; track tipo.valor) {
+        <option [ngValue]="tipo.valor">{{ tipo.etiqueta }}</option>
+      }
+    </select>
+  </label>
+  @if (form.controls.tipoGateway.value === 'PARALELO' && gateway().tipoGateway !== 'PARALELO') {
+    <p class="ayuda">Al guardar como paralelo se eliminan las condiciones de sus arcos salientes.</p>
+  }
+
+  <p class="ayuda">Lane: {{ lane() }}. Un gateway no cambia de lane; arrástralo dentro de su banda.</p>
+
+  @if (!soloLectura()) {
+    <div class="acciones-panel">
+      <button type="submit" class="primario" [disabled]="guardando()">Guardar</button>
+      @if (puedeEliminar()) {
+        <button type="button" class="peligro" [disabled]="guardando()" (click)="eliminar.emit()">Eliminar</button>
+      }
+    </div>
+  }
+</form>

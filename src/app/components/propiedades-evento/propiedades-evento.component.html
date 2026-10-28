@@ -1,0 +1,57 @@
+<form class="formulario-panel" [formGroup]="form" (ngSubmit)="enviar()">
+  <h3>@if (esNuevo()) { Nuevo evento de mensaje } @else { Evento de mensaje }</h3>
+
+  <label>
+    Nombre del mensaje
+    <input formControlName="nombre" />
+  </label>
+  @if (form.controls.nombre.touched && form.controls.nombre.hasError('required')) {
+    <p class="error">El nombre es obligatorio.</p>
+  }
+  <p class="ayuda">El Throw y el Catch que se corresponden deben llamarse igual.</p>
+
+  <label>
+    Tipo
+    <select formControlName="tipoEvento">
+      @for (tipo of tipos; track tipo.valor) {
+        <option [ngValue]="tipo.valor">{{ tipo.etiqueta }}</option>
+      }
+    </select>
+  </label>
+
+  <label>
+    Contenido (campos y tipo de dato)
+    <textarea formControlName="contenido" rows="3" placeholder="Ej.: idPedido: número, fecha: fecha"></textarea>
+  </label>
+  @if (form.controls.contenido.touched && form.controls.contenido.hasError('required')) {
+    <p class="error">Documenta el contenido del mensaje.</p>
+  }
+
+  <label>
+    Clave de correlación
+    <input formControlName="claveCorrelacion" placeholder="Ej.: idPedido" />
+  </label>
+  @if (form.controls.claveCorrelacion.touched && form.controls.claveCorrelacion.hasError('required')) {
+    <p class="error">La clave de correlación es obligatoria.</p>
+  }
+
+  @if (form.controls.tipoEvento.value !== 'THROW') {
+    <label class="casilla">
+      <input type="checkbox" formControlName="origenExterno" />
+      El mensaje llega desde fuera del diagrama
+    </label>
+  }
+
+  @if (!soloLectura()) {
+    <div class="acciones-panel">
+      <button type="submit" class="primario" [disabled]="guardando()">
+        @if (esNuevo()) { Crear evento } @else { Guardar }
+      </button>
+      @if (esNuevo()) {
+        <button type="button" [disabled]="guardando()" (click)="cancelar.emit()">Cancelar</button>
+      } @else if (puedeEliminar()) {
+        <button type="button" class="peligro" [disabled]="guardando()" (click)="eliminar.emit()">Eliminar</button>
+      }
+    </div>
+  }
+</form>

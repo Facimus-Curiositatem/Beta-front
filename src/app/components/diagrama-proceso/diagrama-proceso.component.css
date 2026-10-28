@@ -1,0 +1,334 @@
+.ayuda {
+  font-size: 0.9rem;
+  color: var(--texto-suave);
+}
+
+.modelador {
+  display: grid;
+  grid-template-columns: 170px minmax(0, 1fr) 280px;
+  gap: 12px;
+  align-items: start;
+}
+
+.modelador.solo-lectura {
+  grid-template-columns: minmax(0, 1fr) 280px;
+}
+
+.columna-paleta,
+.panel {
+  position: sticky;
+  top: 12px;
+}
+
+.columna-lienzo {
+  min-width: 0;
+}
+
+.panel {
+  padding: 12px;
+  border: 1px solid var(--borde);
+  border-radius: 6px;
+  background: #ffffff;
+}
+
+.panel h3 {
+  margin: 0 0 8px;
+  font-size: 1rem;
+}
+
+.estado {
+  min-height: 1.4em;
+  margin: 0 0 6px;
+  font-size: 0.85rem;
+  color: var(--texto-suave);
+}
+
+.lane-contenido.colocando {
+  cursor: crosshair;
+}
+
+.lane-contenido.destino,
+.lane-contenido.colocando:hover {
+  background: rgb(10 91 181 / 0.06);
+  outline: 2px dashed var(--acento);
+  outline-offset: -2px;
+}
+
+.colocar-aqui {
+  position: absolute;
+  top: 4px;
+  right: 8px;
+  z-index: 4;
+  padding: 2px 8px;
+  font-size: 0.75rem;
+}
+
+.borrador {
+  position: absolute;
+  z-index: 4;
+}
+
+.borrador .fantasma {
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.nombre-borrador {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 5;
+  width: 120px;
+  padding: 3px 6px;
+  font: inherit;
+  font-size: 0.8rem;
+  border: 2px solid var(--acento);
+  border-radius: 4px;
+  transform: translate(-50%, -50%);
+}
+
+.nombre-borrador.debajo {
+  top: calc(100% + 6px);
+  transform: translateX(-50%);
+}
+
+.menu-contextual {
+  position: absolute;
+  z-index: 4;
+  display: grid;
+  gap: 4px;
+  padding: 4px;
+  background: #ffffff;
+  border: 1px solid var(--borde);
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 0.12);
+}
+
+.menu-contextual button {
+  padding: 2px 8px;
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+
+.lienzo.conectando {
+  cursor: crosshair;
+}
+
+.zona-clic {
+  fill: none;
+  stroke: transparent;
+  stroke-width: 12;
+  pointer-events: stroke;
+  cursor: pointer;
+}
+
+.conexiones g:focus {
+  outline: none;
+}
+
+.conexiones g.seleccionado .linea,
+.conexiones g:focus-visible .linea {
+  stroke: var(--acento);
+  stroke-width: 2.5;
+}
+
+.conexiones g.seleccionado .punta,
+.conexiones g:focus-visible .punta {
+  fill: var(--acento);
+  stroke: var(--acento);
+}
+
+.linea-temporal {
+  stroke: var(--acento);
+  stroke-width: 1.5;
+  stroke-dasharray: 4 4;
+}
+
+.sin-pools {
+  display: grid;
+  justify-items: start;
+  gap: 8px;
+  padding: 24px;
+  border: 2px dashed var(--borde);
+  border-radius: 6px;
+}
+
+.banda[role="button"] {
+  cursor: pointer;
+}
+
+.banda[role="button"]:hover,
+.banda[role="button"]:focus-visible {
+  color: var(--acento);
+  background: var(--acento-suave);
+  outline: none;
+}
+
+.lane-banda.seleccionada {
+  color: var(--acento);
+  background: var(--acento-suave);
+}
+
+.pool.seleccionado {
+  box-shadow: inset 0 0 0 2px var(--acento), 0 0 0 3px var(--acento-suave);
+}
+
+.pool.destino {
+  box-shadow: inset 0 0 0 2px var(--acento), 0 0 0 4px var(--acento-suave);
+}
+
+.pool-vacio.destino-valido {
+  color: #1a7f37;
+  background: rgb(26 127 55 / 0.08);
+  cursor: pointer;
+}
+
+.pool-vacio.destino-invalido {
+  cursor: not-allowed;
+}
+
+.titulo-revision {
+  margin-top: 16px;
+}
+
+.advertencia {
+  margin: 0 0 6px;
+  padding: 4px 8px;
+  font-size: 0.8rem;
+  border-left: 3px solid #bf8700;
+  background: #fff8c5;
+}
+
+.lienzo-scroll {
+  overflow: auto;
+  padding: 10px;
+  border: 1px solid var(--borde);
+  border-radius: 6px;
+  background-color: #fafbfc;
+}
+
+.lienzo {
+  position: relative;
+  background-image: radial-gradient(var(--borde) 1px, transparent 1px);
+  background-size: 10px 10px;
+}
+
+/* Los bordes van como sombras internas para no desplazar las coordenadas de los nodos. */
+.pool {
+  position: absolute;
+  left: 0;
+  right: 0;
+  background: #ffffff;
+  box-shadow: inset 0 0 0 2px #1f2328;
+}
+
+.pool.caja-negra {
+  background: repeating-linear-gradient(135deg, #f6f8fa 0 6px, #ffffff 6px 12px);
+}
+
+/* Nombres en vertical, leídos de abajo hacia arriba como en BPMN. */
+.banda {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  overflow: hidden;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  box-sizing: border-box;
+}
+
+.pool-banda {
+  top: 0;
+  bottom: 0;
+  left: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.lane-banda {
+  left: 30px;
+  border-top: 1px solid var(--borde);
+  border-bottom: 1px solid var(--borde);
+}
+
+.pool-vacio {
+  position: absolute;
+  inset: 0 0 0 30px;
+  display: flex;
+  align-items: center;
+  padding-left: 16px;
+  color: var(--texto-suave);
+  box-shadow: inset 1px 0 0 #1f2328;
+}
+
+.lanes-contenido {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 60px;
+  box-shadow: inset 1px 0 0 var(--borde);
+}
+
+.lane-contenido {
+  position: absolute;
+  left: 0;
+  right: 0;
+  border-bottom: 1px solid var(--borde);
+  box-sizing: border-box;
+}
+
+.lane-contenido:last-child {
+  border-bottom: none;
+}
+
+.conexiones {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.linea {
+  fill: none;
+  stroke: #1f2328;
+  stroke-width: 1.5;
+}
+
+.punta {
+  fill: #1f2328;
+  stroke: #1f2328;
+  stroke-width: 1;
+}
+
+.mensaje .linea {
+  stroke-dasharray: 6 4;
+}
+
+.mensaje .punta,
+.mensaje .inicio {
+  fill: #ffffff;
+  stroke: #1f2328;
+  stroke-width: 1.5;
+}
+
+.etiqueta {
+  font-size: 11px;
+  text-anchor: middle;
+  fill: #1f2328;
+  paint-order: stroke;
+  stroke: #ffffff;
+  stroke-width: 3px;
+}

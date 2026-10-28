@@ -3,6 +3,7 @@
 <h2>Pools del proceso</h2>
 
 <a [routerLink]="['/procesos', procesoId(), 'pools', 'nuevo']">Crear pool</a>
+<a [routerLink]="['/procesos', procesoId(), 'diagrama']">Ver diagrama</a>
 
 @switch (status()) {
   @case ('loading') {

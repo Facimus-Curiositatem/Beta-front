@@ -21,3 +21,84 @@ main {
 .error {
   color: var(--peligro);
 }
+
+/* El modelador usa todo el ancho: paleta, lienzo y panel de propiedades. */
+main:has(app-diagrama-proceso) {
+  max-width: none;
+}
+
+.formulario-panel {
+  display: grid;
+  gap: 10px;
+}
+
+.formulario-panel h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.formulario-panel label {
+  display: grid;
+  gap: 4px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.formulario-panel label.casilla {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 400;
+}
+
+.formulario-panel input:not([type="checkbox"]),
+.formulario-panel select,
+.formulario-panel textarea {
+  width: 100%;
+  padding: 5px 8px;
+  font: inherit;
+  font-weight: 400;
+  border: 1px solid var(--borde);
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.formulario-panel textarea {
+  resize: vertical;
+}
+
+.formulario-panel .error,
+.formulario-panel .ayuda {
+  margin: 0;
+  font-size: 0.8rem;
+}
+
+.formulario-panel .ayuda {
+  color: var(--texto-suave);
+}
+
+.acciones-panel {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+button.primario,
+button.peligro {
+  padding: 5px 12px;
+  font: inherit;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button.primario {
+  color: #ffffff;
+  background: var(--acento);
+  border: 1px solid var(--acento);
+}
+
+button.peligro {
+  color: var(--peligro);
+  background: #ffffff;
+  border: 1px solid var(--peligro);
+}

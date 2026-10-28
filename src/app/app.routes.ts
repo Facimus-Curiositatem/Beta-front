@@ -92,6 +92,13 @@ export const routes: Routes = [
     canActivate: [authGuard]
   },
   {
+    path: 'procesos/:id/diagrama',
+    loadComponent: () =>
+      import('./components/diagrama-proceso/diagrama-proceso.component').then((m) => m.DiagramaProcesoComponent),
+    canActivate: [authGuard],
+    resolve: { tramos: tramosResolver('proceso', 'id', 'Diagrama') }
+  },
+  {
     path: 'procesos/:procesoId/pools',
     loadComponent: () =>
       import('./components/pool-list/pool-list.component').then((m) => m.PoolListComponent),

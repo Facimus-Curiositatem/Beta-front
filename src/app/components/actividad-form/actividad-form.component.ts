@@ -19,6 +19,7 @@ export class ActividadFormComponent {
 
   laneId = input.required<string>();
   id = input<string>();
+  volverADiagrama = input<string>();
 
   protected readonly tiposActividad: TipoActividad[] = [
     'TAREA', 'USUARIO', 'SERVICIO', 'MANUAL', 'SCRIPT', 'REGLA_NEGOCIO'
@@ -69,7 +70,9 @@ export class ActividadFormComponent {
       : this.actividadService.crear(Number(this.laneId()), body);
 
     request$.subscribe({
-      next: () => this.router.navigate(['/lanes', this.laneId(), 'actividades']),
+      next: () => this.router.navigate(
+        this.volverADiagrama() ? ['/procesos', this.volverADiagrama(), 'diagrama'] : ['/lanes', this.laneId(), 'actividades']
+      ),
       error: (err: HttpErrorResponse) => {
         this.saving.set(false);
         this.message.set(err.error?.detail ?? 'No fue posible guardar la actividad');

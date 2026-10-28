@@ -1,0 +1,47 @@
+<form class="formulario-panel" [formGroup]="form" (ngSubmit)="enviar()">
+  <h3>@if (esNuevo()) { Nuevo lane } @else { Lane }</h3>
+  <p class="ayuda">Pool: {{ pool() }}</p>
+
+  <label>
+    Nombre
+    <input formControlName="nombre" />
+  </label>
+  @if (form.controls.nombre.touched && form.controls.nombre.hasError('required')) {
+    <p class="error">El nombre es obligatorio.</p>
+  }
+
+  <label>
+    Rol de proceso responsable
+    <select formControlName="rolProcesoId">
+      <option [ngValue]="0" disabled>Elige un rol</option>
+      @for (rol of roles(); track rol.id) {
+        <option [ngValue]="rol.id">{{ rol.nombre }}</option>
+      }
+    </select>
+  </label>
+  @if (form.controls.rolProcesoId.touched && form.controls.rolProcesoId.hasError('min')) {
+    <p class="error">Cada lane se asocia a un rol de proceso.</p>
+  }
+  @if (roles().length === 0) {
+    <p class="ayuda">No hay roles de proceso. Un administrador los crea en «Roles de proceso».</p>
+  }
+
+  @if (!soloLectura()) {
+    @if (!esNuevo()) {
+      <div class="acciones-panel">
+        <button type="button" [disabled]="guardando() || !puedeSubir()" (click)="mover.emit(-1)">↑ Subir lane</button>
+        <button type="button" [disabled]="guardando() || !puedeBajar()" (click)="mover.emit(1)">↓ Bajar lane</button>
+      </div>
+    }
+    <div class="acciones-panel">
+      <button type="submit" class="primario" [disabled]="guardando()">
+        @if (esNuevo()) { Crear lane } @else { Guardar }
+      </button>
+      @if (esNuevo()) {
+        <button type="button" [disabled]="guardando()" (click)="cancelar.emit()">Cancelar</button>
+      } @else if (puedeEliminar()) {
+        <button type="button" class="peligro" [disabled]="guardando()" (click)="eliminar.emit()">Eliminar</button>
+      }
+    </div>
+  }
+</form>

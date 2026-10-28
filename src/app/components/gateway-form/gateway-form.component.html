@@ -22,16 +22,6 @@
     </select>
   </label>
 
-  <label>
-    Posición X
-    <input type="number" formControlName="posicionX">
-  </label>
-
-  <label>
-    Posición Y
-    <input type="number" formControlName="posicionY">
-  </label>
-
   <button type="submit" [disabled]="saving()">
     @if (saving()) { Guardando... } @else { Guardar }
   </button>

@@ -1,0 +1,334 @@
+<app-ruta-navegacion [tramos]="tramos()" />
+
+<h2>Diagrama del proceso</h2>
+
+@switch (status()) {
+  @case ('loading') {
+    <p>Cargando diagrama...</p>
+  }
+  @case ('error') {
+    <p class="error">{{ message() }}</p>
+    <button (click)="load()">Reintentar</button>
+  }
+  @case ('success') {
+    <div class="modelador" [class.solo-lectura]="!puedeEditar()" (keydown.escape)="escape()">
+      @if (puedeEditar()) {
+        <app-paleta-modelado
+          class="columna-paleta"
+          [elegido]="pendiente()"
+          (elegir)="elegirDePaleta($event)"
+          (arrastreIniciado)="iniciarArrastrePaleta($event)"
+          (arrastreTerminado)="terminarArrastrePaleta()" />
+      }
+
+      <div class="columna-lienzo">
+        <p class="estado" aria-live="polite">
+          @if (guardando()) { Guardando… } @else if (creando()) { Creando… } @else { {{ aviso() }} }
+        </p>
+        @if (message()) {
+          <p class="error" role="alert">{{ message() }}</p>
+        }
+
+        @if (layout(); as l) {
+          @if (l.pools.length === 0) {
+            <div class="sin-pools" (dragover)="sobreLienzo($event)" (drop)="soltarEnLienzo($event)">
+              <p>Este proceso todavía no tiene pools.</p>
+              @if (puedeEditar()) {
+                <button type="button" class="primario" (click)="abrirNuevoPool()">+ Agregar pool</button>
+              }
+            </div>
+          } @else {
+            <div class="lienzo-scroll" (dragover)="sobreLienzo($event)" (drop)="soltarEnLienzo($event)">
+              <div
+                #lienzo
+                class="lienzo"
+                [class.conectando]="conectandoDesde() !== null"
+                [style.width.px]="l.ancho"
+                [style.height.px]="l.alto"
+                (pointermove)="moverPuntero($event)">
+                @for (pool of l.pools; track pool.id) {
+                  <section
+                    class="pool"
+                    [class.caja-negra]="pool.cajaNegra"
+                    [class.destino]="poolDestino() === pool.id"
+                    [class.seleccionado]="seleccion()?.tipo === 'POOL' && seleccion()?.id === pool.id"
+                    [style.top.px]="pool.top"
+                    [style.height.px]="pool.alto"
+                    [attr.aria-label]="'Pool ' + pool.nombre"
+                    (dragover)="sobrePool($event, pool)"
+                    (drop)="soltarEnPool($event, pool)"
+                    (click)="clicEnPool($event, pool)">
+                    <div
+                      class="banda pool-banda"
+                      role="button"
+                      tabindex="0"
+                      [attr.aria-label]="'Propiedades del pool ' + pool.nombre"
+                      (click)="seleccionarPool(pool, $event)"
+                      (keydown.enter)="seleccionarPool(pool, $event)">
+                      {{ pool.nombre }}
+                    </div>
+
+                    @if (pendiente()?.tipo === 'LANE' && !pool.cajaNegra) {
+                      <button type="button" class="colocar-aqui" (click)="clicEnPool($event, pool)">Agregar lane aquí</button>
+                    }
+
+                    @if (pool.lanes.length === 0) {
+                      <div
+                        class="pool-vacio"
+                        [class.destino-valido]="motivosPoolDestino().get(pool.id) === null"
+                        [class.destino-invalido]="!!motivosPoolDestino().get(pool.id)"
+                        [attr.title]="motivosPoolDestino().get(pool.id) || null"
+                        (click)="clicEnPoolVacio(pool, $event)">
+                        @if (pool.cajaNegra) { Pool de caja negra: no admite figuras } @else { Este pool no tiene lanes }
+                      </div>
+                    } @else {
+                      @for (lane of pool.lanes; track lane.id) {
+                        <div
+                          class="banda lane-banda"
+                          role="button"
+                          tabindex="0"
+                          [class.seleccionada]="seleccion()?.tipo === 'LANE' && seleccion()?.id === lane.id"
+                          [style.top.px]="lane.top"
+                          [style.height.px]="lane.alto"
+                          [attr.aria-label]="'Propiedades del lane ' + lane.nombre"
+                          (click)="seleccionarLane(lane, $event)"
+                          (keydown.enter)="seleccionarLane(lane, $event)">
+                          {{ lane.nombre }}
+                        </div>
+                      }
+                      <div class="lanes-contenido">
+                        @for (lane of pool.lanes; track lane.id) {
+                          <div
+                            class="lane-contenido"
+                            [class.destino]="laneDestino() === lane.id"
+                            [class.colocando]="pendienteEsNodo()"
+                            [style.top.px]="lane.top"
+                            [style.height.px]="lane.alto"
+                            (dragover)="sobreLane($event, lane)"
+                            (drop)="soltarEnLane($event, lane)"
+                            (click)="clicEnLane($event, lane)">
+                            @if (pendienteEsNodo()) {
+                              <button type="button" class="colocar-aqui" (click)="colocarAqui(lane, $event)">
+                                Colocar aquí
+                              </button>
+                            }
+
+                            @for (nodo of lane.nodos; track nodo.id) {
+                              <app-nodo-diagrama
+                                [nodo]="nodo"
+                                [class.seleccionado]="seleccion()?.tipo === 'NODO' && seleccion()?.id === nodo.id"
+                                [class.origen-conexion]="conectandoDesde()?.id === nodo.id"
+                                [class.destino-valido]="motivosDestino().get(nodo.id) === null"
+                                [class.destino-invalido]="!!motivosDestino().get(nodo.id) && conectandoDesde()?.id !== nodo.id"
+                                [attr.title]="motivosDestino().get(nodo.id) || null"
+                                [style.left.px]="nodo.x"
+                                [style.top.px]="nodo.y"
+                                [style.width.px]="nodo.ancho"
+                                [style.height.px]="nodo.alto"
+                                [attr.data-nodo]="nodo.id"
+                                cdkDrag
+                                [cdkDragBoundary]="nodo.tipo === 'ACTIVIDAD' ? '.lanes-contenido' : '.lane-contenido'"
+                                [cdkDragConstrainPosition]="ajustarAGrilla"
+                                [cdkDragDisabled]="guardando() || !puedeEditar()"
+                                (cdkDragMoved)="mover(nodo, $event)"
+                                (cdkDragEnded)="soltar(nodo, $event)"
+                                (click)="seleccionarNodo(nodo, $event)"
+                                (keydown)="teclaEnNodo($event, nodo)"
+                                tabindex="0"
+                                [attr.aria-label]="nombresTipo[nodo.tipo] + ' ' + nodo.nombre" />
+
+                              @if (puedeEditar() && !conectandoDesde() && !arrastrando()
+                                && seleccion()?.tipo === 'NODO' && seleccion()?.id === nodo.id) {
+                                <div
+                                  class="menu-contextual"
+                                  [style.left.px]="nodo.x + nodo.ancho + 8"
+                                  [style.top.px]="nodo.y"
+                                  (click)="$event.stopPropagation()">
+                                  <button type="button" (click)="iniciarConexion(nodo, $event)">
+                                    @if (nodo.subtipo === 'THROW') { → Enviar mensaje } @else { → Conectar }
+                                  </button>
+                                  @if (puedeEliminar()) {
+                                    <button type="button" class="peligro" (click)="pedirEliminacion()">Eliminar</button>
+                                  }
+                                </div>
+                              }
+                            }
+
+                            @if (nodoBorrador(); as nb) {
+                              @if (nb.laneId === lane.id) {
+                                <div
+                                  class="borrador"
+                                  [style.left.px]="nb.x"
+                                  [style.top.px]="nb.y"
+                                  [style.width.px]="nb.ancho"
+                                  [style.height.px]="nb.alto"
+                                  (click)="$event.stopPropagation()">
+                                  <app-nodo-diagrama class="fantasma" [nodo]="nb" />
+                                  @if (nb.tipo !== 'EVENTO') {
+                                    <input
+                                      #inputBorrador
+                                      class="nombre-borrador"
+                                      [class.debajo]="nb.tipo !== 'ACTIVIDAD'"
+                                      [formControl]="nombreBorrador"
+                                      [readonly]="creando()"
+                                      [attr.aria-label]="'Nombre de la nueva figura: ' + nombresTipo[nb.tipo]"
+                                      placeholder="Nombre"
+                                      (keydown.enter)="confirmarBorrador()"
+                                      (keydown.escape)="cancelarBorrador(); $event.stopPropagation()"
+                                      (blur)="alSalirDelBorrador()" />
+                                  }
+                                </div>
+                              }
+                            }
+                          </div>
+                        }
+                      </div>
+                    }
+                  </section>
+                }
+
+                <svg class="conexiones" [attr.width]="l.ancho" [attr.height]="l.alto" role="group" aria-label="Conexiones">
+                  @for (c of conexiones(); track c.clave) {
+                    <g
+                      [class.mensaje]="c.tipo === 'MENSAJE'"
+                      [class.seleccionado]="seleccion()?.tipo === (c.tipo === 'MENSAJE' ? 'MENSAJE' : 'ARCO') && seleccion()?.id === c.id"
+                      tabindex="0"
+                      role="button"
+                      [attr.aria-label]="(c.tipo === 'SECUENCIA' ? 'Arco ' : 'Mensaje ') + c.descripcion"
+                      (click)="seleccionarConexion(c, $event)"
+                      (keydown)="teclaEnConexion($event, c)">
+                      <polyline class="zona-clic" [attr.points]="c.trazo" />
+                      <polyline class="linea" [attr.points]="c.trazo" />
+                      <polygon class="punta" [attr.points]="c.punta" />
+                      @if (c.tipo === 'MENSAJE') {
+                        <circle class="inicio" [attr.cx]="c.inicio.x" [attr.cy]="c.inicio.y" r="4" />
+                      }
+                      @if (c.etiqueta) {
+                        <text class="etiqueta" [attr.x]="c.posicionEtiqueta.x" [attr.y]="c.posicionEtiqueta.y - 6">{{ c.etiqueta }}</text>
+                      }
+                    </g>
+                  }
+                  @if (lineaConexion(); as lc) {
+                    <line class="linea-temporal" [attr.x1]="lc.x1" [attr.y1]="lc.y1" [attr.x2]="lc.x2" [attr.y2]="lc.y2" />
+                  }
+                </svg>
+              </div>
+            </div>
+          }
+        }
+      </div>
+
+      <aside class="panel" aria-label="Propiedades">
+        @if (eliminacion(); as e) {
+          <app-confirmar-eliminacion
+            [nombre]="e.nombre"
+            [impacto]="e.impacto"
+            (confirmar)="confirmarEliminacion()"
+            (cancelar)="eliminacion.set(null)" />
+        } @else if (datosPool(); as pool) {
+          <app-propiedades-pool
+            [clave]="pool.clave"
+            [datos]="pool.datos"
+            [tieneLanes]="pool.tieneLanes"
+            [esNuevo]="borradorPool()"
+            [soloLectura]="!puedeEditar()"
+            [puedeEliminar]="puedeEliminar()"
+            [guardando]="guardando()"
+            (guardar)="guardarPool($event)"
+            (agregarLane)="agregarLaneAlPool()"
+            (eliminar)="pedirEliminacion()"
+            (cancelar)="escape()" />
+        } @else if (datosLane(); as lane) {
+          <app-propiedades-lane
+            [clave]="lane.clave"
+            [datos]="lane.datos"
+            [roles]="roles()"
+            [pool]="lane.pool"
+            [esNuevo]="borradorLane() !== null"
+            [puedeSubir]="lane.puedeSubir"
+            [puedeBajar]="lane.puedeBajar"
+            [soloLectura]="!puedeEditar()"
+            [puedeEliminar]="puedeEliminar()"
+            [guardando]="guardando()"
+            (guardar)="guardarLane($event)"
+            (mover)="moverLane($event)"
+            (eliminar)="pedirEliminacion()"
+            (cancelar)="escape()" />
+        } @else if (datosEvento(); as evento) {
+          <app-propiedades-evento
+            [clave]="evento.clave"
+            [datos]="evento.datos"
+            [esNuevo]="borrador()?.tipo === 'EVENTO'"
+            [soloLectura]="!puedeEditar()"
+            [puedeEliminar]="puedeEliminar()"
+            [guardando]="guardando()"
+            (guardar)="guardarEvento($event)"
+            (eliminar)="pedirEliminacion()"
+            (cancelar)="cancelarBorrador()" />
+        } @else if (datosMensaje(); as mensaje) {
+          <app-propiedades-mensaje
+            [clave]="mensaje.clave"
+            [datos]="mensaje.datos"
+            [externo]="mensaje.externo"
+            [sinReceptor]="mensaje.sinReceptor"
+            [actividades]="actividadesDelProceso()"
+            [esNuevo]="borradorMensaje() !== null"
+            [soloLectura]="!puedeEditar()"
+            [puedeEliminar]="puedeEliminar()"
+            [guardando]="guardando()"
+            (guardar)="guardarMensaje($event)"
+            (eliminar)="pedirEliminacion()"
+            (cancelar)="escape()" />
+        } @else if (datosArco(); as arco) {
+          <app-propiedades-arco
+            [clave]="arco.clave"
+            [datos]="arco.datos"
+            [nodos]="nodosDelArco()"
+            [esNuevo]="borradorArco() !== null"
+            [soloLectura]="!puedeEditar()"
+            [puedeEliminar]="puedeEliminar()"
+            [guardando]="guardando()"
+            (guardar)="guardarArco($event)"
+            (eliminar)="pedirEliminacion()"
+            (cancelar)="escape()" />
+        } @else if (actividadSeleccionada(); as actividad) {
+          <app-propiedades-actividad
+            [actividad]="actividad"
+            [lanes]="lanesDelPool()"
+            [soloLectura]="!puedeEditar()"
+            [puedeEliminar]="puedeEliminar()"
+            [guardando]="guardando()"
+            (guardar)="guardarActividad($event)"
+            (eliminar)="pedirEliminacion()" />
+        } @else if (gatewaySeleccionado(); as gateway) {
+          <app-propiedades-gateway
+            [gateway]="gateway"
+            [lane]="nombreLaneGateway()"
+            [soloLectura]="!puedeEditar()"
+            [puedeEliminar]="puedeEliminar()"
+            [guardando]="guardando()"
+            (guardar)="guardarGateway($event)"
+            (eliminar)="pedirEliminacion()" />
+        } @else {
+          <h3>Propiedades</h3>
+          @if (puedeEditar()) {
+            <p class="ayuda">
+              Arrastra una figura de la paleta a un lane, o púlsala y elige dónde colocarla.
+              Selecciona una figura, un arco o la banda de un pool o lane para editar sus datos.
+              Con el teclado, las flechas mueven la figura seleccionada (Mayús para saltos largos).
+            </p>
+          } @else {
+            <p class="ayuda">Tienes acceso de solo lectura: selecciona un elemento para ver sus datos.</p>
+          }
+
+          <h3 class="titulo-revision">Revisión del modelo</h3>
+          @for (advertencia of advertencias(); track advertencia) {
+            <p class="advertencia">{{ advertencia }}</p>
+          } @empty {
+            <p class="ayuda">Sin advertencias: todos los elementos están conectados.</p>
+          }
+        }
+      </aside>
+    </div>
+  }
+}
