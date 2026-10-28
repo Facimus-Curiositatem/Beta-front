@@ -56,7 +56,9 @@ export interface DiagramaLayout {
 
 export interface ConexionDiagrama {
   clave: string;
+  id: number;
   tipo: 'SECUENCIA' | 'MENSAJE';
+  descripcion: string;
   trazo: string;
   punta: string;
   inicio: Punto;
@@ -105,3 +107,16 @@ export interface CambiosActividad {
 }
 
 export type CambiosGateway = Pick<GatewayRequest, 'nombre' | 'tipoGateway'>;
+
+export interface OpcionNodo {
+  id: number;
+  nombre: string;
+  requiereCondicion: boolean;
+}
+
+export interface CambiosArco {
+  origenId: number;
+  destinoId: number;
+  etiqueta: string;
+  condicion: string;
+}
