@@ -96,6 +96,58 @@
   transform: translateX(-50%);
 }
 
+.menu-contextual {
+  position: absolute;
+  z-index: 4;
+  display: grid;
+  gap: 4px;
+  padding: 4px;
+  background: #ffffff;
+  border: 1px solid var(--borde);
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 0.12);
+}
+
+.menu-contextual button {
+  padding: 2px 8px;
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+
+.lienzo.conectando {
+  cursor: crosshair;
+}
+
+.zona-clic {
+  fill: none;
+  stroke: transparent;
+  stroke-width: 12;
+  pointer-events: stroke;
+  cursor: pointer;
+}
+
+.conexiones g:focus {
+  outline: none;
+}
+
+.conexiones g.seleccionado .linea,
+.conexiones g:focus-visible .linea {
+  stroke: var(--acento);
+  stroke-width: 2.5;
+}
+
+.conexiones g.seleccionado .punta,
+.conexiones g:focus-visible .punta {
+  fill: var(--acento);
+  stroke: var(--acento);
+}
+
+.linea-temporal {
+  stroke: var(--acento);
+  stroke-width: 1.5;
+  stroke-dasharray: 4 4;
+}
+
 .lienzo-scroll {
   overflow: auto;
   padding: 10px;
