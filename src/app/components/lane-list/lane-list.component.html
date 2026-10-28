@@ -1,3 +1,5 @@
+<app-ruta-navegacion [tramos]="tramos()" />
+
 <h2>Lanes del pool</h2>
 
 <a [routerLink]="['/pools', id(), 'lanes', 'nuevo']">Crear lane</a>
@@ -7,41 +9,63 @@
     <p>Cargando lanes...</p>
   }
   @case ('error') {
-    <p>{{ message() }}</p>
+    <p class="error">{{ message() }}</p>
     <button (click)="load()">Reintentar</button>
   }
   @case ('success') {
+    @if (message()) {
+      <p class="error" role="alert">{{ message() }}</p>
+    }
     @if (items().length === 0) {
       <p>No hay lanes registrados.</p>
     } @else {
-      <table>
-        <thead>
-          <tr>
-            <th>Nombre</th>
-            <th>Rol</th>
-            <th>Orden</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (lane of items(); track lane.id; let i = $index) {
+      <p class="ayuda">Arrastra un lane desde ⠿ para cambiar su orden, o usa Subir y Bajar.</p>
+
+      <div class="pool">
+        <div class="pool-banda">{{ pool()?.nombre ?? 'Pool' }}</div>
+        <table>
+          <thead>
             <tr>
-              <td>{{ lane.nombre }}</td>
-              <td>{{ lane.rolProcesoNombre }}</td>
-              <td>{{ lane.orden }}</td>
-              <td>
-                <button (click)="subirOrden(i)" [disabled]="i === 0">Subir</button>
-                <button (click)="bajarOrden(i)" [disabled]="i === items().length - 1">Bajar</button>
-                <a [routerLink]="['/lanes', lane.id, 'actividades']">Actividades</a>
-                <a [routerLink]="['/lanes', lane.id, 'gateways']">Gateways</a>
-                <button (click)="editar(lane.id)">Editar</button>
-                <button (click)="eliminar(lane.id)">Eliminar</button>
-                <a [routerLink]="['/lanes', lane.id, 'eventos-mensaje']">Eventos</a>
-              </td>
+              <th><span class="oculto">Arrastrar</span></th>
+              <th>Nombre</th>
+              <th>Rol</th>
+              <th>Orden</th>
+              <th>Acciones</th>
             </tr>
-          }
-        </tbody>
-      </table>
+          </thead>
+          <tbody
+            cdkDropList
+            cdkDropListLockAxis="y"
+            [cdkDropListData]="items()"
+            [cdkDropListDisabled]="guardando()"
+            (cdkDropListDropped)="soltar($event)">
+            @for (lane of items(); track lane.id; let i = $index) {
+              <tr cdkDrag>
+                <td class="asa" cdkDragHandle title="Arrastrar para reordenar">⠿</td>
+                <td>{{ lane.nombre }}</td>
+                <td>{{ lane.rolProcesoNombre }}</td>
+                <td>{{ i + 1 }}</td>
+                <td>
+                  <button (click)="subirOrden(i)" [disabled]="i === 0 || guardando()">Subir</button>
+                  <button (click)="bajarOrden(i)" [disabled]="i === items().length - 1 || guardando()">Bajar</button>
+                  <a [routerLink]="['/lanes', lane.id, 'actividades']">Actividades</a>
+                  <a [routerLink]="['/lanes', lane.id, 'gateways']">Gateways</a>
+                  <button (click)="editar(lane.id)">Editar</button>
+                  <button (click)="eliminar(lane.id)">Eliminar</button>
+                  <a [routerLink]="['/lanes', lane.id, 'eventos-mensaje']">Eventos</a>
+                </td>
+                <ng-template cdkDragPreview [matchSize]="true">
+                  <div class="vista-previa">⠿ {{ lane.nombre }} · {{ lane.rolProcesoNombre }}</div>
+                </ng-template>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <p class="ayuda" aria-live="polite">
+        @if (guardando()) { Guardando orden… } @else { {{ aviso() }} }
+      </p>
     }
   }
 }
