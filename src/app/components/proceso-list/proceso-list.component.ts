@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, input, signal } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -16,6 +16,8 @@ export class ProcesoListComponent {
   private readonly fb = inject(FormBuilder);
   private readonly procesoService = inject(ProcesoService);
   private readonly router = inject(Router);
+
+  aviso = input<string>();
 
   protected readonly estados: EstadoProceso[] = ['BORRADOR', 'PUBLICADO'];
   protected readonly status = signal<'loading' | 'success' | 'error'>('loading');
