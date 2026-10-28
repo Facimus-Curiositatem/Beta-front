@@ -24,10 +24,15 @@
   min-width: 0;
 }
 
-.panel {
-  padding: 12px;
+.panel,
+.menu-contextual,
+.lienzo-scroll {
   border: 1px solid var(--borde);
   border-radius: 6px;
+}
+
+.panel {
+  padding: 12px;
   background: #ffffff;
 }
 
@@ -43,10 +48,6 @@
   color: var(--texto-suave);
 }
 
-.lane-contenido.colocando {
-  cursor: crosshair;
-}
-
 .lane-contenido.destino,
 .lane-contenido.colocando:hover {
   background: rgb(10 91 181 / 0.06);
@@ -54,25 +55,22 @@
   outline-offset: -2px;
 }
 
-.colocar-aqui {
+.colocar-aqui,
+.borrador,
+.menu-contextual {
   position: absolute;
+  z-index: 4;
+}
+
+.colocar-aqui {
   top: 4px;
   right: 8px;
-  z-index: 4;
   padding: 2px 8px;
   font-size: 0.75rem;
 }
 
-.borrador {
-  position: absolute;
-  z-index: 4;
-}
-
 .borrador .fantasma {
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
   opacity: 0.55;
   pointer-events: none;
 }
@@ -97,14 +95,10 @@
 }
 
 .menu-contextual {
-  position: absolute;
-  z-index: 4;
   display: grid;
   gap: 4px;
   padding: 4px;
   background: #ffffff;
-  border: 1px solid var(--borde);
-  border-radius: 6px;
   box-shadow: 0 4px 12px rgb(0 0 0 / 0.12);
 }
 
@@ -114,7 +108,8 @@
   white-space: nowrap;
 }
 
-.lienzo.conectando {
+.lienzo.conectando,
+.lane-contenido.colocando {
   cursor: crosshair;
 }
 
@@ -124,10 +119,6 @@
   stroke-width: 12;
   pointer-events: stroke;
   cursor: pointer;
-}
-
-.conexiones g:focus {
-  outline: none;
 }
 
 .conexiones g.seleccionado .linea,
@@ -162,23 +153,16 @@
 }
 
 .banda[role="button"]:hover,
-.banda[role="button"]:focus-visible {
+.banda[role="button"]:focus-visible,
+.lane-banda.seleccionada {
   color: var(--acento);
   background: var(--acento-suave);
   outline: none;
 }
 
-.lane-banda.seleccionada {
-  color: var(--acento);
-  background: var(--acento-suave);
-}
-
-.pool.seleccionado {
-  box-shadow: inset 0 0 0 2px var(--acento), 0 0 0 3px var(--acento-suave);
-}
-
+.pool.seleccionado,
 .pool.destino {
-  box-shadow: inset 0 0 0 2px var(--acento), 0 0 0 4px var(--acento-suave);
+  box-shadow: inset 0 0 0 2px var(--acento), 0 0 0 3px var(--acento-suave);
 }
 
 .pool-vacio.destino-valido {
@@ -206,8 +190,6 @@
 .lienzo-scroll {
   overflow: auto;
   padding: 10px;
-  border: 1px solid var(--borde);
-  border-radius: 6px;
   background-color: #fafbfc;
 }
 
@@ -217,9 +199,17 @@
   background-size: 10px 10px;
 }
 
+.pool,
+.banda,
+.pool-vacio,
+.lanes-contenido,
+.lane-contenido,
+.conexiones {
+  position: absolute;
+}
+
 /* Los bordes van como sombras internas para no desplazar las coordenadas de los nodos. */
 .pool {
-  position: absolute;
   left: 0;
   right: 0;
   background: #ffffff;
@@ -232,7 +222,6 @@
 
 /* Nombres en vertical, leídos de abajo hacia arriba como en BPMN. */
 .banda {
-  position: absolute;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -262,7 +251,6 @@
 }
 
 .pool-vacio {
-  position: absolute;
   inset: 0 0 0 30px;
   display: flex;
   align-items: center;
@@ -272,16 +260,11 @@
 }
 
 .lanes-contenido {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 60px;
+  inset: 0 0 0 60px;
   box-shadow: inset 1px 0 0 var(--borde);
 }
 
 .lane-contenido {
-  position: absolute;
   left: 0;
   right: 0;
   border-bottom: 1px solid var(--borde);
@@ -293,7 +276,6 @@
 }
 
 .conexiones {
-  position: absolute;
   top: 0;
   left: 0;
   z-index: 1;
