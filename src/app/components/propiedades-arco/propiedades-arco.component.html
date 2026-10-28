@@ -1,0 +1,49 @@
+<form class="formulario-panel" [formGroup]="form" (ngSubmit)="enviar()">
+  <h3>@if (esNuevo()) { Nuevo arco } @else { Arco }</h3>
+
+  <label>
+    Origen
+    <select formControlName="origenId">
+      @for (nodo of nodos(); track nodo.id) {
+        <option [ngValue]="nodo.id">{{ nodo.nombre }}</option>
+      }
+    </select>
+  </label>
+
+  <label>
+    Destino
+    <select formControlName="destinoId">
+      @for (nodo of nodos(); track nodo.id) {
+        <option [ngValue]="nodo.id">{{ nodo.nombre }}</option>
+      }
+    </select>
+  </label>
+
+  <label>
+    Etiqueta
+    <input formControlName="etiqueta" placeholder="Opcional, se muestra sobre la línea" />
+  </label>
+
+  @if (origenRequiereCondicion()) {
+    <label>
+      Condición
+      <input formControlName="condicion" placeholder="Ej.: monto > 1.000.000" />
+    </label>
+    @if (form.controls.condicion.touched && form.controls.condicion.hasError('required')) {
+      <p class="error">Un arco que sale de un gateway exclusivo o inclusivo necesita condición.</p>
+    }
+  }
+
+  @if (!soloLectura()) {
+    <div class="acciones-panel">
+      <button type="submit" class="primario" [disabled]="guardando()">
+        @if (esNuevo()) { Crear arco } @else { Guardar }
+      </button>
+      @if (esNuevo()) {
+        <button type="button" [disabled]="guardando()" (click)="cancelar.emit()">Cancelar</button>
+      } @else if (puedeEliminar()) {
+        <button type="button" class="peligro" [disabled]="guardando()" (click)="eliminar.emit()">Eliminar</button>
+      }
+    </div>
+  }
+</form>
