@@ -11,14 +11,15 @@ import { ProcesoService } from '../../services/proceso.service';
 import { ActividadService } from '../../services/actividad.service';
 import { GatewayService } from '../../services/gateway.service';
 import { EventoMensajeService } from '../../services/evento-mensaje.service';
+import { ArcoService } from '../../services/arco.service';
 import { TokenService } from '../../services/token.service';
 import { ProcesoDiagramaResponse } from '../../models/proceso.model';
 import { TipoActividad } from '../../models/actividad.model';
 import { TipoGateway } from '../../models/gateway.model';
 import { ImpactoEliminacionResponse } from '../../models/impacto-eliminacion.model';
 import {
-  BorradorNodo, CambiosActividad, CambiosGateway, ElementoPaleta, LaneDiagrama, NodoDiagrama, OpcionLane, Punto,
-  Seleccion, TipoElementoPaleta, TipoNodoDiagrama
+  BorradorNodo, CambiosActividad, CambiosArco, CambiosGateway, ConexionDiagrama, ElementoPaleta, LaneDiagrama,
+  NodoDiagrama, OpcionLane, OpcionNodo, Punto, Seleccion, TipoElementoPaleta, TipoNodoDiagrama
 } from '../../models/diagrama.model';
 import { TramoNavegacion } from '../../models/navegacion.model';
 import { RutaNavegacionComponent } from '../ruta-navegacion/ruta-navegacion.component';
@@ -26,11 +27,13 @@ import { NodoDiagramaComponent } from '../nodo-diagrama/nodo-diagrama.component'
 import { PaletaModeladoComponent } from '../paleta-modelado/paleta-modelado.component';
 import { PropiedadesActividadComponent } from '../propiedades-actividad/propiedades-actividad.component';
 import { PropiedadesGatewayComponent } from '../propiedades-gateway/propiedades-gateway.component';
+import { PropiedadesArcoComponent } from '../propiedades-arco/propiedades-arco.component';
 import { ConfirmarEliminacionComponent } from '../confirmar-eliminacion/confirmar-eliminacion.component';
 import {
   GRILLA, ajustar, aplicarPosicion, construirLayout, posicionAlSoltar, posicionEnLane, siguienteEspacioLibre,
   tamanoDe, trazarConexiones
 } from './diagrama.layout';
+import { buscarNodo, motivoNoConectable, opcionesDelPool, poolDeNodo, requiereCondicion } from './reglas-modelado';
 
 interface EliminacionPendiente {
   nombre: string;
@@ -56,7 +59,7 @@ function esTipoNodo(tipo: TipoElementoPaleta): tipo is TipoNodoDiagrama {
   standalone: true,
   imports: [
     RouterLink, ReactiveFormsModule, CdkDrag, RutaNavegacionComponent, NodoDiagramaComponent, PaletaModeladoComponent,
-    PropiedadesActividadComponent, PropiedadesGatewayComponent, ConfirmarEliminacionComponent
+    PropiedadesActividadComponent, PropiedadesGatewayComponent, PropiedadesArcoComponent, ConfirmarEliminacionComponent
   ],
   templateUrl: './diagrama-proceso.component.html',
   styleUrl: './diagrama-proceso.component.css',
@@ -67,6 +70,7 @@ export class DiagramaProcesoComponent {
   private readonly actividadService = inject(ActividadService);
   private readonly gatewayService = inject(GatewayService);
   private readonly eventoMensajeService = inject(EventoMensajeService);
+  private readonly arcoService = inject(ArcoService);
   private readonly tokens = inject(TokenService);
   private readonly injector = inject(Injector);
 
@@ -85,8 +89,12 @@ export class DiagramaProcesoComponent {
   protected readonly creando = signal(false);
   protected readonly eliminacion = signal<EliminacionPendiente | null>(null);
   protected readonly nombreBorrador = new FormControl('', { nonNullable: true, validators: Validators.required });
+  protected readonly conectandoDesde = signal<NodoDiagrama | null>(null);
+  protected readonly borradorArco = signal<{ origenId: number; destinoId: number } | null>(null);
+  private readonly puntero = signal<Punto | null>(null);
   private readonly arrastrePaleta = signal<ElementoPaleta | null>(null);
   private readonly arrastre = signal<{ id: number; delta: Punto } | null>(null);
+  protected readonly arrastrando = computed(() => this.arrastre() !== null);
   private readonly lienzo = viewChild<ElementRef<HTMLElement>>('lienzo');
   private readonly inputBorrador = viewChild<ElementRef<HTMLInputElement>>('inputBorrador');
 
@@ -133,6 +141,52 @@ export class DiagramaProcesoComponent {
 
   protected readonly nombreLaneGateway = computed(() =>
     this.lanesDelPool().find(l => l.id === this.gatewaySeleccionado()?.laneId)?.nombre ?? '');
+
+  // Mientras se conecta, cada nodo sabe si puede ser destino y, si no, por qué.
+  protected readonly motivosDestino = computed(() => {
+    const origen = this.conectandoDesde();
+    const diagrama = this.diagrama();
+    const mapa = new Map<number, string | null>();
+    if (origen && diagrama) {
+      for (const id of this.layout()?.cajas.keys() ?? []) {
+        mapa.set(id, motivoNoConectable(diagrama, origen.id, id));
+      }
+    }
+    return mapa;
+  });
+
+  protected readonly lineaConexion = computed(() => {
+    const origen = this.conectandoDesde();
+    const puntero = this.puntero();
+    const caja = origen ? this.layout()?.cajas.get(origen.id) : undefined;
+    if (!caja || !puntero) return null;
+    return { x1: caja.x + caja.ancho / 2, y1: caja.y + caja.alto / 2, x2: puntero.x, y2: puntero.y };
+  });
+
+  protected readonly arcoSeleccionado = computed(() => {
+    const seleccion = this.seleccion();
+    return seleccion?.tipo === 'ARCO' ? this.diagrama()?.arcos.find(a => a.id === seleccion.id) ?? null : null;
+  });
+
+  protected readonly datosArco = computed<{ clave: string; datos: CambiosArco } | null>(() => {
+    const arco = this.arcoSeleccionado();
+    if (arco) {
+      return {
+        clave: `a${arco.id}`,
+        datos: { origenId: arco.origenId, destinoId: arco.destinoId, etiqueta: arco.etiqueta ?? '', condicion: arco.condicion ?? '' }
+      };
+    }
+    const borrador = this.borradorArco();
+    return borrador
+      ? { clave: 'nuevo', datos: { origenId: borrador.origenId, destinoId: borrador.destinoId, etiqueta: '', condicion: '' } }
+      : null;
+  });
+
+  protected readonly nodosDelArco = computed<OpcionNodo[]>(() => {
+    const diagrama = this.diagrama();
+    const origenId = this.datosArco()?.datos.origenId;
+    return diagrama && origenId !== undefined ? opcionesDelPool(diagrama, poolDeNodo(diagrama, origenId)) : [];
+  });
 
   protected readonly nombresTipo: Record<TipoNodoDiagrama, string> = {
     ACTIVIDAD: 'Actividad',
@@ -225,6 +279,10 @@ export class DiagramaProcesoComponent {
   }
 
   clicEnLane(event: MouseEvent, lane: LaneDiagrama): void {
+    if (this.conectandoDesde()) {
+      this.cancelarConexion();
+      return;
+    }
     const elemento = this.pendiente();
     if (!elemento) {
       this.seleccion.set(null);
@@ -321,8 +379,119 @@ export class DiagramaProcesoComponent {
   seleccionarNodo(nodo: NodoDiagrama, event?: Event): void {
     event?.stopPropagation();
     if (this.borrador()) return;
+    if (this.conectandoDesde()) {
+      this.completarConexion(nodo);
+      return;
+    }
+    this.borradorArco.set(null);
     this.seleccion.set({ tipo: 'NODO', id: nodo.id });
     this.eliminacion.set(null);
+  }
+
+  seleccionarConexion(conexion: ConexionDiagrama, event?: Event): void {
+    event?.stopPropagation();
+    if (this.borrador() || this.conectandoDesde() || conexion.tipo !== 'SECUENCIA') return;
+    this.borradorArco.set(null);
+    this.eliminacion.set(null);
+    this.seleccion.set({ tipo: 'ARCO', id: conexion.id });
+  }
+
+  // ---- Conexiones: como el ContextPad de bpmn-js, se parte del nodo seleccionado ----
+
+  iniciarConexion(nodo: NodoDiagrama, event: Event): void {
+    event.stopPropagation();
+    this.conectandoDesde.set(nodo);
+    this.puntero.set(null);
+    this.message.set('');
+    this.aviso.set(`Elige el destino del arco que sale de «${nodo.nombre}». Esc cancela.`);
+  }
+
+  moverPuntero(event: PointerEvent): void {
+    if (!this.conectandoDesde()) return;
+    const lienzo = this.lienzo()?.nativeElement.getBoundingClientRect();
+    if (lienzo) {
+      this.puntero.set({ x: event.clientX - lienzo.left, y: event.clientY - lienzo.top });
+    }
+  }
+
+  cancelarConexion(): void {
+    this.conectandoDesde.set(null);
+    this.puntero.set(null);
+    this.aviso.set('');
+  }
+
+  private completarConexion(destino: NodoDiagrama): void {
+    const origen = this.conectandoDesde();
+    const diagrama = this.diagrama();
+    if (!origen || !diagrama) return;
+    const motivo = motivoNoConectable(diagrama, origen.id, destino.id);
+    if (motivo) {
+      this.message.set(motivo);
+      return;
+    }
+    this.cancelarConexion();
+    const arco = { origenId: origen.id, destinoId: destino.id, etiqueta: '', condicion: '' };
+    if (requiereCondicion(diagrama, origen.id)) {
+      this.seleccion.set(null);
+      this.borradorArco.set({ origenId: arco.origenId, destinoId: arco.destinoId });
+      this.aviso.set('El arco sale de un gateway: escribe su condición en el panel.');
+      return;
+    }
+    this.crearArco(arco);
+  }
+
+  private crearArco(cambios: CambiosArco): void {
+    this.guardando.set(true);
+    this.message.set('');
+    this.arcoService.crear({
+      origenId: cambios.origenId,
+      destinoId: cambios.destinoId,
+      etiqueta: cambios.etiqueta || undefined,
+      condicion: cambios.condicion || undefined
+    }).subscribe({
+      next: arco => {
+        this.diagrama.update(d => d && { ...d, arcos: [...d.arcos, arco] });
+        this.guardando.set(false);
+        this.borradorArco.set(null);
+        this.seleccion.set({ tipo: 'ARCO', id: arco.id });
+        this.aviso.set('Arco creado');
+      },
+      error: (err: HttpErrorResponse) => {
+        this.guardando.set(false);
+        this.message.set(err.error?.detail ?? 'No fue posible crear el arco');
+      }
+    });
+  }
+
+  guardarArco(cambios: CambiosArco): void {
+    const diagrama = this.diagrama();
+    if (!diagrama) return;
+    const arco = this.arcoSeleccionado();
+    const motivo = motivoNoConectable(diagrama, cambios.origenId, cambios.destinoId, arco?.id);
+    if (motivo) {
+      this.message.set(motivo);
+      return;
+    }
+    if (!arco) {
+      this.crearArco(cambios);
+      return;
+    }
+    this.ejecutarGuardado(
+      this.arcoService.editar(arco.id, cambios).pipe(tap(actualizado => this.diagrama.update(d => d && {
+        ...d,
+        arcos: d.arcos.map(a => a.id === actualizado.id ? actualizado : a)
+      })))
+    );
+  }
+
+  cancelarArco(): void {
+    this.borradorArco.set(null);
+    this.aviso.set('');
+  }
+
+  nombreDeNodo(id: number): string {
+    const diagrama = this.diagrama();
+    return (diagrama && buscarNodo(diagrama, id)?.nombre) ?? '';
   }
 
   teclaEnNodo(event: KeyboardEvent, nodo: NodoDiagrama): void {
@@ -337,7 +506,7 @@ export class DiagramaProcesoComponent {
       return;
     }
     const paso = PASOS_TECLADO[event.key];
-    if (!paso || !this.puedeEditar() || this.guardando()) return;
+    if (!paso || !this.puedeEditar() || this.guardando() || this.conectandoDesde()) return;
     event.preventDefault();
     const distancia = event.shiftKey ? GRILLA * 5 : GRILLA;
     this.reubicar(nodo, { x: paso.x * distancia, y: paso.y * distancia }, true);
@@ -501,6 +670,25 @@ export class DiagramaProcesoComponent {
       if (evento) {
         this.prepararEliminacion(evento.nombre, of(SIN_IMPACTO), () => this.eventoMensajeService.eliminar(evento.id));
       }
+      return;
+    }
+
+    if (seleccion.tipo === 'ARCO') {
+      const arco = diagrama.arcos.find(a => a.id === seleccion.id);
+      if (arco) {
+        const nombre = `arco de ${this.nombreDeNodo(arco.origenId)} a ${this.nombreDeNodo(arco.destinoId)}`;
+        this.prepararEliminacion(nombre, this.arcoService.evaluarImpacto(arco.id), () => this.arcoService.eliminar(arco.id));
+      }
+    }
+  }
+
+  teclaEnConexion(event: KeyboardEvent, conexion: ConexionDiagrama): void {
+    if (event.key === 'Enter') {
+      this.seleccionarConexion(conexion, event);
+    } else if (event.key === 'Delete') {
+      event.preventDefault();
+      this.seleccionarConexion(conexion, event);
+      this.pedirEliminacion();
     }
   }
 
@@ -535,6 +723,10 @@ export class DiagramaProcesoComponent {
   escape(): void {
     if (this.borrador()) {
       this.cancelarBorrador();
+    } else if (this.conectandoDesde()) {
+      this.cancelarConexion();
+    } else if (this.borradorArco()) {
+      this.cancelarArco();
     } else if (this.pendiente()) {
       this.pendiente.set(null);
       this.aviso.set('');
