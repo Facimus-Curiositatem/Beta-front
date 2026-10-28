@@ -1,0 +1,40 @@
+@switch (nodo().tipo) {
+  @case ('ACTIVIDAD') {
+    <div class="actividad">
+      @if (marcador()) {
+        <span class="marcador">{{ marcador() }}</span>
+      }
+      <span class="nombre">{{ nodo().nombre }}</span>
+    </div>
+  }
+  @case ('GATEWAY') {
+    <svg class="figura" viewBox="0 0 50 50" aria-hidden="true">
+      <polygon class="contorno" points="25,1 49,25 25,49 1,25" />
+      @switch (nodo().subtipo) {
+        @case ('EXCLUSIVO') {
+          <path class="marca" d="M18 18 L32 32 M32 18 L18 32" />
+        }
+        @case ('PARALELO') {
+          <path class="marca" d="M25 14 V36 M14 25 H36" />
+        }
+        @case ('INCLUSIVO') {
+          <circle class="marca" cx="25" cy="25" r="9" />
+        }
+      }
+    </svg>
+    <span class="etiqueta-externa">{{ nodo().nombre }}</span>
+  }
+  @case ('EVENTO') {
+    <svg class="figura" viewBox="0 0 36 36" aria-hidden="true">
+      <circle class="contorno" cx="18" cy="18" r="16" />
+      @if (nodo().subtipo !== 'CATCH_INICIO') {
+        <circle class="contorno" cx="18" cy="18" r="13" />
+      }
+      <path
+        class="sobre"
+        [class.relleno]="nodo().subtipo === 'THROW'"
+        d="M11 13 H25 V23 H11 Z M11 13 L18 18 L25 13" />
+    </svg>
+    <span class="etiqueta-externa">{{ nodo().nombre }}</span>
+  }
+}
