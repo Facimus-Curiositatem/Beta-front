@@ -29,6 +29,25 @@ function ajustarArriba(valor: number): number {
   return Math.ceil(valor / GRILLA) * GRILLA;
 }
 
+export function tamanoDe(tipo: TipoNodoDiagrama): { ancho: number; alto: number } {
+  return TAMANOS[tipo];
+}
+
+// Centra la figura en el punto donde se soltó, relativo al contenido del lane.
+export function posicionEnLane(lane: LaneDiagrama, tipo: TipoNodoDiagrama, puntoX: number, puntoY: number): Punto {
+  const { ancho, alto } = TAMANOS[tipo];
+  return {
+    x: Math.max(GRILLA, ajustar(puntoX - ancho / 2)),
+    y: Math.min(Math.max(GRILLA, ajustar(puntoY - alto / 2)), lane.alto - alto)
+  };
+}
+
+export function siguienteEspacioLibre(lane: LaneDiagrama, tipo: TipoNodoDiagrama): Punto {
+  const { alto } = TAMANOS[tipo];
+  const x = Math.max(MARGEN, ...lane.nodos.map(n => n.x + n.ancho + SEPARACION_NODOS));
+  return { x: ajustarArriba(x), y: Math.max(GRILLA, ajustar((ALTO_LANE_MIN - alto) / 2)) };
+}
+
 function crearNodo(
   tipo: TipoNodoDiagrama,
   id: number,
