@@ -29,6 +29,27 @@
   filter: drop-shadow(0 0 3px var(--acento));
 }
 
+/* Modo conectar: el origen y los destinos válidos se resaltan, los inválidos se atenúan. */
+:host(.origen-conexion) .actividad,
+:host(.destino-valido:hover) .actividad {
+  border-color: #1a7f37;
+  box-shadow: 0 0 0 4px rgb(26 127 55 / 0.15);
+}
+
+:host(.origen-conexion) .contorno,
+:host(.destino-valido:hover) .contorno {
+  stroke: #1a7f37;
+}
+
+:host(.destino-valido) {
+  cursor: pointer;
+}
+
+:host(.destino-invalido) {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
 :host(:focus-visible) {
   outline: 2px solid var(--acento);
   outline-offset: 4px;
