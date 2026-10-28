@@ -224,10 +224,18 @@ function puntoMedio(puntos: Punto[]): Punto {
   return { x: (puntos[i].x + puntos[i + 1].x) / 2, y: (puntos[i].y + puntos[i + 1].y) / 2 };
 }
 
-function conexion(clave: string, tipo: ConexionDiagrama['tipo'], puntos: Punto[], etiqueta: string | null): ConexionDiagrama {
+function conexion(
+  id: number,
+  tipo: ConexionDiagrama['tipo'],
+  descripcion: string,
+  puntos: Punto[],
+  etiqueta: string | null
+): ConexionDiagrama {
   return {
-    clave,
+    clave: `${tipo === 'MENSAJE' ? 'm' : 'a'}${id}`,
+    id,
     tipo,
+    descripcion,
     trazo: puntos.map(p => `${p.x},${p.y}`).join(' '),
     punta: puntaFlecha(puntos[puntos.length - 2], puntos[puntos.length - 1]),
     inicio: puntos[0],
@@ -249,19 +257,25 @@ export function trazarConexiones(
     return { ...encontrada, x: encontrada.x + arrastre.delta.x, y: encontrada.y + arrastre.delta.y };
   };
 
+  const nombres = new Map(nodosDe(d).map(n => [n.id, n.nombre]));
+  const descripcion = (origenId: number | null, destinoId: number | null) =>
+    `${nombres.get(origenId ?? -1) ?? ''} → ${nombres.get(destinoId ?? -1) ?? ''}`;
+
   const conexiones: ConexionDiagrama[] = [];
   for (const arco of d.arcos) {
     const origen = caja(arco.origenId);
     const destino = caja(arco.destinoId);
     if (origen && destino) {
-      conexiones.push(conexion(`a${arco.id}`, 'SECUENCIA', rutaSecuencia(origen, destino), arco.etiqueta));
+      conexiones.push(conexion(arco.id, 'SECUENCIA', descripcion(arco.origenId, arco.destinoId),
+        rutaSecuencia(origen, destino), arco.etiqueta || arco.condicion));
     }
   }
   for (const mensaje of d.mensajes) {
     const origen = caja(mensaje.eventoThrowId);
     const destino = caja(mensaje.eventoCatchId);
     if (origen && destino) {
-      conexiones.push(conexion(`m${mensaje.id}`, 'MENSAJE', rutaMensaje(origen, destino), mensaje.nombre));
+      conexiones.push(conexion(mensaje.id, 'MENSAJE', descripcion(mensaje.eventoThrowId, mensaje.eventoCatchId),
+        rutaMensaje(origen, destino), mensaje.nombre));
     }
   }
   return conexiones;
