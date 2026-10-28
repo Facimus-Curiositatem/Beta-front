@@ -1,3 +1,5 @@
+<app-ruta-navegacion [tramos]="tramos()" />
+
 <h2>@if (editing()) { Editar pool } @else { Crear pool }</h2>
 
 @if (message()) {
@@ -29,4 +31,5 @@
   <button type="submit" [disabled]="saving()">
     @if (saving()) { Guardando... } @else { Guardar }
   </button>
+  <a [routerLink]="['/procesos', procesoId(), 'pools']">Cancelar</a>
 </form>
