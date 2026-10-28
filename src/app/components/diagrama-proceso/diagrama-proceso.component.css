@@ -1,0 +1,144 @@
+.ayuda {
+  font-size: 0.9rem;
+  color: var(--texto-suave);
+}
+
+.lienzo-scroll {
+  overflow: auto;
+  padding: 10px;
+  border: 1px solid var(--borde);
+  border-radius: 6px;
+  background-color: #fafbfc;
+}
+
+.lienzo {
+  position: relative;
+  background-image: radial-gradient(var(--borde) 1px, transparent 1px);
+  background-size: 10px 10px;
+}
+
+/* Los bordes van como sombras internas para no desplazar las coordenadas de los nodos. */
+.pool {
+  position: absolute;
+  left: 0;
+  right: 0;
+  background: #ffffff;
+  box-shadow: inset 0 0 0 2px #1f2328;
+}
+
+.pool.caja-negra {
+  background: repeating-linear-gradient(135deg, #f6f8fa 0 6px, #ffffff 6px 12px);
+}
+
+/* Nombres en vertical, leídos de abajo hacia arriba como en BPMN. */
+.banda {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  overflow: hidden;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  box-sizing: border-box;
+}
+
+.pool-banda {
+  top: 0;
+  bottom: 0;
+  left: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.lane-banda {
+  left: 30px;
+  border-top: 1px solid var(--borde);
+  border-bottom: 1px solid var(--borde);
+}
+
+.pool-vacio {
+  position: absolute;
+  inset: 0 0 0 30px;
+  display: flex;
+  align-items: center;
+  padding-left: 16px;
+  color: var(--texto-suave);
+  box-shadow: inset 1px 0 0 #1f2328;
+}
+
+.lanes-contenido {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 60px;
+  box-shadow: inset 1px 0 0 var(--borde);
+}
+
+.lane-contenido {
+  position: absolute;
+  left: 0;
+  right: 0;
+  border-bottom: 1px solid var(--borde);
+  box-sizing: border-box;
+}
+
+.lane-contenido:last-child {
+  border-bottom: none;
+}
+
+.lane-acciones {
+  position: absolute;
+  top: 4px;
+  right: 8px;
+  z-index: 1;
+  display: flex;
+  gap: 10px;
+  font-size: 0.75rem;
+}
+
+.conexiones {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.linea {
+  fill: none;
+  stroke: #1f2328;
+  stroke-width: 1.5;
+}
+
+.punta {
+  fill: #1f2328;
+  stroke: #1f2328;
+  stroke-width: 1;
+}
+
+.mensaje .linea {
+  stroke-dasharray: 6 4;
+}
+
+.mensaje .punta,
+.mensaje .inicio {
+  fill: #ffffff;
+  stroke: #1f2328;
+  stroke-width: 1.5;
+}
+
+.etiqueta {
+  font-size: 11px;
+  text-anchor: middle;
+  fill: #1f2328;
+  paint-order: stroke;
+  stroke: #ffffff;
+  stroke-width: 3px;
+}
