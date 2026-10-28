@@ -19,6 +19,7 @@ export class GatewayFormComponent {
 
   laneId = input.required<string>();
   id = input<string>();
+  volverADiagrama = input<string>();
 
   protected readonly tiposGateway: TipoGateway[] = ['EXCLUSIVO', 'PARALELO', 'INCLUSIVO'];
   protected readonly editing = computed(() => this.id() !== undefined);
@@ -65,7 +66,9 @@ export class GatewayFormComponent {
       : this.gatewayService.crear(Number(this.laneId()), body);
 
     request$.subscribe({
-      next: () => this.router.navigate(['/lanes', this.laneId(), 'gateways']),
+      next: () => this.router.navigate(
+        this.volverADiagrama() ? ['/procesos', this.volverADiagrama(), 'diagrama'] : ['/lanes', this.laneId(), 'gateways']
+      ),
       error: (err: HttpErrorResponse) => {
         this.saving.set(false);
         this.message.set(err.error?.detail ?? 'No fue posible guardar el gateway');
