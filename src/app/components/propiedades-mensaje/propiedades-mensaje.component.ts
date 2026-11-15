@@ -85,6 +85,9 @@ export class PropiedadesMensajeComponent {
       if (!c.politicaFalloNotificacion.value) c.politicaFalloNotificacion.setErrors({ required: true });
       if (c.politicaFalloNotificacion.value === 'DERIVAR_ACTIVIDAD_ERROR' && c.actividadErrorId.value === null) {
         c.actividadErrorId.setErrors({ required: true });
+      } else if (c.politicaFalloNotificacion.value !== 'DERIVAR_ACTIVIDAD_ERROR') {
+        // El campo queda oculto: limpia el error manual que dejo un intento previo con "Derivar".
+        c.actividadErrorId.setErrors(null);
       }
     }
     if (this.form.invalid) {
