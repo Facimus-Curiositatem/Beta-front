@@ -1,0 +1,26 @@
+# Front de la app publicada, en la VM beta-front (10.43.99.76).
+# Va en el servidor en /opt/beta/compose.yml (el workflow lo copia en cada despliegue).
+# Los valores salen de /opt/beta/.env (ver .env.example).
+#
+# Tailscale Funnel publica el puerto 8080 en https://beta-front.<tailnet>.ts.net:
+#   sudo tailscale funnel --bg 8080
+
+name: beta
+
+services:
+  front:
+    image: ghcr.io/facimus-curiositatem/beta-front:${FRONT_TAG:-latest}
+    container_name: beta-front
+    environment:
+      # nginx reenvia /api al backend de la VM beta-back
+      BACKEND_URL: ${BACKEND_URL:-http://10.43.99.37:8080}
+    ports:
+      # 0.0.0.0: tambien se puede entrar desde la red de la universidad (http://10.43.99.76:8080)
+      - "${HTTP_BIND:-0.0.0.0}:8080:8080"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080/healthz"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    mem_limit: 128m
+    restart: unless-stopped

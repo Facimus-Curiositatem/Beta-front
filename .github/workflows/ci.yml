@@ -1,0 +1,208 @@
+# CI/CD del front (Beta-front)
+#
+#   Pull request a main  -> CI: pruebas unitarias (Karma) + build + imagen :pr-N
+#   Merge (push) a main  -> CD: imagen :latest y :sha-xxxxxxx, y despliegue en beta-front
+#                           despues de la aprobacion en el entorno "production"
+#   (Selenium se agrega despues como un job contra la app desplegada)
+name: CI/CD Front
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+env:
+  IMAGEN: ghcr.io/facimus-curiositatem/beta-front
+  TS_FRONT: beta-front
+
+jobs:
+  # ---------------------------------------------------------------- CI
+  test:
+    name: Pruebas unitarias (Karma)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      checks: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Pruebas con cobertura
+        run: >
+          npx ng test --watch=false --browsers=ChromeHeadlessCI
+          --code-coverage --reporters=progress --reporters=junit
+
+      - name: Reporte de pruebas unitarias
+        if: always()
+        uses: dorny/test-reporter@v1
+        with:
+          name: Reporte Karma
+          path: reportes/junit/*.xml
+          reporter: java-junit
+          fail-on-error: false
+
+      - name: Guardar reporte de cobertura
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reporte-cobertura-front
+          path: coverage/
+          retention-days: 14
+          if-no-files-found: ignore
+
+  docker:
+    name: Imagen Docker (GHCR)
+    runs-on: ubuntu-latest
+    needs: test
+    timeout-minutes: 20
+    if: >
+      github.event_name != 'pull_request' ||
+      github.event.pull_request.head.repo.full_name == github.repository
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      tag: ${{ steps.tags.outputs.principal }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Calcular etiquetas
+        id: tags
+        run: |
+          SHA_TAG="sha-${GITHUB_SHA::7}"
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            SHA_TAG="sha-$(echo '${{ github.event.pull_request.head.sha }}' | cut -c1-7)"
+            echo "principal=pr-${{ github.event.pull_request.number }}" >> "$GITHUB_OUTPUT"
+            echo "todas=pr-${{ github.event.pull_request.number }} $SHA_TAG" >> "$GITHUB_OUTPUT"
+          else
+            echo "principal=$SHA_TAG" >> "$GITHUB_OUTPUT"
+            echo "todas=$SHA_TAG latest" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build de la imagen
+        run: >-
+          docker build
+          --label "org.opencontainers.image.source=https://github.com/${{ github.repository }}"
+          --label "org.opencontainers.image.revision=${{ github.sha }}"
+          -t beta-front:ci .
+
+      # La imagen arranca y nginx sirve el index y el /healthz
+      - name: Smoke test de la imagen
+        run: |
+          docker run -d --name front-ci -p 8080:8080 beta-front:ci
+          for i in $(seq 1 15); do
+            curl -fs http://localhost:8080/healthz > /dev/null && break
+            sleep 2
+          done
+          curl -fs http://localhost:8080/healthz
+          curl -fs http://localhost:8080/ | grep -qi '<app-root' && echo "index.html OK"
+          # Una ruta de Angular debe devolver el index (no 404)
+          curl -fs -o /dev/null http://localhost:8080/login && echo "Rutas de Angular OK"
+          docker rm -f front-ci
+
+      - name: Publicar en GHCR
+        env:
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "$GHCR_TOKEN" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+          for TAG in ${{ steps.tags.outputs.todas }}; do
+            docker tag beta-front:ci "$IMAGEN:$TAG"
+            docker push -q "$IMAGEN:$TAG"
+            echo "- \`$IMAGEN:$TAG\`" >> "$GITHUB_STEP_SUMMARY"
+          done
+
+  # ---------------------------------------------------------------- CD
+  deploy:
+    name: Desplegar en beta-front
+    runs-on: ubuntu-latest
+    needs: docker
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    timeout-minutes: 15
+    environment:
+      name: production
+      url: ${{ vars.PUBLIC_URL }}
+    permissions:
+      contents: read
+      packages: read
+    concurrency:
+      group: deploy-beta-front
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Conectar a Tailscale
+        uses: tailscale/github-action@v4
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:ci
+
+      - name: Preparar SSH a beta-front
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          KNOWN_HOSTS: ${{ secrets.FRONT_KNOWN_HOSTS }}
+        run: bash ci/preparar-ssh.sh "$TS_FRONT"
+
+      - name: Comprobar el servidor
+        run: |
+          ssh servidor 'bash -s' <<'EOF'
+          set -e
+          test -f /opt/beta/.env || { echo "Falta /opt/beta/.env (ver deploy/.env.example)"; exit 1; }
+          if ss -ltnH '( sport = :8080 )' | grep -q . && \
+             ! docker ps --format '{{.Names}}' | grep -qx beta-front; then
+            echo "El puerto 8080 lo usa otro proceso. Detenlo antes de desplegar."
+            ss -ltn
+            exit 1
+          fi
+          EOF
+
+      - name: Desplegar
+        env:
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ needs.docker.outputs.tag }}
+        run: |
+          scp deploy/compose.yml servidor:/opt/beta/compose.yml
+          echo "$GHCR_TOKEN" | ssh servidor "docker login ghcr.io -u '${{ github.actor }}' --password-stdin"
+          ssh servidor "cd /opt/beta && \
+            (grep -q '^FRONT_TAG=' .env && sed -i 's/^FRONT_TAG=.*/FRONT_TAG=$TAG/' .env || echo 'FRONT_TAG=$TAG' >> .env) && \
+            docker compose pull && \
+            docker compose up -d --wait --wait-timeout 120; \
+            RES=\$?; docker logout ghcr.io > /dev/null; docker compose ps; \
+            [ \$RES -eq 0 ] || docker compose logs --tail 60 front; exit \$RES"
+          ssh servidor 'docker image prune -f > /dev/null'
+          echo "Desplegado \`$IMAGEN:$TAG\` en beta-front" >> "$GITHUB_STEP_SUMMARY"
+
+      # Recorrido completo por Internet: Funnel -> nginx -> backend
+      - name: Verificar por la URL publica
+        if: vars.PUBLIC_URL != ''
+        run: |
+          URL="${{ vars.PUBLIC_URL }}"
+          for i in $(seq 1 24); do
+            FRONT=$(curl -s -o /dev/null -w '%{http_code}' "$URL/healthz" || true)
+            API=$(curl -s -o /dev/null -w '%{http_code}' "$URL/api/v1/procesos" || true)
+            if [ "$FRONT" = "200" ] && { [ "$API" = "401" ] || [ "$API" = "403" ]; }; then
+              echo "App publica OK: front $FRONT, API $API"
+              echo "App publicada en $URL" >> "$GITHUB_STEP_SUMMARY"
+              exit 0
+            fi
+            echo "Intento $i: front $FRONT, API $API"
+            sleep 5
+          done
+          echo "La app no respondio por $URL"
+          exit 1
