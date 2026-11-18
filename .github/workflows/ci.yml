@@ -1,9 +1,9 @@
 # CI/CD del front (Beta-front)
 #
 #   Pull request a main  -> CI: pruebas unitarias (Karma) + build + imagen :pr-N
+#                           + pruebas E2E (Selenium) contra un backend temporal en beta-back
 #   Merge (push) a main  -> CD: imagen :latest y :sha-xxxxxxx, y despliegue en beta-front
 #                           despues de la aprobacion en el entorno "production"
-#   (Selenium se agrega despues como un job contra la app desplegada)
 name: CI/CD Front
 
 on:
@@ -23,6 +23,7 @@ permissions:
 env:
   IMAGEN: ghcr.io/facimus-curiositatem/beta-front
   TS_FRONT: beta-front
+  TS_BACK: beta-back
 
 jobs:
   # ---------------------------------------------------------------- CI
@@ -126,6 +127,158 @@ jobs:
             docker push -q "$IMAGEN:$TAG"
             echo "- \`$IMAGEN:$TAG\`" >> "$GITHUB_STEP_SUMMARY"
           done
+
+  # Selenium: el front del PR corre en el runner y usa un backend temporal en beta-back
+  # (imagen beta-back:latest, BD vacia proyecto_ci_front). Si falla una prueba, el PR queda en rojo.
+  e2e:
+    name: Pruebas E2E (Selenium)
+    runs-on: ubuntu-latest
+    needs: docker
+    if: github.event_name == 'pull_request'
+    timeout-minutes: 40
+    permissions:
+      contents: read
+      checks: write
+      packages: read   # imagen del front en el runner y del backend en la VM
+    # Una sola ejecucion a la vez usa el backend temporal y la BD proyecto_ci_front
+    concurrency:
+      group: e2e-beta-front
+      cancel-in-progress: false
+    env:
+      BACK_IMAGEN: ghcr.io/facimus-curiositatem/beta-back:latest
+      FRONT_IMAGEN: ghcr.io/facimus-curiositatem/beta-front:${{ needs.docker.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Conectar a Tailscale
+        uses: tailscale/github-action@v4
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:ci
+
+      - name: Preparar SSH a beta-back
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          KNOWN_HOSTS: ${{ secrets.BACK_KNOWN_HOSTS }}
+        run: bash ci/preparar-ssh.sh "$TS_BACK"
+
+      - name: Levantar backend temporal
+        env:
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ -z "$DB_PASSWORD" ]; then
+            echo "::error::El secreto DB_PASSWORD esta vacio. Crealo en Beta-front > Settings > Secrets and variables > Actions > Repository secrets."
+            exit 1
+          fi
+          # Credenciales temporales en la VM (las borra bajar-backend-e2e.sh)
+          ssh servidor 'install -d -m 700 ~/ci'
+          printf 'DB_PASSWORD=%s\nJWT_SECRET=%s\n' "$DB_PASSWORD" "$(openssl rand -hex 32)" \
+            | ssh servidor 'umask 077; cat > ~/ci/beta-back-ci-front.env'
+          echo "$GHCR_TOKEN" | ssh servidor "docker login ghcr.io -u '${{ github.actor }}' --password-stdin"
+
+          # La imagen se expande en el runner a proposito (SC2029)
+          # shellcheck disable=SC2029
+          SALIDA=$(ssh servidor "bash -s -- '$BACK_IMAGEN'" < ci/levantar-backend-e2e.sh)
+          echo "$SALIDA"
+          PUERTO=$(echo "$SALIDA" | sed -n 's/^PUERTO=//p' | tail -n1)
+          [ -n "$PUERTO" ] || { echo "No se obtuvo el puerto"; exit 1; }
+          echo "BACKEND_URL=http://$SERVIDOR_IP:$PUERTO" >> "$GITHUB_ENV"
+
+      - name: Esperar a que el backend responda
+        run: |
+          for i in $(seq 1 60); do
+            CODIGO=$(curl -s -o /dev/null -w '%{http_code}' "$BACKEND_URL/api/v1/procesos" || true)
+            # 401/403 = la app ya responde (la ruta exige token)
+            if [ "$CODIGO" = "401" ] || [ "$CODIGO" = "403" ]; then
+              echo "Backend listo en $BACKEND_URL (HTTP $CODIGO)"
+              exit 0
+            fi
+            echo "Intento $i: HTTP $CODIGO"
+            sleep 5
+          done
+          echo "El backend temporal no arranco a tiempo"
+          ssh servidor 'docker logs --tail 80 beta-back-ci-front'
+          exit 1
+
+      - name: Levantar el front del PR
+        env:
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "$GHCR_TOKEN" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+          docker run -d --name front-e2e --network host -e BACKEND_URL="$BACKEND_URL" "$FRONT_IMAGEN"
+          for i in $(seq 1 30); do
+            curl -fs http://localhost:8080/healthz > /dev/null && { echo "Front listo"; exit 0; }
+            echo "Intento $i: el front aun no responde"
+            sleep 2
+          done
+          echo "El front no arranco a tiempo"
+          docker logs front-e2e
+          exit 1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: e2e/requirements.txt
+
+      - name: Instalar dependencias de las pruebas
+        run: pip install -r e2e/requirements.txt pytest-html
+
+      # Sin -l, --showlocals ni --tb=long: mostrarian credenciales de la empresa de prueba
+      - name: Pruebas E2E
+        env:
+          E2E_BASE_URL: http://localhost:8080
+          E2E_HEADLESS: '1'
+          E2E_TIMEOUT: '20'
+        run: >
+          python -m pytest e2e -v
+          --junitxml=e2e/reportes/junit.xml
+          --html=e2e/reportes/reporte.html --self-contained-html
+
+      - name: Reporte E2E (tabla de checks)
+        if: always()
+        uses: dorny/test-reporter@v1
+        with:
+          name: Reporte E2E Selenium
+          path: e2e/reportes/junit.xml
+          reporter: java-junit
+          fail-on-error: false
+          fail-on-empty: false
+
+      - name: Resumen en la pagina de la ejecucion
+        if: always()
+        run: |
+          {
+            echo "## Pruebas E2E (Selenium)"
+            echo ""
+            echo "Front: \`$FRONT_IMAGEN\` · Backend: \`$BACK_IMAGEN\` · BD: \`proyecto_ci_front\`"
+            echo ""
+            python3 ci/resumen_e2e.py e2e/reportes/junit.xml
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # Pase lo que pase: logs, se quita el backend temporal y se vacia proyecto_ci_front
+      - name: Limpiar backend temporal y BD de pruebas
+        if: always()
+        run: |
+          mkdir -p e2e/reportes/logs
+          docker logs front-e2e > e2e/reportes/logs/front-e2e.log 2>&1 || true
+          docker rm -f front-e2e > /dev/null 2>&1 || true
+          docker logout ghcr.io > /dev/null 2>&1 || true
+          if [ -f ~/.ssh/config ]; then
+            ssh servidor 'bash -s' < ci/bajar-backend-e2e.sh || true
+            ssh servidor 'cat ~/ci/beta-back-ci-front.log 2>/dev/null' > e2e/reportes/logs/beta-back-ci-front.log || true
+          fi
+
+      - name: Guardar reporte E2E
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reporte-e2e
+          path: e2e/reportes/
+          retention-days: 14
+          if-no-files-found: ignore
 
   # ---------------------------------------------------------------- CD
   deploy:
