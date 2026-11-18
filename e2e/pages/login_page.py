@@ -33,5 +33,4 @@ class LoginPage(BasePage):
         return self.texto(self.MENSAJE_ERROR)
 
     def errores_validacion(self):
-        errores = self.wait.until(EC.visibility_of_all_elements_located(self.ERRORES_VALIDACION))
-        return [error.text for error in errores]
+        return self.textos_estables(self.ERRORES_VALIDACION)

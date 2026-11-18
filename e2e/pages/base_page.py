@@ -1,5 +1,6 @@
 import os
 import re
+import time
 from urllib.parse import urlparse
 
 from selenium.webdriver.common.by import By
@@ -52,6 +53,24 @@ class BasePage:
 
     def esperar_texto(self, locator, texto):
         return self.wait.until(EC.text_to_be_present_in_element(locator, texto))
+
+    def textos_estables(self, locator, quieto=0.5):
+        """Textos visibles de los elementos que coinciden, cuando la lista deja de cambiar.
+
+        Sirve para mensajes de validacion que Angular muestra en momentos distintos (unos al salir
+        de un campo y otros al enviar): esperar solo "a que haya alguno" puede leer la lista a medias.
+        """
+        self.wait.until(EC.visibility_of_any_elements_located(locator))
+        limite = time.monotonic() + TIEMPO_ESPERA
+        anterior, desde = None, time.monotonic()
+        while time.monotonic() < limite:
+            actual = [e.text for e in self.driver.find_elements(*locator) if e.is_displayed()]
+            if actual != anterior:
+                anterior, desde = actual, time.monotonic()
+            elif time.monotonic() - desde >= quieto:
+                return actual
+            time.sleep(0.1)
+        return anterior
 
     def esta_visible(self, locator):
         return self.wait.until(EC.visibility_of_element_located(locator)).is_displayed()
