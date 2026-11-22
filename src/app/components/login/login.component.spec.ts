@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
+import { RouterTestingHarness } from '@angular/router/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting, HttpTestingController } from '@angular/common/http/testing';
 import { LoginComponent } from './login.component';
@@ -60,5 +61,33 @@ describe('LoginComponent', () => {
     f.detectChanges();
     expect(f.nativeElement.textContent).toContain('Credenciales inválidas');
     expect(f.nativeElement.querySelector('button').disabled).toBeFalse();
+  });
+  it('después del login vuelve a la página indicada en returnUrl', async () => {
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter([{ path: 'login', component: LoginComponent }]),
+        provideHttpClient(),
+        provideHttpClientTesting()
+      ]
+    });
+    const harness = await RouterTestingHarness.create();
+    await harness.navigateByUrl('/login?returnUrl=%2Froles', LoginComponent);
+    const nav = spyOn(TestBed.inject(Router), 'navigateByUrl').and.resolveTo(true);
+    for (const [name, value] of [
+      ['email', 'sam@beta.co'],
+      ['password', '123456']
+    ]) {
+      const input: HTMLInputElement = harness.routeNativeElement!.querySelector(
+        `[formControlName="${name}"]`
+      )!;
+      input.value = value;
+      input.dispatchEvent(new Event('input'));
+    }
+    harness.routeDebugElement!.componentInstance.submit();
+    TestBed.inject(HttpTestingController)
+      .expectOne('/api/v1/auth/login')
+      .flush({ accessToken: 'jwt', refreshToken: 'refresh', usuario: {}, expiresIn: 900, tokenType: 'Bearer' });
+    expect(nav).toHaveBeenCalledWith('/roles');
   });
 });
