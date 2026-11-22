@@ -3,20 +3,23 @@ import { inject } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { TokenService } from '../services/token.service';
 
-export const authInterceptor: HttpInterceptorFn = (req, next) => {
-  const tokenService = inject(TokenService);
-  const token = tokenService.getToken();
+const RUTAS_PUBLICAS = [
+  `${environment.apiUrl}/auth/login`,
+  `${environment.apiUrl}/auth/refresh`,
+  `${environment.apiUrl}/empresas`
+];
 
-  const esApi = req.url.startsWith(`${environment.apiUrl}/`);
-  const esPublica =
-    req.method === 'POST' &&
-    (req.url === `${environment.apiUrl}/auth/login` ||
-      req.url === `${environment.apiUrl}/empresas`);
-  if (token && esApi && !esPublica) {
-    req = req.clone({
-      setHeaders: { Authorization: `Bearer ${token}` }
-    });
+export function necesitaToken(metodo: string, url: string): boolean {
+  const esApi = url.startsWith(`${environment.apiUrl}/`);
+  const esPublica = metodo === 'POST' && RUTAS_PUBLICAS.includes(url);
+  return esApi && !esPublica;
+}
+
+export const authInterceptor: HttpInterceptorFn = (req, next) => {
+  const token = inject(TokenService).getToken();
+  if (!token || !necesitaToken(req.method, req.url)) {
+    return next(req);
   }
 
-  return next(req);
+  return next(req.clone({ setHeaders: { Authorization: `Bearer ${token}` } }));
 };
