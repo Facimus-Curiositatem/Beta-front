@@ -51,8 +51,7 @@ export const routes: Routes = [
   },
   {
     path: 'procesos-compartidos',
-    canActivate: [authGuard, rolGuard],
-    data: { rol: 'ADMINISTRADOR' },
+    canActivate: [authGuard],
     loadComponent: () =>
       import('./components/procesos-compartidos-list/procesos-compartidos-list.component').then(
         (m) => m.ProcesosCompartidosListComponent
@@ -60,8 +59,7 @@ export const routes: Routes = [
   },
   {
     path: 'procesos-compartidos/:id',
-    canActivate: [authGuard, rolGuard],
-    data: { rol: 'ADMINISTRADOR' },
+    canActivate: [authGuard],
     loadComponent: () =>
       import('./components/proceso-compartido-detalle/proceso-compartido-detalle.component').then(
         (m) => m.ProcesoCompartidoDetalleComponent
