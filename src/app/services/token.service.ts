@@ -1,9 +1,15 @@
 import { DestroyRef, Injectable, inject, signal } from '@angular/core';
+import { jwtDecode } from 'jwt-decode';
+import { TokenPayload } from '../models/login.model';
+import { RolAcceso } from '../models/usuario.model';
 
 @Injectable({ providedIn: 'root' })
 export class TokenService {
   private readonly TOKEN_KEY = 'accessToken';
+  private readonly REFRESH_KEY = 'refreshToken';
   private readonly token = signal<string | null>(localStorage.getItem(this.TOKEN_KEY));
+
+  readonly usuario = signal<string | null>(this.leerPayload()?.sub ?? null);
 
   constructor() {
     const sincronizar = (event: StorageEvent) => {
@@ -12,6 +18,7 @@ export class TokenService {
         (event.key === this.TOKEN_KEY || event.key === null)
       ) {
         this.token.set(localStorage.getItem(this.TOKEN_KEY));
+        this.usuario.set(this.leerPayload()?.sub ?? null);
       }
     };
     window.addEventListener('storage', sincronizar);
@@ -25,37 +32,48 @@ export class TokenService {
   setToken(token: string): void {
     localStorage.setItem(this.TOKEN_KEY, token);
     this.token.set(token);
+    this.usuario.set(this.leerPayload()?.sub ?? null);
   }
 
-  // Leer claims orienta la interfaz; solo el backend verifica la firma del JWT.
-  private claims(): { exp?: number; rol?: string } | null {
+  getRefreshToken(): string | null {
+    return localStorage.getItem(this.REFRESH_KEY);
+  }
+
+  setRefreshToken(refreshToken: string): void {
+    localStorage.setItem(this.REFRESH_KEY, refreshToken);
+  }
+
+  leerPayload(): TokenPayload | null {
     const token = this.getToken();
     if (!token) return null;
     try {
-      const parts = token.split('.');
-      if (parts.length !== 3) return null;
-      const payload = parts[1].replace(/-/g, '+').replace(/_/g, '/');
-      return JSON.parse(atob(payload.padEnd(Math.ceil(payload.length / 4) * 4, '=')));
+      return jwtDecode<TokenPayload>(token);
     } catch {
       return null;
     }
   }
 
   tieneSesion(): boolean {
-    const claims = this.claims();
-    return typeof claims?.exp === 'number' && claims.exp * 1000 > Date.now();
+    const exp = this.leerPayload()?.exp;
+    return typeof exp === 'number' && exp * 1000 > Date.now();
+  }
+
+  tieneRol(rol: RolAcceso): boolean {
+    return this.tieneSesion() && this.leerPayload()?.rol === rol;
   }
 
   esAdministrador(): boolean {
-    return this.tieneSesion() && this.claims()?.rol === 'ADMINISTRADOR';
+    return this.tieneRol('ADMINISTRADOR');
   }
 
   rol(): string | null {
-    return this.tieneSesion() ? this.claims()?.rol ?? null : null;
+    return this.tieneSesion() ? this.leerPayload()?.rol ?? null : null;
   }
 
   removeToken(): void {
     localStorage.removeItem(this.TOKEN_KEY);
+    localStorage.removeItem(this.REFRESH_KEY);
     this.token.set(null);
+    this.usuario.set(null);
   }
 }
