@@ -25,7 +25,7 @@ describe('LoginComponent', () => {
   });
   it('guarda sesión, evita doble envío y navega a procesos', () => {
     const f = TestBed.createComponent(LoginComponent);
-    const nav = spyOn(TestBed.inject(Router), 'navigate').and.resolveTo(true);
+    const nav = spyOn(TestBed.inject(Router), 'navigateByUrl').and.resolveTo(true);
     f.detectChanges();
     for (const [name, value] of [
       ['email', 'sam@beta.co'],
@@ -40,7 +40,7 @@ describe('LoginComponent', () => {
     const req = TestBed.inject(HttpTestingController).expectOne('/api/v1/auth/login');
     req.flush({ accessToken: 'jwt', usuario: {}, expiresIn: 3600, tokenType: 'Bearer' });
     expect(localStorage.getItem('accessToken')).toBe('jwt');
-    expect(nav).toHaveBeenCalledWith(['/procesos']);
+    expect(nav).toHaveBeenCalledWith('/procesos');
   });
   it('muestra detail del backend y permite reintentar', () => {
     const f = TestBed.createComponent(LoginComponent);

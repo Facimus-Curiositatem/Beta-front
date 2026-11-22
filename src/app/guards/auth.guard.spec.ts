@@ -3,6 +3,8 @@ import { Router, UrlTree } from '@angular/router';
 import { provideRouter } from '@angular/router';
 import { authGuard } from './auth.guard';
 import { TokenService } from '../services/token.service';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 
 describe('authGuard', () => {
   let tokenService: TokenService;
@@ -11,7 +13,7 @@ describe('authGuard', () => {
   beforeEach(() => {
     localStorage.clear();
     TestBed.configureTestingModule({
-      providers: [provideRouter([])]
+    providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()]
     });
     tokenService = TestBed.inject(TokenService);
     router = TestBed.inject(Router);

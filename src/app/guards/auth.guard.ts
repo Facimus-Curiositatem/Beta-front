@@ -1,16 +1,30 @@
-import { CanActivateFn } from '@angular/router';
 import { inject } from '@angular/core';
-import { Router } from '@angular/router';
+import { CanActivateFn, Router } from '@angular/router';
+import { catchError, map, of } from 'rxjs';
+import { AuthService } from '../services/auth.service';
 import { TokenService } from '../services/token.service';
 
-export const authGuard: CanActivateFn = () => {
-  const tokenService = inject(TokenService);
-  const router = inject(Router);
-
-  if (tokenService.tieneSesion()) {
+export const authGuard: CanActivateFn = (_route, state) => {
+  const tokens = inject(TokenService);
+  const auth = inject(AuthService);
+  if (tokens.tieneSesion()) {
     return true;
   }
 
-  tokenService.removeToken();
-  return router.createUrlTree(['/login']);
+  // Manda al login y recuerda a donde queria ir
+  const login = inject(Router).createUrlTree(['/login'], {
+    queryParams: { returnUrl: state.url }
+  });
+
+  if (!tokens.getRefreshToken()) {
+    tokens.removeToken();
+    return login;
+  }
+  return auth.refrescar().pipe(
+    map(() => true),
+    catchError(() => {
+      tokens.removeToken();
+      return of(login);
+    })
+  );
 };
