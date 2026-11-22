@@ -30,7 +30,7 @@ describe('Rutas de procesos compartidos H4', () => {
   it('protege módulos privados sin sesión', async () => {
     const h = await RouterTestingHarness.create();
     await h.navigateByUrl('/procesos/10/compartir');
-    expect(TestBed.inject(Router).url).toBe('/login');
+    expect(TestBed.inject(Router).url).toBe('/login?returnUrl=%2Fprocesos%2F10%2Fcompartir');
   });
   it('impide a editor abrir administración', async () => {
     login('EDITOR');

@@ -30,7 +30,7 @@ describe('Rutas administrativas H8', () => {
   it('protege módulos privados sin sesión', async () => {
     const h = await RouterTestingHarness.create();
     await h.navigateByUrl('/roles');
-    expect(TestBed.inject(Router).url).toBe('/login');
+    expect(TestBed.inject(Router).url).toBe('/login?returnUrl=%2Froles');
   });
   it('impide a editor abrir administración', async () => {
     login('EDITOR');
