@@ -1,6 +1,6 @@
 <h1>Roles de proceso</h1>
-<a routerLink="/roles/nuevo">Crear rol</a>
-<form [formGroup]="form" (ngSubmit)="buscar()">
+<a class="enlace-accion" routerLink="/roles/nuevo">Crear rol</a>
+<form class="filtros" [formGroup]="form" (ngSubmit)="buscar()">
   <label>Nombre <input formControlName="nombre" /></label>
   <button type="submit" [disabled]="loading()">Buscar</button>
 </form>
@@ -8,44 +8,46 @@
   <p role="alert">{{ message() }}</p>
 }
 @if (loading()) {
-  <p>Cargando...</p>
+  <p class="cargando" role="status">Cargando...</p>
 }
 @if (page(); as resultado) {
-  <table>
-    <thead>
-      <tr>
-        <th>Nombre</th>
-        <th>Descripción</th>
-        <th>Procesos que lo usan</th>
-        <th>En uso</th>
-        <th>Acciones</th>
-      </tr>
-    </thead>
-    <tbody>
-      @for (rol of resultado.content; track rol.id) {
+  <div class="tabla-scroll" tabindex="0" role="region" aria-label="Roles de proceso">
+    <table>
+      <thead>
         <tr>
-          <td>{{ rol.nombre }}</td>
-          <td>{{ rol.descripcion }}</td>
-          <td>{{ rol.procesos.length }}: {{ rol.procesos.join(', ') }}</td>
-          <td>{{ rol.enUso ? 'Sí' : 'No' }}</td>
-          <td>
-            <a [routerLink]="['/roles', rol.id, 'editar']">Editar</a>
-            <button
-              type="button"
-              (click)="eliminar(rol)"
-              [disabled]="rol.enUso || deleting() !== null"
-            >
-              Eliminar
-            </button>
-          </td>
+          <th>Nombre</th>
+          <th>Descripción</th>
+          <th>Procesos que lo usan</th>
+          <th>En uso</th>
+          <th>Acciones</th>
         </tr>
-      } @empty {
-        <tr>
-          <td colspan="5">No hay roles para esta búsqueda.</td>
-        </tr>
-      }
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+        @for (rol of resultado.content; track rol.id) {
+          <tr>
+            <td>{{ rol.nombre }}</td>
+            <td>{{ rol.descripcion }}</td>
+            <td>{{ rol.procesos.length }}: {{ rol.procesos.join(', ') }}</td>
+            <td>{{ rol.enUso ? 'Sí' : 'No' }}</td>
+            <td>
+              <a [routerLink]="['/roles', rol.id, 'editar']">Editar</a>
+              <button class="peligro"
+                type="button"
+                (click)="eliminar(rol)"
+                [disabled]="rol.enUso || deleting() !== null"
+              >
+                Eliminar
+              </button>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="5">No hay roles para esta búsqueda.</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
   <button
     type="button"
     (click)="cargar(resultado.page - 1)"

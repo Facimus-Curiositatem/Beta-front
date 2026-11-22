@@ -2,11 +2,11 @@
 
 <h2>Arcos del pool</h2>
 
-<a [routerLink]="['/pools', poolId(), 'arcos', 'nuevo']">Crear arco</a>
+<a class="enlace-accion" [routerLink]="['/pools', poolId(), 'arcos', 'nuevo']">Crear arco</a>
 
 @switch (status()) {
   @case ('loading') {
-    <p>Cargando arcos...</p>
+    <p class="cargando" role="status">Cargando arcos...</p>
   }
   @case ('error') {
     <p>{{ message() }}</p>
@@ -16,32 +16,34 @@
     @if (message()) {
       <p>{{ message() }}</p>
     }
-    <table>
-      <thead>
-        <tr>
-          <th>Origen</th>
-          <th>Destino</th>
-          <th>Etiqueta</th>
-          <th>Condicion</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (arco of items(); track arco.id) {
+    <div class="tabla-scroll" tabindex="0" role="region" aria-label="Arcos">
+      <table>
+        <thead>
           <tr>
-            <td>{{ nombresNodo().get(arco.origenId) ?? arco.origenId }}</td>
-            <td>{{ nombresNodo().get(arco.destinoId) ?? arco.destinoId }}</td>
-            <td>{{ arco.etiqueta }}</td>
-            <td>{{ arco.condicion }}</td>
-            <td>
-              <button (click)="editar(arco.id)">Editar</button>
-              <button (click)="eliminar(arco.id)">Eliminar</button>
-            </td>
+            <th>Origen</th>
+            <th>Destino</th>
+            <th>Etiqueta</th>
+            <th>Condicion</th>
+            <th>Acciones</th>
           </tr>
-        } @empty {
-          <tr><td colspan="5">No hay arcos registrados.</td></tr>
-        }
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          @for (arco of items(); track arco.id) {
+            <tr>
+              <td>{{ nombresNodo().get(arco.origenId) ?? arco.origenId }}</td>
+              <td>{{ nombresNodo().get(arco.destinoId) ?? arco.destinoId }}</td>
+              <td>{{ arco.etiqueta }}</td>
+              <td>{{ arco.condicion }}</td>
+              <td>
+                <button (click)="editar(arco.id)">Editar</button>
+                <button class="peligro" (click)="eliminar(arco.id)">Eliminar</button>
+              </td>
+            </tr>
+          } @empty {
+            <tr><td colspan="5">No hay arcos registrados.</td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
   }
 }

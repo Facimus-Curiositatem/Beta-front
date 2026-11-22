@@ -314,3 +314,15 @@
   stroke: #ffffff;
   stroke-width: 3px;
 }
+
+/* El lienzo conserva sus coordenadas; los paneles cambian de columna. */
+@media (max-width: 1000px) {
+  .modelador { grid-template-columns: 150px minmax(0, 1fr); }
+  .modelador.solo-lectura { grid-template-columns: minmax(0, 1fr); }
+  .panel { grid-column: 1 / -1; position: static; }
+}
+
+@media (max-width: 640px) {
+  .modelador { grid-template-columns: minmax(0, 1fr); }
+  .columna-paleta { position: static; }
+}

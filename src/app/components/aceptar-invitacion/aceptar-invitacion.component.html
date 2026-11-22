@@ -1,14 +1,14 @@
 <h2>Aceptar invitación</h2>
 
 <form [formGroup]="form" (ngSubmit)="submit()">
-  <label>Nombre</label>
-  <input formControlName="nombre" />
+  <label for="aceptar-invitacion-nombre">Nombre</label>
+  <input id="aceptar-invitacion-nombre" formControlName="nombre" />
   @if (form.controls.nombre.touched && form.controls.nombre.invalid) {
     <p class="error">El nombre es obligatorio.</p>
   }
 
-  <label>Contraseña</label>
-  <input type="password" formControlName="password" />
+  <label for="aceptar-invitacion-password">Contraseña</label>
+  <input id="aceptar-invitacion-password" type="password" formControlName="password" />
   @if (form.controls.password.touched && form.controls.password.invalid) {
     <p class="error">La contraseña debe tener al menos 8 caracteres.</p>
   }

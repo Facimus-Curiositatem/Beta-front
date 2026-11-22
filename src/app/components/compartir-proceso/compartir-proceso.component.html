@@ -17,30 +17,32 @@
   Actualizar lista
 </button>
 @if (loading()) {
-  <p>Cargando...</p>
+  <p class="cargando" role="status">Cargando...</p>
 }
-<table>
-  <thead>
-    <tr>
-      <th>Empresa invitada</th>
-      <th>Solo lectura</th>
-      <th>Acción</th>
-    </tr>
-  </thead>
-  <tbody>
-    @for (item of compartidos(); track item.id) {
+<div class="tabla-scroll" tabindex="0" role="region" aria-label="Empresas invitadas">
+  <table>
+    <thead>
       <tr>
-        <td>{{ item.empresaInvitada }}</td>
-        <td>{{ item.soloLectura ? 'Sí' : 'No' }}</td>
-        <td>
-          <button type="button" (click)="revocar(item)" [disabled]="saving()">Revocar</button>
-        </td>
+        <th>Empresa invitada</th>
+        <th>Solo lectura</th>
+        <th>Acción</th>
       </tr>
-    } @empty {
-      <tr>
-        <td colspan="3">No hay empresas invitadas.</td>
-      </tr>
-    }
-  </tbody>
-</table>
+    </thead>
+    <tbody>
+      @for (item of compartidos(); track item.id) {
+        <tr>
+          <td>{{ item.empresaInvitada }}</td>
+          <td>{{ item.soloLectura ? 'Sí' : 'No' }}</td>
+          <td>
+            <button class="peligro" type="button" (click)="revocar(item)" [disabled]="saving()">Revocar</button>
+          </td>
+        </tr>
+      } @empty {
+        <tr>
+          <td colspan="3">No hay empresas invitadas.</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
 <a routerLink="/procesos">Volver a procesos</a>
