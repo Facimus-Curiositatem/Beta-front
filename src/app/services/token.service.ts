@@ -39,8 +39,12 @@ export class TokenService {
     return localStorage.getItem(this.REFRESH_KEY);
   }
 
-  setRefreshToken(refreshToken: string): void {
-    localStorage.setItem(this.REFRESH_KEY, refreshToken);
+  setRefreshToken(refreshToken: string | null | undefined): void {
+    if (refreshToken) {
+      localStorage.setItem(this.REFRESH_KEY, refreshToken);
+    } else {
+      localStorage.removeItem(this.REFRESH_KEY);
+    }
   }
 
   leerPayload(): TokenPayload | null {

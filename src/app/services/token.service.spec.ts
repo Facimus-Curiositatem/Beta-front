@@ -38,6 +38,12 @@ describe('TokenService', () => {
     expect(service.getToken()).toBeNull();
     expect(service.getRefreshToken()).toBeNull();
   });
+  it('no guarda el texto "undefined" si el backend no envía refresh token', () => {
+    service.setRefreshToken('refresh-anterior');
+    service.setRefreshToken(undefined);
+    expect(service.getRefreshToken()).toBeNull();
+    expect(localStorage.getItem('refreshToken')).toBeNull();
+  });
   it('lee el payload con jwt-decode y expone usuario y tieneRol', () => {
     service.setToken(
       'h.' +
