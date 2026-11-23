@@ -2,8 +2,9 @@
 #
 #   Pull request a main  -> CI: pruebas unitarias (Karma) + build + imagen :pr-N
 #                           + pruebas E2E (Selenium) contra un backend temporal en beta-back
-#   Merge (push) a main  -> CD: imagen :latest y :sha-xxxxxxx, y despliegue en beta-front
-#                           despues de la aprobacion en el entorno "production"
+#   Merge (push) a main  -> las mismas pruebas, imagen :latest y :sha-xxxxxxx, y despliegue en
+#                           beta-front cuando pasan, despues de la aprobacion en "production"
+#   Manual (Actions)     -> las mismas pruebas sobre la rama elegida, imagen :sha-xxxxxxx, sin desplegar
 name: CI/CD Front
 
 on:
@@ -13,8 +14,10 @@ on:
     branches: [main]
   workflow_dispatch:
 
+# En un PR, un push nuevo cancela la ejecucion anterior. El evento va en el grupo para que
+# una ejecucion manual sobre main no cancele un merge que espera turno para desplegar.
 concurrency:
-  group: ci-${{ github.ref }}
+  group: ci-${{ github.event_name }}-${{ github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 permissions:
@@ -91,9 +94,13 @@ jobs:
             SHA_TAG="sha-$(echo '${{ github.event.pull_request.head.sha }}' | cut -c1-7)"
             echo "principal=pr-${{ github.event.pull_request.number }}" >> "$GITHUB_OUTPUT"
             echo "todas=pr-${{ github.event.pull_request.number }} $SHA_TAG" >> "$GITHUB_OUTPUT"
-          else
+          elif [ "${{ github.event_name }}" = "push" ] && [ "${{ github.ref }}" = "refs/heads/main" ]; then
             echo "principal=$SHA_TAG" >> "$GITHUB_OUTPUT"
             echo "todas=$SHA_TAG latest" >> "$GITHUB_OUTPUT"
+          else
+            # Ejecucion manual: :latest queda solo para lo que llega a main por merge
+            echo "principal=$SHA_TAG" >> "$GITHUB_OUTPUT"
+            echo "todas=$SHA_TAG" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Build de la imagen
@@ -128,13 +135,13 @@ jobs:
             echo "- \`$IMAGEN:$TAG\`" >> "$GITHUB_STEP_SUMMARY"
           done
 
-  # Selenium: el front del PR corre en el runner y usa un backend temporal en beta-back
-  # (imagen beta-back:latest, BD vacia proyecto_ci_front). Si falla una prueba, el PR queda en rojo.
+  # Selenium en el PR, en el merge y en las ejecuciones manuales: la imagen recien publicada
+  # corre en el runner y usa un backend temporal en beta-back (imagen beta-back:latest,
+  # BD vacia proyecto_ci_front). Si falla una prueba, el PR queda en rojo y no se despliega.
   e2e:
     name: Pruebas E2E (Selenium)
     runs-on: ubuntu-latest
     needs: docker
-    if: github.event_name == 'pull_request'
     timeout-minutes: 40
     permissions:
       contents: read
@@ -284,7 +291,8 @@ jobs:
   deploy:
     name: Desplegar en beta-front
     runs-on: ubuntu-latest
-    needs: docker
+    # Solo se despliega una imagen que ya paso las pruebas E2E
+    needs: [docker, e2e]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     timeout-minutes: 15
     environment:
