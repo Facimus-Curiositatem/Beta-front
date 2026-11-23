@@ -22,14 +22,14 @@ def test_formulario_vacio_muestra_campos_obligatorios(login_page):
 
     assert login_page.errores_validacion() == [
         "El correo es obligatorio",
-        "La contrasena es obligatoria",
+        "La contraseña es obligatoria",
     ]
 
 
 def test_correo_con_formato_invalido(login_page):
     login_page.iniciar_sesion("esto-no-es-un-correo", "cualquier-contrasena")
 
-    assert login_page.errores_validacion() == ["El correo no tiene un formato valido"]
+    assert login_page.errores_validacion() == ["El correo no tiene un formato válido"]
 
 
 def test_ruta_protegida_sin_sesion_redirige_a_login(driver, base_url):
