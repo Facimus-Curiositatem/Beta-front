@@ -2,7 +2,7 @@
 
 <h2>Gateways del lane</h2>
 
-<a [routerLink]="['/lanes', laneId(), 'gateways', 'nuevo']">Crear gateway</a>
+<a class="enlace-accion" [routerLink]="['/lanes', laneId(), 'gateways', 'nuevo']">Crear gateway</a>
 
 @if (message()) {
   <p class="error">{{ message() }}</p>
@@ -18,38 +18,40 @@
 
 @switch (status()) {
   @case ('loading') {
-    <p>Cargando gateways...</p>
+    <p class="cargando" role="status">Cargando gateways...</p>
   }
   @case ('error') {
     <button type="button" (click)="load()">Reintentar</button>
   }
   @case ('success') {
-    <table>
-      <thead>
-        <tr>
-          <th>Nombre</th>
-          <th>Tipo</th>
-          <th>Posición X</th>
-          <th>Posición Y</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (gateway of items(); track gateway.id) {
+    <div class="tabla-scroll" tabindex="0" role="region" aria-label="Gateways">
+      <table>
+        <thead>
           <tr>
-            <td>{{ gateway.nombre }}</td>
-            <td>{{ gateway.tipoGateway }}</td>
-            <td>{{ gateway.posicionX }}</td>
-            <td>{{ gateway.posicionY }}</td>
-            <td>
-              <a [routerLink]="['/lanes', laneId(), 'gateways', gateway.id, 'editar']">Editar</a>
-              <button type="button" class="eliminar" (click)="pedirEliminar(gateway)">Eliminar</button>
-            </td>
+            <th>Nombre</th>
+            <th>Tipo</th>
+            <th>Posición X</th>
+            <th>Posición Y</th>
+            <th>Acciones</th>
           </tr>
-        } @empty {
-          <tr><td colspan="5">No hay gateways registrados.</td></tr>
-        }
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          @for (gateway of items(); track gateway.id) {
+            <tr>
+              <td>{{ gateway.nombre }}</td>
+              <td>{{ gateway.tipoGateway }}</td>
+              <td>{{ gateway.posicionX }}</td>
+              <td>{{ gateway.posicionY }}</td>
+              <td>
+                <a [routerLink]="['/lanes', laneId(), 'gateways', gateway.id, 'editar']">Editar</a>
+                <button type="button" class="eliminar" (click)="pedirEliminar(gateway)">Eliminar</button>
+              </td>
+            </tr>
+          } @empty {
+            <tr><td colspan="5">No hay gateways registrados.</td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
   }
 }

@@ -2,8 +2,8 @@
 <p>{{ usuario()?.nombre }} — {{ usuario()?.email }}</p>
 
 <form [formGroup]="form" (ngSubmit)="submit()">
-  <label>Rol</label>
-  <select formControlName="rolAcceso">
+  <label for="editar-usuario-rolAcceso">Rol</label>
+  <select id="editar-usuario-rolAcceso" formControlName="rolAcceso">
     @for (r of roles; track r) {
       <option [value]="r">{{ r }}</option>
     }

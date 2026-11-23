@@ -5,10 +5,10 @@
 }
 
 @if (!soloLectura()) {
-  <a routerLink="/procesos/nuevo">Crear proceso</a>
+  <a class="enlace-accion" routerLink="/procesos/nuevo">Crear proceso</a>
 }
 
-<form [formGroup]="filtros" (ngSubmit)="buscar()">
+<form class="filtros" [formGroup]="filtros" (ngSubmit)="buscar()">
   <label>
     Nombre
     <input formControlName="nombre">
@@ -42,39 +42,41 @@
 
 @switch (status()) {
   @case ('loading') {
-    <p>Cargando procesos...</p>
+    <p class="cargando" role="status">Cargando procesos...</p>
   }
   @case ('error') {
     <p>{{ message() }}</p>
     <button (click)="load()">Reintentar</button>
   }
   @case ('success') {
-    <table>
-      <thead>
-        <tr>
-          <th>Nombre</th>
-          <th>Categoria</th>
-          <th>Estado</th>
-          <th>Creacion</th>
-          <th>Modificacion</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (proceso of items(); track proceso.id) {
+    <div class="tabla-scroll" tabindex="0" role="region" aria-label="Procesos">
+      <table>
+        <thead>
           <tr>
-            <td>{{ proceso.nombre }}</td>
-            <td>{{ proceso.categoria }}</td>
-            <td>{{ proceso.estado }}</td>
-            <td>{{ proceso.fechaCreacion }}</td>
-            <td>{{ proceso.fechaModificacion }}</td>
-            <td><button (click)="ver(proceso.id)">Ver</button></td>
+            <th>Nombre</th>
+            <th>Categoria</th>
+            <th>Estado</th>
+            <th>Creacion</th>
+            <th>Modificacion</th>
+            <th>Acciones</th>
           </tr>
-        } @empty {
-          <tr><td colspan="6">No hay procesos registrados.</td></tr>
-        }
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          @for (proceso of items(); track proceso.id) {
+            <tr>
+              <td>{{ proceso.nombre }}</td>
+              <td>{{ proceso.categoria }}</td>
+              <td>{{ proceso.estado }}</td>
+              <td>{{ proceso.fechaCreacion }}</td>
+              <td>{{ proceso.fechaModificacion }}</td>
+              <td><button (click)="ver(proceso.id)">Ver</button></td>
+            </tr>
+          } @empty {
+            <tr><td colspan="6">No hay procesos registrados.</td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
 
     <button (click)="anterior()" [disabled]="pagina() === 0">Anterior</button>
     <span>Pagina {{ pagina() + 1 }} de {{ totalPages() || 1 }}</span>

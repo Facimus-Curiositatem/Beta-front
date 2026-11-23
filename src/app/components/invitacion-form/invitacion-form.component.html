@@ -3,14 +3,14 @@
 <a routerLink="/usuarios">Volver a usuarios</a>
 
 <form [formGroup]="form" (ngSubmit)="submit()">
-  <label>Correo</label>
-  <input formControlName="email" />
+  <label for="invitacion-form-email">Correo</label>
+  <input id="invitacion-form-email" formControlName="email" />
   @if (form.controls.email.touched && form.controls.email.invalid) {
     <p class="error">Escribe un correo válido.</p>
   }
 
-  <label>Rol</label>
-  <select formControlName="rolAcceso">
+  <label for="invitacion-form-rolAcceso">Rol</label>
+  <select id="invitacion-form-rolAcceso" formControlName="rolAcceso">
     @for (r of roles; track r) {
       <option [value]="r">{{ r }}</option>
     }

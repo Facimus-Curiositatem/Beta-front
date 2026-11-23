@@ -6,7 +6,7 @@
 
 @switch (status()) {
   @case ('loading') {
-    <p>Cargando proceso...</p>
+    <p class="cargando" role="status">Cargando proceso...</p>
   }
   @case ('error') {
     <button (click)="load()">Reintentar</button>
@@ -34,7 +34,7 @@
         <button (click)="publicar()">Publicar</button>
       }
       @if (tokens.esAdministrador()) {
-        <button (click)="confirmarEliminacion()">Eliminar</button>
+        <button class="peligro" (click)="confirmarEliminacion()">Eliminar</button>
       }
 
       <h3>Historial de cambios</h3>
