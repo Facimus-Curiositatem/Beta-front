@@ -55,10 +55,16 @@ python -m pytest e2e -v
 
 ## En el CI
 
-El job `e2e` de `.github/workflows/ci.yml` corre estas pruebas en cada pull request a `main` y bloquea el PR si alguna falla:
+El job `e2e` de `.github/workflows/ci.yml` corre estas pruebas:
+
+- En cada pull request a `main`: si alguna falla, el PR queda en rojo.
+- En cada merge a `main`: el despliegue en beta-front solo ocurre si pasan.
+- A mano, desde Actions > CI/CD Front > Run workflow, sobre la rama que elijas (no despliega).
+
+En cada ejecucion:
 
 1. Levanta en la VM beta-back un backend temporal (`ci/levantar-backend-e2e.sh`) con la imagen `beta-back:latest`, contra la BD vacia `proyecto_ci_front`.
-2. Arranca en el runner la imagen del front del PR (`beta-front:pr-<N>`) en `http://localhost:8080`, apuntando a ese backend.
+2. Arranca en el runner la imagen del front que acaba de publicar el job `docker` (`beta-front:pr-<N>` en un PR, `beta-front:sha-<commit>` en el merge o a mano) en `http://localhost:8080`, apuntando a ese backend.
 3. Ejecuta pytest con `E2E_HEADLESS=1` y `E2E_TIMEOUT=20`.
 4. Publica la tabla "Reporte E2E Selenium", un resumen en la pagina de la ejecucion y el artefacto `reporte-e2e` (HTML, junit y capturas).
 5. Siempre quita el backend temporal y vacia la BD (`ci/bajar-backend-e2e.sh`).
