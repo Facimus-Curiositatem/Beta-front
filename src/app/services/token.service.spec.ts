@@ -30,6 +30,33 @@ describe('TokenService', () => {
     service.removeToken();
     expect(service.getToken()).toBeNull();
   });
+  it('guarda el refresh token y removeToken borra ambos', () => {
+    service.setToken('abc123');
+    service.setRefreshToken('refresh');
+    expect(service.getRefreshToken()).toBe('refresh');
+    service.removeToken();
+    expect(service.getToken()).toBeNull();
+    expect(service.getRefreshToken()).toBeNull();
+  });
+  it('no guarda el texto "undefined" si el backend no envía refresh token', () => {
+    service.setRefreshToken('refresh-anterior');
+    service.setRefreshToken(undefined);
+    expect(service.getRefreshToken()).toBeNull();
+    expect(localStorage.getItem('refreshToken')).toBeNull();
+  });
+  it('lee el payload con jwt-decode y expone usuario y tieneRol', () => {
+    service.setToken(
+      'h.' +
+        btoa(JSON.stringify({ sub: 'ana@beta.co', rol: 'EDITOR', exp: Date.now() / 1000 + 1000 })) +
+        '.s'
+    );
+    expect(service.leerPayload()?.sub).toBe('ana@beta.co');
+    expect(service.usuario()).toBe('ana@beta.co');
+    expect(service.tieneRol('EDITOR')).toBeTrue();
+    expect(service.tieneRol('ADMINISTRADOR')).toBeFalse();
+    service.removeToken();
+    expect(service.usuario()).toBeNull();
+  });
   it('rechaza tokens malformados, sin vencimiento o vencidos', () => {
     for (const token of [
       'mal',

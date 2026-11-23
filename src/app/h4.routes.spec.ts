@@ -30,17 +30,23 @@ describe('Rutas de procesos compartidos H4', () => {
   it('protege módulos privados sin sesión', async () => {
     const h = await RouterTestingHarness.create();
     await h.navigateByUrl('/procesos/10/compartir');
-    expect(TestBed.inject(Router).url).toBe('/login');
+    expect(TestBed.inject(Router).url).toBe('/login?returnUrl=%2Fprocesos%2F10%2Fcompartir');
   });
   it('impide a editor abrir administración', async () => {
     login('EDITOR');
     const h = await RouterTestingHarness.create();
     await h.navigateByUrl('/procesos/10/compartir');
     expect(TestBed.inject(Router).url).toContain('/procesos?aviso=sin-permiso');
-    // La redirección abre el listado real de procesos, que pide la primera página.
     TestBed.inject(HttpTestingController)
       .expectOne(req => req.url === '/api/v1/procesos')
       .flush({ content: [], page: 0, size: 10, totalElements: 0, totalPages: 0 });
+  });
+  it('permite a un editor abrir los procesos compartidos con su empresa', async () => {
+    login('EDITOR');
+    const h = await RouterTestingHarness.create();
+    await h.navigateByUrl('/procesos-compartidos');
+    expect(TestBed.inject(Router).url).toBe('/procesos-compartidos');
+    TestBed.inject(HttpTestingController).expectOne('/api/v1/procesos-compartidos').flush([]);
   });
   it('vincula id de proceso al módulo compartir', async () => {
     login();

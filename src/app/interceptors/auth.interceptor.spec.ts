@@ -44,9 +44,10 @@ describe('authInterceptor', () => {
     expect(req.request.headers.has('Authorization')).toBeFalse();
     req.flush({});
   });
-  it('no envía un token anterior al iniciar sesión o registrar empresa', () => {
+
+  it('no envía un token anterior al iniciar sesión, renovar tokens o registrar empresa', () => {
     tokenService.setToken('token-anterior');
-    for (const url of ['/api/v1/auth/login', '/api/v1/empresas']) {
+    for (const url of ['/api/v1/auth/login', '/api/v1/auth/refresh', '/api/v1/empresas']) {
       http.post(url, {}).subscribe();
       const req = httpTesting.expectOne(url);
       expect(req.request.headers.has('Authorization')).toBeFalse();
